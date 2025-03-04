@@ -12,6 +12,8 @@
 #include "imgui_internal.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
+#include "Define.h"
+#include "CPlayer.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -22,12 +24,15 @@ struct FVertexSimple {
 	float r, g, b, a;		// Color (색상)
 };
 
-struct FVector3
+FVertexSimple box_vertices[] =
 {
-	float x, y, z;
-	FVector3(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
+	{ -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌상
+	{  0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 우상
+	{ -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌하
+	{ -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌하
+	{  0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 우상
+	{  0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }  // 우하
 };
-
 class UBall {
 public:
 	// 클래스 이름과, 아래 두개의 변수 이름은 변경 X
@@ -80,6 +85,7 @@ FVector3 ComputeRepulsiveForce(UBall* ball, const FVector3& mousePos, float stre
 
 #include "Sphere.h"
 UINT numVerticesSphere = sizeof(sphere_vertices) / sizeof(FVertexSimple);
+UINT numVerticesBox = sizeof(box_vertices) / sizeof(FVertexSimple);
 
 /* 자기력 관련 변수들 */
 // 마우스 위치를 저장할 변수
@@ -425,7 +431,8 @@ public:
 	}
 
 };
-
+bool keyStates[256] = { false };
+void UpdateInput(CPlayer* _pPlyaer);
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
@@ -456,6 +463,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 구 정점 버퍼 1회 생성
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
+
+	ID3D11Buffer* vertexBufferBox = renderer.CreateVertexBuffer(box_vertices, numVerticesBox * sizeof(FVertexSimple));
+
 
 	// IMGUI 초기화
 	IMGUI_CHECKVERSION();
@@ -533,8 +543,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	const float GravityAcceleration = -0.005f;
 	float e = 0.8f;
 
+	CPlayer* pPlayer = new CPlayer;
+
 	// 프레임 관련 변수.
-	const int targetFPS = 30;
+	const int targetFPS = 60;
 	const double targetFrameTime = 1000.0 / targetFPS;
 	LARGE_INTEGER startTime, endTime, frequency;
 	QueryPerformanceFrequency(&frequency);
@@ -553,6 +565,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (msg.message == WM_QUIT) {
 				bIsExit = true;
 				break;
+			}
+			UpdateInput(pPlayer);
+			//if (msg.wParam == VK_SPACE)
+			//{
+			//	pPlayer->Jump();
+			//}
+			//if (msg.wParam == VK_LEFT)
+			//{
+			//	pPlayer->Move(-0.01f, D_RIGHT);
+			//}
+			//if (msg.wParam == VK_RIGHT)
+			//{
+			//	pPlayer->Move(0.01f, D_RIGHT);
+			//}
+			//if (msg.wParam == VK_UP)
+			//{
+			//	pPlayer->Move(0.01f, D_UP);
+			//}
+			//if (msg.wParam == VK_DOWN)
+			//{
+			//	pPlayer->Move(-0.01f, D_UP);
+			//}
+			if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+			{
+				pPlayer->Jump();
+			}
+			if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+			{
+				pPlayer->Move(-0.005f, D_RIGHT);
+			}
+			if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+			{
+				pPlayer->Move(0.005f, D_RIGHT);
 			}
 		}
 
@@ -631,6 +676,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}*/
 			}
 		}
+		pPlayer->Update(elapsedTime);
 
 		HandleCollisions(HeadBall, e);
 
@@ -673,6 +719,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			renderer.UpdateConstant(curBall->Location, curBall->Radius);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
+
+		//Player Rendering
+		renderer.UpdateConstant(pPlayer->GetLoc(), pPlayer->GetScale());
+		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+
+		// Player Rendering 종료
 		ImGui::End();
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -693,6 +745,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		HeadBall = HeadBall->NextBall;
 		delete temp;
 	}
+	delete pPlayer;
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -818,4 +871,33 @@ FVector3 ComputeRepulsiveForce(UBall* ball, const FVector3& mousePos, float stre
 
 	FVector3 repulsiveForce = MultVector3(DivideVector3(direction, distance), forceMagnitude);
 	return repulsiveForce;
+}
+void UpdateInput(CPlayer* _pPlyaer)
+{
+	keyStates[VK_SPACE] = GetAsyncKeyState(VK_SPACE) & 0x8000;
+	keyStates[VK_LEFT] = GetAsyncKeyState(VK_LEFT) & 0x8000;
+	keyStates[VK_RIGHT] = GetAsyncKeyState(VK_RIGHT) & 0x8000;
+	keyStates[VK_UP] = GetAsyncKeyState(VK_UP) & 0x8000;
+	keyStates[VK_DOWN] = GetAsyncKeyState(VK_DOWN) & 0x8000;
+
+	if (keyStates[VK_SPACE])
+	{
+		_pPlyaer->Jump();
+	}
+	if (keyStates[VK_LEFT])
+	{
+		_pPlyaer->Move(-0.01f, D_RIGHT);
+	}
+	if (keyStates[VK_RIGHT])
+	{
+		_pPlyaer->Move(0.01f, D_RIGHT);
+	}
+	if (keyStates[VK_UP])
+	{
+		_pPlyaer->Move(0.01f, D_UP);
+	}
+	if (keyStates[VK_DOWN])
+	{
+		_pPlyaer->Move(-0.01f, D_UP);
+	}
 }
