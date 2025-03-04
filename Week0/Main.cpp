@@ -7,13 +7,19 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "d2d1.lib")
 
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 #include "Sound.h"
+#include "UINumberRenderer.h"
+
+UINumberRenderer uiRenderer;
 SoundManager soundManager;
+
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -431,7 +437,6 @@ public:
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	
 	WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
@@ -459,10 +464,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Renderer 및 Direct3D 관련 초기화
 	URenderer renderer;
 
+	if (!uiRenderer.Initialize(hWnd)) {
+		MessageBoxW(nullptr, L"Direct2D 초기화 실패!", L"오류", MB_OK | MB_ICONERROR);
+		return -1;
+	}
+
+
 	// D3D11 생성 함수 호출.
 	renderer.Create(hWnd);
 	renderer.CreateShader();
 	renderer.CreateConstantBuffer();
+
 
 	// 구 정점 버퍼 1회 생성
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
@@ -552,6 +564,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	double elapsedTime = 0.0;
 	bool bIsExit = false;
 
+	int score = 0;
 	// 렌더링 루프.
 	while (!bIsExit) {
 		QueryPerformanceCounter(&startTime);
@@ -648,6 +661,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		HandleCollisions(HeadBall, e);
 
 		// 렌더링 준비 (프레임 클리어, 뷰포트 설정 등)
+		
 		renderer.Prepare();
 		renderer.PrepareShader();
 
@@ -680,15 +694,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			RemoveRandomBall();
 			currentCount--;
 		}
-
 		// 각 볼들 렌더링
 		for (UBall* curBall = HeadBall; curBall != nullptr; curBall = curBall->NextBall) {
 			renderer.UpdateConstant(curBall->Location, curBall->Radius);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
+		uiRenderer.Render(score);
 		ImGui::End();
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		
 
 		// 프레임 조절 관련
 		do {
@@ -710,12 +725,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-
+	uiRenderer.Cleanup();
 	renderer.ReleaseVertexBuffer(vertexBufferSphere);
 	renderer.ReleaseConstantBuffer();
 	renderer.ReleaseShader();
 	renderer.Release();
 
+	
+	
 	return 0;
 }
 
