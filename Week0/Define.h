@@ -33,6 +33,15 @@ struct FVector3
 	FVector3 operator*(float scalar) const {
 		return FVector3(x * scalar, y * scalar, z * scalar);
 	}
+
+	bool operator==(const FVector3& other) const {
+		return (x == other.x && y == other.y && z == other.z);
+	}
+
+	float Distance(const FVector3& other) const {
+		// 두 벡터의 차 벡터의 크기를 계산
+		return ((*this - other).Magnitude());
+	}
 };
 
 enum Direction

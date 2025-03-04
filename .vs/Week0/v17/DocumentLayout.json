@@ -3,10 +3,6 @@
   "WorkspaceRootPath": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CPlayer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\CPlayer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
@@ -19,12 +15,16 @@
       "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Define.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Sphere.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Sphere.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\ShaderW0.hlsl||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\ShaderW0.hlsl||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Sphere.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Sphere.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,7 +38,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Sphere.h",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Sphere.h",
               "RelativeDocumentMoniker": "Week0\\Sphere.h",
@@ -46,31 +46,30 @@
               "RelativeToolTip": "Week0\\Sphere.h",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-03-04T08:53:20.174Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-04T08:53:20.174Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "Define.h",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Define.h",
               "RelativeDocumentMoniker": "Week0\\Define.h",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Define.h",
               "RelativeToolTip": "Week0\\Define.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAHAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-03-04T08:43:11.5Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "CPlayer.h",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CPlayer.h",
               "RelativeDocumentMoniker": "Week0\\CPlayer.h",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CPlayer.h",
               "RelativeToolTip": "Week0\\CPlayer.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-03-04T08:40:10.323Z",
               "EditorCaption": ""
@@ -79,11 +78,11 @@
         },
         {
           "DockedWidth": 211,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "ShaderW0.hlsl",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\ShaderW0.hlsl",
               "RelativeDocumentMoniker": "Week0\\ShaderW0.hlsl",
@@ -96,26 +95,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "CPlayer.cpp",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CPlayer.cpp",
               "RelativeDocumentMoniker": "Week0\\CPlayer.cpp",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CPlayer.cpp",
               "RelativeToolTip": "Week0\\CPlayer.cpp",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAAAB0AAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAADYAAAAAAAAAAAAAAEcAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-04T08:40:38.464Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Main.cpp",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Main.cpp",
               "RelativeDocumentMoniker": "Week0\\Main.cpp",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Main.cpp",
               "RelativeToolTip": "Week0\\Main.cpp",
-              "ViewState": "AgIAADgCAAAAAAAAAAAqwD0CAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAADEAAAAAAAAAAAAnwFsAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-01-28T18:59:04.183Z",
               "EditorCaption": ""

@@ -431,9 +431,6 @@ public:
 	}
 
 };
-bool keyStates[256] = { false };
-void UpdateInput(CPlayer* _pPlyaer);
-
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
@@ -565,39 +562,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (msg.message == WM_QUIT) {
 				bIsExit = true;
 				break;
-			}
-			UpdateInput(pPlayer);
-			//if (msg.wParam == VK_SPACE)
-			//{
-			//	pPlayer->Jump();
-			//}
-			//if (msg.wParam == VK_LEFT)
-			//{
-			//	pPlayer->Move(-0.01f, D_RIGHT);
-			//}
-			//if (msg.wParam == VK_RIGHT)
-			//{
-			//	pPlayer->Move(0.01f, D_RIGHT);
-			//}
-			//if (msg.wParam == VK_UP)
-			//{
-			//	pPlayer->Move(0.01f, D_UP);
-			//}
-			//if (msg.wParam == VK_DOWN)
-			//{
-			//	pPlayer->Move(-0.01f, D_UP);
-			//}
-			if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-			{
-				pPlayer->Jump();
-			}
-			if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-			{
-				pPlayer->Move(-0.005f, D_RIGHT);
-			}
-			if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-			{
-				pPlayer->Move(0.005f, D_RIGHT);
 			}
 		}
 
@@ -871,33 +835,4 @@ FVector3 ComputeRepulsiveForce(UBall* ball, const FVector3& mousePos, float stre
 
 	FVector3 repulsiveForce = MultVector3(DivideVector3(direction, distance), forceMagnitude);
 	return repulsiveForce;
-}
-void UpdateInput(CPlayer* _pPlyaer)
-{
-	keyStates[VK_SPACE] = GetAsyncKeyState(VK_SPACE) & 0x8000;
-	keyStates[VK_LEFT] = GetAsyncKeyState(VK_LEFT) & 0x8000;
-	keyStates[VK_RIGHT] = GetAsyncKeyState(VK_RIGHT) & 0x8000;
-	keyStates[VK_UP] = GetAsyncKeyState(VK_UP) & 0x8000;
-	keyStates[VK_DOWN] = GetAsyncKeyState(VK_DOWN) & 0x8000;
-
-	if (keyStates[VK_SPACE])
-	{
-		_pPlyaer->Jump();
-	}
-	if (keyStates[VK_LEFT])
-	{
-		_pPlyaer->Move(-0.01f, D_RIGHT);
-	}
-	if (keyStates[VK_RIGHT])
-	{
-		_pPlyaer->Move(0.01f, D_RIGHT);
-	}
-	if (keyStates[VK_UP])
-	{
-		_pPlyaer->Move(0.01f, D_UP);
-	}
-	if (keyStates[VK_DOWN])
-	{
-		_pPlyaer->Move(-0.01f, D_UP);
-	}
 }

@@ -1,9 +1,5 @@
-﻿  Main.cpp
-C:\Users\Jungle\Documents\GitHub\PinBall\Week0\CPlayer.h(21,18): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
-  (소스 파일 'Main.cpp'을(를) 컴파일하는 중)
+﻿  CPlayer.cpp
+C:\Users\Jungle\Documents\GitHub\PinBall\Week0\CPlayer.h(21,19): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+  (소스 파일 'CPlayer.cpp'을(를) 컴파일하는 중)
   
-C:\Users\Jungle\Documents\GitHub\PinBall\Week0\Main.cpp(128,42): warning C4305: '초기화 중': 'double'에서 'FLOAT'(으)로 잘립니다.
-C:\Users\Jungle\Documents\GitHub\PinBall\Week0\Main.cpp(679,19): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\Jungle\Documents\GitHub\PinBall\Week0\Main.cpp(850,15): warning C4244: '초기화 중': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\Jungle\Documents\GitHub\PinBall\Week0\Main.cpp(851,16): warning C4244: '초기화 중': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   Week0.vcxproj -> C:\Users\Jungle\Documents\GitHub\PinBall\x64\Debug\Week0.exe
