@@ -114,8 +114,21 @@ void UPlayer::Jump()
 void UPlayer::Dash()
 {
 	FVector3 direction = (MousePosition - m_Loc).Normalize();
-	float dashDistance = 0.7f; 
-	m_DashTarget = m_Loc + direction * dashDistance;
+	// 목표 지점에 따른 대쉬 거리 계산 (최소 0.2, 최대 0.7)
+	float dashDistance = min((MousePosition - m_Loc).Magnitude() + 0.2f, 0.7f);
+	FVector3 potentialDashTarget = m_Loc + direction * dashDistance;
+
+	// 벽의 경계를 침범하지 않도록 대쉬 목표 지점 조정
+	if (potentialDashTarget.x - m_Scale < -1.0f)
+		potentialDashTarget.x = -1.0f + m_Scale;
+	if (potentialDashTarget.x + m_Scale > 1.0f)
+		potentialDashTarget.x = 1.0f - m_Scale;
+	if (potentialDashTarget.y - m_Scale < -1.0f)
+		potentialDashTarget.y = -1.0f + m_Scale;
+	if (potentialDashTarget.y + m_Scale > 1.0f)
+		potentialDashTarget.y = 1.0f - m_Scale;
+
+	m_DashTarget = potentialDashTarget;
 	m_Velocity.y = 0;
 	m_Dashing = true;
 
