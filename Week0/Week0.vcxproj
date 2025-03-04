@@ -140,6 +140,7 @@
     <ClCompile Include="imgui_tables.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="SharkShark.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -159,6 +160,7 @@
     <ClInclude Include="imstb_rectpack.h" />
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
+    <ClInclude Include="SharkShark.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Define.h" />
   </ItemGroup>

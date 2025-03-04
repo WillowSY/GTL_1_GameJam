@@ -16,6 +16,7 @@
 #include "Player.h"
 #include "CollisionMgr.h"
 #include "Ball.h"
+#include "SharkShark.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -35,39 +36,7 @@ FVertexSimple box_vertices[] =
 	{  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 우상
 	{  1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }  // 우하
 };
-//class UBall {
-//public:
-//	// 클래스 이름과, 아래 두개의 변수 이름은 변경 X
-//	FVector3 Location;
-//	FVector3 Velocity;
-//	float Radius;
-//	float Mass;
-//
-//	// 자유 변수
-//	float Index;
-//	int NumHits;
-//	UBall* NextBall; // 다음 볼 객체 가리키는 포인터.
-//	FVector3 offset;
-//	FVector3 velocity;
-//	// 각속도 미완
-//	//FVector3 AngularVelocity;
-//
-//	/*void Render(URenderer* renderer) {
-//
-//	}
-//
-//	void DoRender(URenderer& renderer) {
-//
-//	}
-//
-//	void Move() {
-//
-//	}
-//
-//	void Update() {
-//
-//	}*/
-//};
+
 
 float GetRandomFloat(float min, float max);
 
@@ -547,8 +516,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 
-
-	UPlayer* pPlayer = new UPlayer;
+	SharkShark* pMainGame = new SharkShark;
+	pMainGame->Initialize();
+	//UPlayer* pPlayer = new UPlayer;
 
 	UBall* HeadBall = new UBall;
 	HeadBall->CreateBall();
@@ -581,70 +551,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		}
 		UpdateMousePosition(hWnd);
-		//생성 파괴 절
-		while (numBalls > UBall::ballCount)
+
+		while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
 		{
-			if (HeadBall && !HeadBall->CreateBall())
-			{
-				numBalls--;
-			}
+			pMainGame->CreateBall();
 		}
-		while (HeadBall && numBalls < UBall::ballCount)
+		while (numBalls < pMainGame->GetpObejectList()[OL_BALL].size())
 		{
-			if (numBalls <= 0) {
-				numBalls = 1;
-				break;
-			}
-			HeadBall->DeleteRandomBall();
+			pMainGame->DeleteRandomBall(numBalls);
 		}
 		
-		
+		pMainGame->Update(elapsedTime);
+		pMainGame->FixedUpdate();
+		numBalls = pMainGame->GetBallList().size();
 
-		pPlayer->Update(elapsedTime);
-		UBall* Iter = HeadBall->NextBall;
-		while (Iter)
-		{
-			Iter->Update(elapsedTime);
-			Iter = Iter->NextBall;
-		}
-		// 충돌 처리
-		UBall* pBall = HeadBall;
-		while (pBall != nullptr)
-		{
-			CollisionMgr::CollisionPlayerAndBall(pPlayer, pBall);
-			pBall = pBall->NextBall;
-		}
-
-		// 파괴 확인 
-
-		UBall* ptmp = HeadBall->NextBall;
-		while (ptmp)
-		{
-			if (ptmp->bDead)
-			{
-				ptmp->DeleteBall();
-				ptmp = HeadBall->NextBall;
-				numBalls--;
-			}
-			if (ptmp)
-				ptmp = ptmp->NextBall;
-		}
-
-		
 		// 준비 작업
 		renderer.Prepare();
 		renderer.PrepareShader();
 
-		Iter = HeadBall->NextBall;
-		while (Iter)
+
+		// ball Rendering
+		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
 		{
-			renderer.UpdateConstant(Iter->Location, Iter->Radius);
-			// 생성한 버텍스 버퍼를 넘겨 실질적인 렌더링 요청
+			renderer.UpdateConstant(static_cast<UBall*>(*iter)->Location, static_cast<UBall*>(*iter)->Radius);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
-			Iter = Iter->NextBall;
 		}
+		
 		//Player Rendering
-		renderer.UpdateConstant(pPlayer->GetLoc(), pPlayer->GetScale());
+		renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
 		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 
 		// Player Rendering 종료
@@ -658,7 +592,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		ImGui::Text("Hello Jungle World!");
 
-		//ImGui::Text("%f", HeadBall->NextBall->Mass);
+		ImGui::Text("%d", pMainGame->GetBallList().size());
 
 
 		ImGui::PushItemWidth(80);
@@ -864,7 +798,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		HeadBall = HeadBall->NextBall;
 		delete temp;
 	}
-	delete pPlayer;
+	//delete pPlayer;
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();

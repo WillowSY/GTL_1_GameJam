@@ -1,5 +1,5 @@
 #include "Ball.h"
-
+#include "Player.h"
 UBall::UBall()
 {
 }
@@ -109,7 +109,12 @@ void UBall::Update(float deltaTime)
 
 void UBall::BeginOverllaped(UObject* _pOther)
 {
-	bDead = true;
+	UPlayer* pPlayer = dynamic_cast<UPlayer*>(_pOther);
+	if (pPlayer)
+		bDead = true;
+	UBall* pBall = dynamic_cast<UBall*>(_pOther);
+	if(pBall)
+		CollisionHandle(_pOther);
 }
 
 void UBall::ResolveOverlap(FVector3& pos1, FVector3& pos2, float penetrationDepth)
@@ -159,44 +164,36 @@ void UBall::BoundaryHandle()
 	}
 }
 
-void UBall::CollisionHandle()
+void UBall::CollisionHandle(UObject* _pOther)
 {
-	UBall* pIter = NextBall;
-	while (pIter)
+	UBall* pOther = static_cast<UBall*>(_pOther);
+	float distance = (Location - pOther->Location).Magnitude();
+	float radiusSum = Radius + pOther->Radius;
+	float penetrationDepth = radiusSum - distance;
+	if (distance <= radiusSum)
 	{
-		//원과 원의 충돌
-		float distance = (Location - pIter->Location).Magnitude();
-		float radiusSum = Radius + pIter->Radius;
-		float penetrationDepth = radiusSum - distance;
-		if (distance <= radiusSum)
-		{
-			FVector3 normal = (Location - pIter->Location).Normalize();
-			ResolveOverlap(Location, pIter->Location, penetrationDepth);
+		FVector3 normal = (Location - pOther->Location).Normalize();
+		ResolveOverlap(Location, pOther->Location, penetrationDepth);
 
-			FVector3 relativeVelocity = Velocity - pIter->Velocity;
+		FVector3 relativeVelocity = Velocity - pOther->Velocity;
 
-			float velocityAlongNormal = relativeVelocity.Dot(normal);
+		float velocityAlongNormal = relativeVelocity.Dot(normal);
 
-			if (velocityAlongNormal > 0) continue;
+		if (velocityAlongNormal > 0) return;
 
-			float impulse = -2.f * velocityAlongNormal / (Mass + pIter->Mass);
-			Velocity = Velocity + normal * (impulse * pIter->Mass);
-			pIter->Velocity = pIter->Velocity - normal * (impulse * Mass);
+		float impulse = -2.f * velocityAlongNormal / (Mass + pOther->Mass);
+		Velocity = Velocity + normal * (impulse * pOther->Mass);
+		pOther->Velocity = pOther->Velocity - normal * (impulse * Mass);
 
-			// 회전 추가 
-			FVector3 tangent = FVector3(-normal.y, normal.x, 0); // 접선 방향
-			float relativeTangentialVelocity = relativeVelocity.Dot(tangent);
+		// 회전 추가 
+		FVector3 tangent = FVector3(-normal.y, normal.x, 0); // 접선 방향
+		float relativeTangentialVelocity = relativeVelocity.Dot(tangent);
 
-			float rotationalImpulse = relativeTangentialVelocity / (Radius + pIter->Radius);
-			AngularVelocity += rotationalImpulse / Radius;
-			pIter->AngularVelocity -= rotationalImpulse / pIter->Radius;
-		}
-		////////////////////////////////////////////////////////////////////////////
-
-		if (pIter->NextBall == nullptr)
-			break;
-		pIter = pIter->NextBall;
+		float rotationalImpulse = relativeTangentialVelocity / (Radius + pOther->Radius);
+		AngularVelocity += rotationalImpulse / Radius;
+		pOther->AngularVelocity -= rotationalImpulse / pOther->Radius;
 	}
+
 }
 
 void UBall::Move(float deltaTime)
@@ -209,7 +206,6 @@ void UBall::Move(float deltaTime)
 //}
 	Location = Location + Velocity * deltaTime;
 	BoundaryHandle();
-	CollisionHandle();
 }
 
 void UBall::Rotate(float deltaTime)

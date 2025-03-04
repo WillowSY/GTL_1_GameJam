@@ -45,7 +45,7 @@ private:
 
 	void ResolveOverlap(FVector3& pos1, FVector3& pos2, float penetrationDepth); // 겹쳤을 때 떨어뜨리기
 	void BoundaryHandle(); // 화면 경계 확인 함수
-	void CollisionHandle(); // 충돌 처리 함수
+	void CollisionHandle(UObject* _pOther); // 충돌 처리 함수
 	void Move(float deltaTime); // 이동 함수
 	void Rotate(float deltaTime); // 회전 함수
 };

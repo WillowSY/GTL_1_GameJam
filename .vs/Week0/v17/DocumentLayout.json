@@ -7,16 +7,36 @@
       "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CollisionMgr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\CollisionMgr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\SharkShark.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\SharkShark.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Define.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Define.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Player.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Player.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Ball.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Ball.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\SharkShark.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\SharkShark.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CollisionMgr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\CollisionMgr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Player.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Player.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Object.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Object.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Ball.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -29,22 +49,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Object.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Object.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Define.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Define.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Object.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Object.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Ball.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\Ball.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\ShaderW0.hlsl||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{BF705677-AECC-4CE0-BF3F-8EF02526F0CF}|Week0\\Week0.vcxproj|solutionrelative:Week0\\ShaderW0.hlsl||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -54,45 +58,71 @@
       "DocumentGroups": [
         {
           "DockedWidth": 189,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 10,
               "Title": "CollisionMgr.h",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CollisionMgr.h",
               "RelativeDocumentMoniker": "Week0\\CollisionMgr.h",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CollisionMgr.h",
               "RelativeToolTip": "Week0\\CollisionMgr.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-03-04T11:23:47.392Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 9,
               "Title": "Ball.h",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Ball.h",
               "RelativeDocumentMoniker": "Week0\\Ball.h",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Ball.h",
               "RelativeToolTip": "Week0\\Ball.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAC8AAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-03-04T12:28:11.331Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 11,
               "Title": "Object.h",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Object.h",
               "RelativeDocumentMoniker": "Week0\\Object.h",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Object.h",
               "RelativeToolTip": "Week0\\Object.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-03-04T12:27:58.401Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "SharkShark.h",
+              "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\SharkShark.h",
+              "RelativeDocumentMoniker": "Week0\\SharkShark.h",
+              "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\SharkShark.h",
+              "RelativeToolTip": "Week0\\SharkShark.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-03-04T13:56:25.177Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Ball.cpp",
+              "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Ball.cpp",
+              "RelativeDocumentMoniker": "Week0\\Ball.cpp",
+              "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Ball.cpp",
+              "RelativeToolTip": "Week0\\Ball.cpp",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAAAFIAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-03-04T12:38:10.286Z",
               "EditorCaption": ""
             }
           ]
@@ -103,51 +133,52 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Ball.cpp",
-              "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Ball.cpp",
-              "RelativeDocumentMoniker": "Week0\\Ball.cpp",
-              "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Ball.cpp",
-              "RelativeToolTip": "Week0\\Ball.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEQAAAAeAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-03-04T12:38:10.286Z",
+              "DocumentIndex": 7,
+              "Title": "Player.h",
+              "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Player.h",
+              "RelativeDocumentMoniker": "Week0\\Player.h",
+              "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Player.h",
+              "RelativeToolTip": "Week0\\Player.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-03-04T12:28:15.593Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 1,
+              "Title": "SharkShark.cpp",
+              "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\SharkShark.cpp",
+              "RelativeDocumentMoniker": "Week0\\SharkShark.cpp",
+              "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\SharkShark.cpp",
+              "RelativeToolTip": "Week0\\SharkShark.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-03-04T13:59:23.346Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Define.h",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Define.h",
               "RelativeDocumentMoniker": "Week0\\Define.h",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Define.h",
               "RelativeToolTip": "Week0\\Define.h",
-              "ViewState": "AgIAACoAAAAAAAAAAAAAADcAAAACAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-03-04T11:29:15.463Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "ShaderW0.hlsl",
-              "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\ShaderW0.hlsl",
-              "RelativeDocumentMoniker": "Week0\\ShaderW0.hlsl",
-              "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\ShaderW0.hlsl",
-              "RelativeToolTip": "Week0\\ShaderW0.hlsl",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-03-04T09:33:21.314Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Player.cpp",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Player.cpp",
               "RelativeDocumentMoniker": "Week0\\Player.cpp",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Player.cpp",
               "RelativeToolTip": "Week0\\Player.cpp",
-              "ViewState": "AgIAADEAAAAAAAAAAAAowG8AAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAG8AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-04T08:40:38.464Z",
               "EditorCaption": ""
@@ -160,20 +191,20 @@
               "RelativeDocumentMoniker": "Week0\\Main.cpp",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Main.cpp",
               "RelativeToolTip": "Week0\\Main.cpp",
-              "ViewState": "AgIAAKECAAAAAAAAAAAcwGADAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAACkCAAAAAAAAAAAMwDoCAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-01-28T18:59:04.183Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "CollisionMgr.cpp",
               "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CollisionMgr.cpp",
               "RelativeDocumentMoniker": "Week0\\CollisionMgr.cpp",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\CollisionMgr.cpp",
               "RelativeToolTip": "Week0\\CollisionMgr.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAApAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-04T11:28:50.554Z",
               "EditorCaption": ""
@@ -186,22 +217,9 @@
               "RelativeDocumentMoniker": "Week0\\Object.cpp",
               "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Object.cpp",
               "RelativeToolTip": "Week0\\Object.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-04T12:28:53.725Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Player.h",
-              "DocumentMoniker": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Player.h",
-              "RelativeDocumentMoniker": "Week0\\Player.h",
-              "ToolTip": "C:\\Users\\Jungle\\Documents\\GitHub\\PinBall\\Week0\\Player.h",
-              "RelativeToolTip": "Week0\\Player.h",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-03-04T12:28:15.593Z",
               "EditorCaption": ""
             }
           ]
