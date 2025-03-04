@@ -5,8 +5,10 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
-#include <d3d11.h>
-#include <d3dcompiler.h>
+#include <d2d1.h>
+#include <dwrite.h>
+#pragma comment(lib, "d2d1")
+#pragma comment(lib, "dwrite")
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -99,6 +101,12 @@ public:
 	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025, 1.0f }; // 화면을 초기화(clear) 할 때 사용할 색상(RGBA)
 	D3D11_VIEWPORT ViewportInfo; // 렌더링 영역을 정의하는 뷰포트 정보
 
+	ID2D1Factory* pD2DFactory = nullptr;
+	ID2D1RenderTarget* pRenderTarget = nullptr;
+	IDWriteFactory* pDWriteFactory = nullptr;
+	IDWriteTextFormat* pTextFormat = nullptr;
+	ID2D1SolidColorBrush* pWhiteBrush = nullptr;
+
 public:
 	// 렌더러 초기화 함수
 	void Create(HWND hWindow) {
@@ -110,6 +118,8 @@ public:
 
 		// 래스터라이저 상태 생성
 		CreateRasterizerState();
+
+		CreateTextFactory(hWindow);
 	}
 
 	//Direct3D 장치 및 스왑 체인을 생성하는 함수
@@ -219,6 +229,58 @@ public:
 		}
 	}
 
+	void CreateTextFactory(HWND hWindow)
+	{
+		// Direct2D 팩토리 생성
+		D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
+		// DWrite 팩토리 생성
+		DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&pDWriteFactory));
+
+		// 텍스트 포맷 생성
+		pDWriteFactory->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 32.0f, L"en-us", &pTextFormat);
+		//pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+		
+		// 렌더 타겟 생성
+		IDXGISurface* pDXGISurface;
+		SwapChain->GetBuffer(0, __uuidof(IDXGISurface), (void**)&pDXGISurface);
+
+		D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED));
+		pD2DFactory->CreateDxgiSurfaceRenderTarget(pDXGISurface, &props, &pRenderTarget);
+
+		// 브러시 생성
+		pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pWhiteBrush);
+
+	}
+
+	void ReleaseTextFactory()
+	{
+		if (pTextFormat)
+		{
+			pTextFormat->Release();
+			pTextFormat = nullptr;
+		}
+		if (pWhiteBrush)
+		{
+			pWhiteBrush->Release();
+			pWhiteBrush = nullptr;
+		}
+		if (pRenderTarget)
+		{
+			pRenderTarget->Release();
+			pRenderTarget = nullptr;
+		}
+		if (pD2DFactory)
+		{
+			pD2DFactory->Release();
+			pD2DFactory = nullptr;
+		}
+		if (pDWriteFactory)
+		{
+			pDWriteFactory->Release();
+			pDWriteFactory = nullptr;
+		}
+	}
+
 	// 렌더러에 사용된 모든 리소스를 해제하는 함수
 	void Release()
 	{
@@ -229,6 +291,7 @@ public:
 
 		ReleaseFrameBuffer();
 		ReleaseDeviceAndSwapChain();
+		ReleaseTextFactory();
 	}
 
 	// 스왑 체인의 백 버퍼와 프론트 버퍼를 교체하여 화면에 출력
@@ -401,6 +464,22 @@ public:
 		}
 	}
 
+	void RenderText(const wchar_t* text, float x, float y, float width, float height)
+	{
+		pRenderTarget->BeginDraw();
+		//배경색을 안칠하면 투명하다!!
+		//pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black, 0.f));
+
+		pRenderTarget->DrawText(
+			text,
+			wcslen(text),
+			pTextFormat,
+			D2D1::RectF(x, y, x + width, y + height),
+			pWhiteBrush
+		);
+
+		pRenderTarget->EndDraw();
+	}
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
@@ -514,8 +593,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//float e = 0.8f;
 #pragma endregion
 
-
-
 	SharkShark* pMainGame = new SharkShark;
 	pMainGame->Initialize();
 	//UPlayer* pPlayer = new UPlayer;
@@ -580,9 +657,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		//Player Rendering
 		renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
 		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+		
+		// 텍스트 렌더링
+		renderer.RenderText(L"Shark, Shark", 8, 8, 400, 200);
+		wchar_t numBallsText[50];
+		swprintf(numBallsText, 50, L"Number of Balls: %d", numBalls);
+		renderer.RenderText(numBallsText, 8, 48, 400, 200);
 
-		// Player Rendering 종료
 
+		// ImGui 렌더링
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
