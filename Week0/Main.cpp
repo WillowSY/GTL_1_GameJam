@@ -552,18 +552,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		UpdateMousePosition(hWnd);
 
-		while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
-		{
-			pMainGame->CreateBall();
-		}
-		while (numBalls < pMainGame->GetpObejectList()[OL_BALL].size())
-		{
-			pMainGame->DeleteRandomBall(numBalls);
-		}
-		
-		pMainGame->Update(elapsedTime);
-		pMainGame->FixedUpdate();
-		numBalls = pMainGame->GetBallList().size();
+		//while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
+		//{
+		//	pMainGame->CreateBall();
+		//}
+		//while (numBalls < pMainGame->GetpObejectList()[OL_BALL].size())
+		//{
+		//	pMainGame->DeleteRandomBall(numBalls);
+		//}
+		//
+		//pMainGame->Update(elapsedTime);
+		//pMainGame->FixedUpdate();
+		//numBalls = pMainGame->GetBallList().size();
 
 		// 준비 작업
 		renderer.Prepare();
@@ -571,15 +571,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 		// ball Rendering
-		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
+		/*for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
 		{
 			renderer.UpdateConstant(static_cast<UBall*>(*iter)->Location, static_cast<UBall*>(*iter)->Radius);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
-		}
+		}*/
 		
 		//Player Rendering
-		renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
-		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+		//renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
+		//renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 
 		// Player Rendering 종료
 
