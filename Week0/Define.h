@@ -1,6 +1,8 @@
 #pragma once
-#include <iostream>
+#include <cmath>
+#include <algorithm>
 
+using namespace std;
 struct FVector3
 {
 	float x, y, z;
@@ -51,3 +53,37 @@ enum Direction
 	D_RIGHT,
 	D_LEFT
 };
+class UBall {
+public:
+	// 클래스 이름과, 아래 두개의 변수 이름은 변경 X
+	FVector3 Location;
+	FVector3 Velocity;
+	float Radius;
+	float Mass;
+
+	// 자유 변수
+	float Index;
+	int NumHits;
+	UBall* NextBall; // 다음 볼 객체 가리키는 포인터.
+	FVector3 offset;
+	FVector3 velocity;
+	// 각속도 미완
+	//FVector3 AngularVelocity;
+
+	/*void Render(URenderer* renderer) {
+
+	}
+
+	void DoRender(URenderer& renderer) {
+
+	}
+
+	void Move() {
+
+	}
+
+	void Update() {
+
+	}*/
+};
+

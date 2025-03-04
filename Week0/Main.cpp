@@ -13,7 +13,8 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 #include "Define.h"
-#include "CPlayer.h"
+#include "Player.h"
+#include "CollisionMgr.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -26,46 +27,46 @@ struct FVertexSimple {
 
 FVertexSimple box_vertices[] =
 {
-	{ -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌상
-	{  0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 우상
-	{ -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌하
-	{ -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌하
-	{  0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 우상
-	{  0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }  // 우하
+	{ -1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌상
+	{  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 우상
+	{ -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌하
+	{ -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌하
+	{  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 우상
+	{  1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }  // 우하
 };
-class UBall {
-public:
-	// 클래스 이름과, 아래 두개의 변수 이름은 변경 X
-	FVector3 Location;
-	FVector3 Velocity;
-	float Radius;
-	float Mass;
-
-	// 자유 변수
-	float Index;
-	int NumHits;
-	UBall* NextBall; // 다음 볼 객체 가리키는 포인터.
-	FVector3 offset;
-	FVector3 velocity;
-	// 각속도 미완
-	//FVector3 AngularVelocity;
-
-	/*void Render(URenderer* renderer) {
-
-	}
-
-	void DoRender(URenderer& renderer) {
-
-	}
-
-	void Move() {
-
-	}
-
-	void Update() {
-
-	}*/
-};
+//class UBall {
+//public:
+//	// 클래스 이름과, 아래 두개의 변수 이름은 변경 X
+//	FVector3 Location;
+//	FVector3 Velocity;
+//	float Radius;
+//	float Mass;
+//
+//	// 자유 변수
+//	float Index;
+//	int NumHits;
+//	UBall* NextBall; // 다음 볼 객체 가리키는 포인터.
+//	FVector3 offset;
+//	FVector3 velocity;
+//	// 각속도 미완
+//	//FVector3 AngularVelocity;
+//
+//	/*void Render(URenderer* renderer) {
+//
+//	}
+//
+//	void DoRender(URenderer& renderer) {
+//
+//	}
+//
+//	void Move() {
+//
+//	}
+//
+//	void Update() {
+//
+//	}*/
+//};
 
 float GetRandomFloat(float min, float max);
 
@@ -540,7 +541,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	const float GravityAcceleration = -0.005f;
 	float e = 0.8f;
 
-	CPlayer* pPlayer = new CPlayer;
+	UPlayer* pPlayer = new UPlayer;
 
 	// 프레임 관련 변수.
 	const int targetFPS = 60;
@@ -639,6 +640,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					curBall->AngularVelocity = MultVector3(curBall->AngularVelocity, 0.98f);
 				}*/
 			}
+		}
+		UBall* pBall = HeadBall;
+		while (pBall != nullptr)
+		{
+			CollisionMgr::CollisionPlayerAndBall(pPlayer, pBall);
+			pBall = pBall->NextBall;
 		}
 		pPlayer->Update(elapsedTime);
 

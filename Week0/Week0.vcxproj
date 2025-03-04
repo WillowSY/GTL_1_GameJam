@@ -128,7 +128,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CPlayer.cpp" />
+    <ClCompile Include="CollisionMgr.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
@@ -144,7 +145,8 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CPlayer.h" />
+    <ClInclude Include="CollisionMgr.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_impl_dx11.h" />

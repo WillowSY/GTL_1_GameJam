@@ -1,5 +1,1 @@
-﻿  CPlayer.cpp
-C:\Users\Jungle\Documents\GitHub\PinBall\Week0\CPlayer.h(21,19): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
-  (소스 파일 'CPlayer.cpp'을(를) 컴파일하는 중)
-  
-  Week0.vcxproj -> C:\Users\Jungle\Documents\GitHub\PinBall\x64\Debug\Week0.exe
+﻿  Week0.vcxproj -> C:\Users\Jungle\Documents\GitHub\PinBall\x64\Debug\Week0.exe
