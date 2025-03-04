@@ -10,7 +10,9 @@ public:
     ~TextRenderer();
 
     bool Initialize(IDXGISwapChain* swapChain);
-    void RenderText(const std::wstring& text, float screenWidth, float screenHeight);
+    void RenderText(const std::wstring& text, float x, float y);
+    void RenderButton(const std::wstring& text, float x, float y, float width, float height);
+    bool IsButtonClicked(float x, float y, float width, float height, int mouseX, int mouseY, bool isMouseDown);
     void Cleanup();
 
 private:
@@ -19,4 +21,5 @@ private:
     Microsoft::WRL::ComPtr<IDWriteFactory> dwriteFactory;
     Microsoft::WRL::ComPtr<IDWriteTextFormat> textFormat;
     Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> textBrush;
+    Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> buttonBrush;
 };

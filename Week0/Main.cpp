@@ -20,6 +20,8 @@
 
 SoundManager soundManager;
 TextRenderer textRenderer;
+bool isMouseDown = false;
+int mouseX = 0, mouseY = 0;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -102,6 +104,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 
 	switch (message) {
+	case WM_LBUTTONDOWN:
+		isMouseDown = true;
+		mouseX = LOWORD(lParam);
+		mouseY = HIWORD(lParam);
+		break;
+	case WM_LBUTTONUP:
+		isMouseDown = false;
+		break;
+	case WM_MOUSEMOVE:
+		mouseX = LOWORD(lParam);
+		mouseY = HIWORD(lParam);
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
@@ -474,6 +488,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		MessageBoxW(nullptr, L"텍스트 렌더러 초기화 실패!", L"오류", MB_OK | MB_ICONERROR);
 	}
 
+	float buttonX = 700, buttonY = 20, buttonWidth = 120, buttonHeight = 50;
+
 	// 구 정점 버퍼 1회 생성
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
 
@@ -669,8 +685,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// 점수 출력
 		std::wstring scoreText = L"Score: " + std::to_wstring(score);
-		textRenderer.RenderText(scoreText, screenWidth, screenHeight);
+		textRenderer.RenderText(scoreText, screenWidth / 2 - 100, 20);
 
+		// 버튼 그리기 (우측 상단)
+		textRenderer.RenderButton(L"Score Up", buttonX, buttonY, buttonWidth, buttonHeight);
+
+		// 버튼 클릭 감지
+		if (textRenderer.IsButtonClicked(buttonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY, isMouseDown)) {
+			score += 10;
+			isMouseDown = false;
+		}
 
 		// ImGui 초기화
 		
