@@ -1,0 +1,3 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(512,5): warning MSB8003: VCToolsInstallDir 속성이 정의되지 않았습니다. 일부 빌드 도구를 찾을 수 없습니다.
+  TRACKER : 오류 TRK0005: "CL.exe"을(를) 찾지 못했습니다. 지정된 파일을 찾을 수 없습니다.
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(755,5): error MSB6006: "CL.exe"이(가) 종료되었습니다(코드: 5).
