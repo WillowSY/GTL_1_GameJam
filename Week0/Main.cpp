@@ -12,6 +12,8 @@
 #include "imgui_internal.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
+#include "Sound.h"
+SoundManager soundManager;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -427,13 +429,14 @@ public:
 };
 
 
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	
 	WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
+
+	
 
 	if (!RegisterClassW(&wndclass)) {
 		MessageBoxW(nullptr, L"윈도우 클래스 등록 실패!", L"오류", MB_OK | MB_ICONERROR);
@@ -446,6 +449,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;
 	}
 
+
+	if (!soundManager.PlayBGM(L"BGM.mp3")) {
+		MessageBoxW(nullptr, L"BGM 재생 실패!", L"Error", MB_ICONERROR);
+	}
+
+	
+	
 	// Renderer 및 Direct3D 관련 초기화
 	URenderer renderer;
 
@@ -482,6 +492,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 볼 추가
 	auto AddBall = [&HeadBall]() {
+
 		UBall* newBall = new UBall();
 		
 		newBall->Radius = GetRandomFloat(0.05f, 0.2f);
@@ -584,6 +595,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 					if (curBall->Velocity.y < 0) {
 						curBall->Velocity.y *= -e;
+						soundManager.PlayEffect(L"Attack.mp3");
 					}
 
 					//if (fabs(curBall->Velocity.y) < 0.01f) {
@@ -594,6 +606,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (curBall->Location.x < leftBorder + curBall->Radius) {
 					curBall->Location.x = leftBorder + curBall->Radius;
 					curBall->Velocity.x *= -e;
+					soundManager.PlayEffect(L"Attack.mp3");
 					
 					//각속도 미완
 					//curBall->AngularVelocity.z += curBall->Velocity.y * 0.1f;
@@ -601,7 +614,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				else if (curBall->Location.x > rightBorder - curBall->Radius) {
 					curBall->Location.x = rightBorder - curBall->Radius;
 					curBall->Velocity.x *= -e;
-
+					soundManager.PlayEffect(L"Attack.mp3");
 					//각속도 미완
 					//curBall->AngularVelocity.z -= curBall->Velocity.y * 0.1f;
 				}
@@ -610,14 +623,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (curBall->Location.y < topBorder + curBall->Radius) {
 					curBall->Location.y = topBorder + curBall->Radius;
 					curBall->Velocity.y *= -e;
-
+					soundManager.PlayEffect(L"Attack.mp3");
 					//각속도 미완
 					//curBall->AngularVelocity.x += curBall->Velocity.x * 0.1f;
 				}
 				else if (curBall->Location.y > bottomBorder - curBall->Radius) {
 					curBall->Location.y = bottomBorder - curBall->Radius;
 					curBall->Velocity.y *= -e;
-
+					soundManager.PlayEffect(L"Attack.mp3");
 					//각속도 미완
 					//curBall->AngularVelocity.x -= curBall->Velocity.x * 0.1f;
 				}
@@ -719,6 +732,7 @@ void HandleCollisions(UBall* headBall, float e = 0.5f) {
 			float radiusSum = b1->Radius + b2->Radius;
 
 			if (distanceSq < radiusSum * radiusSum) {
+				soundManager.PlayEffect(L"Hit.mp3");
 				float distance = sqrt(distanceSq);
 				if (distance == 0.0f) distance = 0.001f;
 
