@@ -19,6 +19,7 @@ public:
 	void	SideCheck();
 	void	Jump();
 	void	Dash();
+	void	Reposition();
 	
 	virtual void BeginOverllaped(UObject* _pOther);
 

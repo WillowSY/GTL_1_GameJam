@@ -15,6 +15,7 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 #include "Define.h"
+#include "GameMode.h"
 #include "Player.h"
 #include "CollisionMgr.h"
 #include "Ball.h"
@@ -595,11 +596,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SharkShark* pMainGame = new SharkShark;
 	pMainGame->Initialize();
+
+	CGameMode* gameMode = new CGameMode();
+	gameMode->Initialize();
 	//UPlayer* pPlayer = new UPlayer;
 
 	UBall* HeadBall = new UBall;
-	HeadBall->CreateBall();
-	static int numBalls = 1;  // 공의 개수 초기값
+	//HeadBall->CreateBall();
+	static int numBalls = 0;  // 공의 개수 초기값
 
 	const int targetFPS = 60;
 	const double targetFrameTime = 1000.0 / targetFPS; // 한 프레임의 목표 시간 (밀리초 단위)
@@ -629,15 +633,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		UpdateMousePosition(hWnd);
 
-		while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
+		UPlayer* player = (UPlayer*)pMainGame->GetPlayer();
+		gameMode->bGameOver = player->IsDead();
+		if (gameMode->bHasInit) gameMode->bStageClear = numBalls == 0;
+		if (!gameMode->bHasInit)
 		{
-			pMainGame->CreateBall();
+			/* 플레이어 */
+			gameMode->bGameOver ? player->Initialize() : player->Reposition();
+			/* 지형 */
+			// LevelLoader
+			/* 적 (UBall) */
+			numBalls = gameMode->stage;
+			while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
+			{
+				pMainGame->CreateBall();
+			}
+			while (numBalls < pMainGame->GetpObejectList()[OL_BALL].size())
+			{
+				pMainGame->DeleteRandomBall(numBalls);
+			}
+			gameMode->bHasInit = true;
 		}
-		while (numBalls < pMainGame->GetpObejectList()[OL_BALL].size())
-		{
-			pMainGame->DeleteRandomBall(numBalls);
-		}
-		
+
+		gameMode->Update(elapsedTime);
 		pMainGame->Update(elapsedTime);
 		pMainGame->FixedUpdate();
 		numBalls = pMainGame->GetBallList().size();
@@ -663,7 +681,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		wchar_t numBallsText[50];
 		swprintf(numBallsText, 50, L"Number of Balls: %d", numBalls);
 		renderer.RenderText(numBallsText, 8, 48, 400, 200);
+		wchar_t stageText[50];
+		swprintf(stageText, 50, L"Stage: %d", gameMode->stage);
+		renderer.RenderText(stageText, 8, 88, 400, 200);
+		wchar_t scoreText[50];
+		swprintf(scoreText, 50, L"Score: %d", gameMode->score);
+		renderer.RenderText(scoreText, 8, 128, 400, 200);
 
+		if (gameMode->bGameOver)
+		{
+			renderer.RenderText(L"Game Over",	512 - 70,	424, 400, 200);
+			renderer.RenderText(L"Press 'R'",	460,		464, 400, 200);
+			renderer.RenderText(scoreText,		460,		512, 400, 200);
+		}
+			
 
 		// ImGui 렌더링
 		ImGui_ImplDX11_NewFrame();

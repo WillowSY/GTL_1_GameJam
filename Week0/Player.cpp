@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Define.h"
 #include "Windows.h"
+#include "Ball.h"
 
 extern FVector3 MousePosition;
 
@@ -14,6 +15,13 @@ UPlayer::~UPlayer()
 
 void UPlayer::Initialize()
 {
+	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
+	m_Rot = FVector3(0.0f, 0.0f, 0.0f);
+	m_Velocity = FVector3(0.0f, 0.0f, 0.0f);
+	m_Hp = 1.0f;
+	m_Dead = false;
+	m_Dashing = false;
+	m_Scale = 0.1f;
 }
 
 void UPlayer::Update(float deltaTime)
@@ -73,7 +81,8 @@ void UPlayer::Move()
 	{
 		Move(0.005f, D_RIGHT);
 	}
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
+	// Reposition 이후 Dash 재적용 되는 문제 해결
+	if (GetAsyncKeyState(VK_RBUTTON) & 0x0001)
 	{
 		Dash();
 	}
@@ -134,7 +143,19 @@ void UPlayer::Dash()
 
 }
 
-void UPlayer::BeginOverllaped(UObject* _pOther)
+void UPlayer::Reposition()
 {
+	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
+	m_Rot = FVector3(0.0f, 0.0f, 0.0f);
+	m_Velocity = FVector3(0.0f, 0.0f, 0.0f);
+	m_Dead = false;
+	m_Dashing = false;
+	m_Scale = 0.1f;
 }
 
+void UPlayer::BeginOverllaped(UObject* _pOther)
+{
+	UBall* pBall = dynamic_cast<UBall*>(_pOther);
+	if (pBall && !m_Dashing)
+		m_Dead = true;
+}

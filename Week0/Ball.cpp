@@ -110,7 +110,7 @@ void UBall::Update(float deltaTime)
 void UBall::BeginOverllaped(UObject* _pOther)
 {
 	UPlayer* pPlayer = dynamic_cast<UPlayer*>(_pOther);
-	if (pPlayer)
+	if (pPlayer && pPlayer->IsDash())
 		bDead = true;
 	UBall* pBall = dynamic_cast<UBall*>(_pOther);
 	if(pBall)
