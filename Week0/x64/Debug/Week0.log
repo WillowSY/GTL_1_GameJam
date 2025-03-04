@@ -1,1 +1,7 @@
-﻿  Week0.vcxproj -> C:\Users\Jungle\Documents\GitHub\PinBall\x64\Debug\Week0.exe
+﻿  Main.cpp
+C:\Users\Jungle\Documents\GitHub\PinBall\Week0\Main.cpp(130,42): warning C4305: '초기화 중': 'double'에서 'FLOAT'(으)로 잘립니다.
+C:\Users\Jungle\Documents\GitHub\PinBall\Week0\Main.cpp(603,19): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\Jungle\Documents\GitHub\PinBall\Week0\Main.cpp(607,17): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\Jungle\Documents\GitHub\PinBall\Week0\Main.cpp(970,15): warning C4244: '초기화 중': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\Jungle\Documents\GitHub\PinBall\Week0\Main.cpp(971,16): warning C4244: '초기화 중': 'LONG'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Week0.vcxproj -> C:\Users\Jungle\Documents\GitHub\PinBall\x64\Debug\Week0.exe

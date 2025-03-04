@@ -15,6 +15,7 @@
 #include "Define.h"
 #include "Player.h"
 #include "CollisionMgr.h"
+#include "Ball.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -472,243 +473,390 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ImGui_ImplWin32_Init(hWnd);
 	ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
 
+#pragma region Seyoungs
 	/* Ball 관련 변수들 */
-	// 링크드리스트 헤더 볼
-	UBall* HeadBall = nullptr;    
+// 링크드리스트 헤더 볼
+//UBall* HeadBall = nullptr;    
 
-	static int targetBallCount = 0;
-	// 구 질량 계산 시 비례 상수
-	static int k = 1;
+//static int targetBallCount = 0;
+//// 구 질량 계산 시 비례 상수
+//static int k = 1;
 
-	// 존재하는 볼의 개수를 순회하며 카운트.
-	auto CountBalls = [&HeadBall]() -> int {
-		int count = 0;
-		for (UBall* cur = HeadBall; cur != nullptr; cur = cur->NextBall)
-			count++;
-		return count;
-		};
+//// 존재하는 볼의 개수를 순회하며 카운트.
+//auto CountBalls = [&HeadBall]() -> int {
+//	int count = 0;
+//	for (UBall* cur = HeadBall; cur != nullptr; cur = cur->NextBall)
+//		count++;
+//	return count;
+//	};
 
-	// 볼 추가
-	auto AddBall = [&HeadBall]() {
-		UBall* newBall = new UBall();
-		
-		newBall->Radius = GetRandomFloat(0.05f, 0.2f);
-		newBall->Location = FVector3(
-			GetRandomFloat(-1.0f, 1.0f),
-			GetRandomFloat(-0.5f, 0.5f),
-			0.0f
-		);
-		newBall->Velocity = FVector3(0, 0, 0);
+//// 볼 추가
+//auto AddBall = [&HeadBall]() {
+//	UBall* newBall = new UBall();
+//	
+//	newBall->Radius = GetRandomFloat(0.05f, 0.2f);
+//	newBall->Location = FVector3(
+//		GetRandomFloat(-1.0f, 1.0f),
+//		GetRandomFloat(-0.5f, 0.5f),
+//		0.0f
+//	);
+//	newBall->Velocity = FVector3(0, 0, 0);
 
-		newBall->Mass = newBall->Radius * newBall->Radius * newBall->Radius * k;
+//	newBall->Mass = newBall->Radius * newBall->Radius * newBall->Radius * k;
 
-		newBall->NextBall = HeadBall;
-		HeadBall = newBall;
-		};
+//	newBall->NextBall = HeadBall;
+//	HeadBall = newBall;
+//	};
 
-	// 볼 제거.
-	auto RemoveRandomBall = [&HeadBall, &CountBalls]() {
-		int count = CountBalls();
-		if (count == 0) return;
-		// 0 ~ count-1 사이의 임의 인덱스 선택
-		int index = static_cast<int>(GetRandomFloat(0, static_cast<float>(count -1)));
-		UBall* current = HeadBall;
-		UBall* prev = nullptr;
-		for (int i = 0; i < index; i++) {
-			prev = current;
-			current = current->NextBall;
-		}
-		if (prev == nullptr) {  // HeadBall를 삭제
-			HeadBall = current->NextBall;
-		}
-		else {
-			prev->NextBall = current->NextBall;
-		}
-		delete current;
-		};
+//// 볼 제거.
+//auto RemoveRandomBall = [&HeadBall, &CountBalls]() {
+//	int count = CountBalls();
+//	if (count == 0) return;
+//	// 0 ~ count-1 사이의 임의 인덱스 선택
+//	int index = static_cast<int>(GetRandomFloat(0, static_cast<float>(count -1)));
+//	UBall* current = HeadBall;
+//	UBall* prev = nullptr;
+//	for (int i = 0; i < index; i++) {
+//		prev = current;
+//		current = current->NextBall;
+//	}
+//	if (prev == nullptr) {  // HeadBall를 삭제
+//		HeadBall = current->NextBall;
+//	}
+//	else {
+//		prev->NextBall = current->NextBall;
+//	}
+//	delete current;
+//	};
 
-	// 화면 경계 관련 변수.
-	const float leftBorder = -1.0f;
-	const float rightBorder = 1.0f;
-	const float topBorder = -1.0f;
-	const float bottomBorder = 1.0f;
-	bool bBoundBallToScreen = true;
-	bool bPinballMovement = true;
-	bool bApplyGravity = true;
-	//각속도 미완
-	//bool bApplyAngularVelocity = false;
-	bool bMagnetic = false;
-	const float GravityAcceleration = -0.005f;
-	float e = 0.8f;
+// 화면 경계 관련 변수.
+//const float leftBorder = -1.0f;
+//const float rightBorder = 1.0f;
+//const float topBorder = -1.0f;
+//const float bottomBorder = 1.0f;
+//bool bBoundBallToScreen = true;
+//bool bPinballMovement = true;
+//bool bApplyGravity = true;
+//각속도 미완
+//bool bApplyAngularVelocity = false;
+//bool bMagnetic = false;
+
+	//const float GravityAcceleration = -0.005f;
+	//float e = 0.8f;
+#pragma endregion
+
+
+
 
 	UPlayer* pPlayer = new UPlayer;
 
-	// 프레임 관련 변수.
+	UBall* HeadBall = new UBall;
+	HeadBall->CreateBall();
+	static int numBalls = 1;  // 공의 개수 초기값
+
 	const int targetFPS = 60;
-	const double targetFrameTime = 1000.0 / targetFPS;
-	LARGE_INTEGER startTime, endTime, frequency;
+	const double targetFrameTime = 1000.0 / targetFPS; // 한 프레임의 목표 시간 (밀리초 단위)
+	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
-	double elapsedTime = 0.0;
+
+	LARGE_INTEGER startTime, endTime;
+	double elapsedTime = 1.0;
 	bool bIsExit = false;
 
-	// 렌더링 루프.
-	while (!bIsExit) {
+	while (bIsExit == false)
+	{
 		QueryPerformanceCounter(&startTime);
 
-		// 메시지 처리
 		MSG msg;
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-			if (msg.message == WM_QUIT) {
+		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg); // 키보드 입력 메시지를 문자메시지로 변경
+			DispatchMessage(&msg); // 메시지를 WndProc에 전달
+
+			if (msg.message == WM_QUIT)
+			{
 				bIsExit = true;
 				break;
 			}
+
 		}
-
-		// 마우스 위치 업데이트
 		UpdateMousePosition(hWnd);
-
-		if (bPinballMovement) {
-			for (UBall* curBall = HeadBall; curBall != nullptr; curBall = curBall->NextBall) {
-				if (bMagnetic) {
-					// 척력 계산 및 적용
-					FVector3 repulsiveForce = ComputeRepulsiveForce(curBall, MousePosition, 0.01f);
-					curBall->Velocity = SumVector3(curBall->Velocity, repulsiveForce);
-				}
-				curBall->Location.x += curBall->Velocity.x;
-				curBall->Location.y += curBall->Velocity.y;
-				curBall->Location.z += curBall->Velocity.z;
-
-				if (bApplyGravity) {
-					curBall->Velocity.y += GravityAcceleration;
-				}
-
-				// 너무 느리게 움직여서 떨리는 문제 방지
-				if (curBall->Location.y >= bottomBorder - curBall->Radius && fabs(curBall->Velocity.y) < 0.01f) {
-					curBall->Velocity.y = 0.0f;
-				}
-
-				if (curBall->Location.y <= topBorder + curBall->Radius) {
-					curBall->Location.y = topBorder + curBall->Radius;
-
-					if (curBall->Velocity.y < 0) {
-						curBall->Velocity.y *= -e;
-					}
-
-					//if (fabs(curBall->Velocity.y) < 0.01f) {
-					//	curBall->Velocity.y = 0.01f;
-					//}
-				}
-
-				if (curBall->Location.x < leftBorder + curBall->Radius) {
-					curBall->Location.x = leftBorder + curBall->Radius;
-					curBall->Velocity.x *= -e;
-					
-					//각속도 미완
-					//curBall->AngularVelocity.z += curBall->Velocity.y * 0.1f;
-				}
-				else if (curBall->Location.x > rightBorder - curBall->Radius) {
-					curBall->Location.x = rightBorder - curBall->Radius;
-					curBall->Velocity.x *= -e;
-
-					//각속도 미완
-					//curBall->AngularVelocity.z -= curBall->Velocity.y * 0.1f;
-				}
-
-				// 상하 벽 충돌 (Y축 방향)
-				if (curBall->Location.y < topBorder + curBall->Radius) {
-					curBall->Location.y = topBorder + curBall->Radius;
-					curBall->Velocity.y *= -e;
-
-					//각속도 미완
-					//curBall->AngularVelocity.x += curBall->Velocity.x * 0.1f;
-				}
-				else if (curBall->Location.y > bottomBorder - curBall->Radius) {
-					curBall->Location.y = bottomBorder - curBall->Radius;
-					curBall->Velocity.y *= -e;
-
-					//각속도 미완
-					//curBall->AngularVelocity.x -= curBall->Velocity.x * 0.1f;
-				}
-
-				//각속도 미완
-				/*if (bApplyAngularVelocity) {
-					curBall->Velocity.x += curBall->AngularVelocity.y * 0.01f;
-					curBall->Velocity.y += curBall->AngularVelocity.x * 0.01f;
-
-					curBall->AngularVelocity = MultVector3(curBall->AngularVelocity, 0.98f);
-				}*/
+		//생성 파괴 절
+		while (numBalls > UBall::ballCount)
+		{
+			if (HeadBall && !HeadBall->CreateBall())
+			{
+				numBalls--;
 			}
 		}
+		while (HeadBall && numBalls < UBall::ballCount)
+		{
+			if (numBalls <= 0) {
+				numBalls = 1;
+				break;
+			}
+			HeadBall->DeleteRandomBall();
+		}
+		
+		
+
+		pPlayer->Update(elapsedTime);
+		UBall* Iter = HeadBall->NextBall;
+		while (Iter)
+		{
+			Iter->Update(elapsedTime);
+			Iter = Iter->NextBall;
+		}
+		// 충돌 처리
 		UBall* pBall = HeadBall;
 		while (pBall != nullptr)
 		{
 			CollisionMgr::CollisionPlayerAndBall(pPlayer, pBall);
 			pBall = pBall->NextBall;
 		}
-		pPlayer->Update(elapsedTime);
 
-		HandleCollisions(HeadBall, e);
+		// 파괴 확인 
 
-		// 렌더링 준비 (프레임 클리어, 뷰포트 설정 등)
+		UBall* ptmp = HeadBall->NextBall;
+		while (ptmp)
+		{
+			if (ptmp->bDead)
+			{
+				ptmp->DeleteBall();
+				ptmp = HeadBall->NextBall;
+				numBalls--;
+			}
+			if (ptmp)
+				ptmp = ptmp->NextBall;
+		}
+
+		
+		// 준비 작업
 		renderer.Prepare();
 		renderer.PrepareShader();
 
-		// ImGui 초기화
-		
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-		ImGui::Begin("Jungle Property Window");
-		ImGui::Text("Hello Jungle World!");
-		ImGui::SliderFloat("COR", &e, 0.0f, 1.0f);
-		ImGui::Checkbox("Gravity", &bApplyGravity);
-		//각속도 미완
-		//ImGui::Checkbox("Angular Velocity", &bApplyAngularVelocity);
-		ImGui::Checkbox("Magnetic Repulsion", &bMagnetic);
-
-		// 공 개수 카운팅
-		ImGui::InputInt("Number of Balls", &targetBallCount);
-		if (targetBallCount < 0)
-			targetBallCount = 0;
-		
-
-		// 공 개수에 따라 조절.
-		int currentCount = CountBalls();
-		while (currentCount < targetBallCount) {
-			AddBall();
-			currentCount++;
-		}
-		while (currentCount > targetBallCount) {
-			RemoveRandomBall();
-			currentCount--;
-		}
-
-		// 각 볼들 렌더링
-		for (UBall* curBall = HeadBall; curBall != nullptr; curBall = curBall->NextBall) {
-			renderer.UpdateConstant(curBall->Location, curBall->Radius);
+		Iter = HeadBall->NextBall;
+		while (Iter)
+		{
+			renderer.UpdateConstant(Iter->Location, Iter->Radius);
+			// 생성한 버텍스 버퍼를 넘겨 실질적인 렌더링 요청
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+			Iter = Iter->NextBall;
 		}
-
 		//Player Rendering
 		renderer.UpdateConstant(pPlayer->GetLoc(), pPlayer->GetScale());
 		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 
 		// Player Rendering 종료
+
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		// 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
+		ImGui::Begin("Jungle Property Window");
+
+		ImGui::Text("Hello Jungle World!");
+
+		//ImGui::Text("%f", HeadBall->NextBall->Mass);
+
+
+		ImGui::PushItemWidth(80);
+		ImGui::InputInt("##balls", &numBalls);
+		ImGui::PopItemWidth();
+
+		ImGui::SameLine();
+		ImGui::Text("Number of Balls");
+
 		ImGui::End();
+		/////////////////////////////////////////////////////////////////////////
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-		// 프레임 조절 관련
-		do {
-			Sleep(0);
-			QueryPerformanceCounter(&endTime);
-			elapsedTime = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
-		} while (elapsedTime < targetFrameTime);
-		
+		//버퍼 교체
 		renderer.SwapBuffer();
+		do
+		{
+			Sleep(0);
+
+			// 루프 종료 시간 기록
+			QueryPerformanceCounter(&endTime);
+
+			// 한 프레임이 소요된 시간 계산 (밀리초 단위로 변환)
+			elapsedTime = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
+
+		} while (elapsedTime < targetFrameTime);
 	}
+#pragma region Seyoungs
+	// 프레임 관련 변수.
+//const int targetFPS = 60;
+//const double targetFrameTime = 1000.0 / targetFPS;
+//LARGE_INTEGER startTime, endTime, frequency;
+//QueryPerformanceFrequency(&frequency);
+//double elapsedTime = 0.0;
+//bool bIsExit = false;
+
+//// 렌더링 루프.
+//while (!bIsExit) {
+//	QueryPerformanceCounter(&startTime);
+
+//	// 메시지 처리
+//	MSG msg;
+//	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+//		TranslateMessage(&msg);
+//		DispatchMessage(&msg);
+//		if (msg.message == WM_QUIT) {
+//			bIsExit = true;
+//			break;
+//		}
+//	}
+
+//	// 마우스 위치 업데이트
+//	UpdateMousePosition(hWnd);
+
+//	if (bPinballMovement) {
+//		for (UBall* curBall = HeadBall; curBall != nullptr; curBall = curBall->NextBall) {
+//			if (bMagnetic) {
+//				// 척력 계산 및 적용
+//				FVector3 repulsiveForce = ComputeRepulsiveForce(curBall, MousePosition, 0.01f);
+//				curBall->Velocity = SumVector3(curBall->Velocity, repulsiveForce);
+//			}
+//			curBall->Location.x += curBall->Velocity.x;
+//			curBall->Location.y += curBall->Velocity.y;
+//			curBall->Location.z += curBall->Velocity.z;
+
+//			if (bApplyGravity) {
+//				curBall->Velocity.y += GravityAcceleration;
+//			}
+
+//			// 너무 느리게 움직여서 떨리는 문제 방지
+//			if (curBall->Location.y >= bottomBorder - curBall->Radius && fabs(curBall->Velocity.y) < 0.01f) {
+//				curBall->Velocity.y = 0.0f;
+//			}
+
+//			if (curBall->Location.y <= topBorder + curBall->Radius) {
+//				curBall->Location.y = topBorder + curBall->Radius;
+
+//				if (curBall->Velocity.y < 0) {
+//					curBall->Velocity.y *= -e;
+//				}
+
+//				//if (fabs(curBall->Velocity.y) < 0.01f) {
+//				//	curBall->Velocity.y = 0.01f;
+//				//}
+//			}
+
+//			if (curBall->Location.x < leftBorder + curBall->Radius) {
+//				curBall->Location.x = leftBorder + curBall->Radius;
+//				curBall->Velocity.x *= -e;
+//				
+//				//각속도 미완
+//				//curBall->AngularVelocity.z += curBall->Velocity.y * 0.1f;
+//			}
+//			else if (curBall->Location.x > rightBorder - curBall->Radius) {
+//				curBall->Location.x = rightBorder - curBall->Radius;
+//				curBall->Velocity.x *= -e;
+
+//				//각속도 미완
+//				//curBall->AngularVelocity.z -= curBall->Velocity.y * 0.1f;
+//			}
+
+//			// 상하 벽 충돌 (Y축 방향)
+//			if (curBall->Location.y < topBorder + curBall->Radius) {
+//				curBall->Location.y = topBorder + curBall->Radius;
+//				curBall->Velocity.y *= -e;
+
+//				//각속도 미완
+//				//curBall->AngularVelocity.x += curBall->Velocity.x * 0.1f;
+//			}
+//			else if (curBall->Location.y > bottomBorder - curBall->Radius) {
+//				curBall->Location.y = bottomBorder - curBall->Radius;
+//				curBall->Velocity.y *= -e;
+
+//				//각속도 미완
+//				//curBall->AngularVelocity.x -= curBall->Velocity.x * 0.1f;
+//			}
+
+//			//각속도 미완
+//			/*if (bApplyAngularVelocity) {
+//				curBall->Velocity.x += curBall->AngularVelocity.y * 0.01f;
+//				curBall->Velocity.y += curBall->AngularVelocity.x * 0.01f;
+
+//				curBall->AngularVelocity = MultVector3(curBall->AngularVelocity, 0.98f);
+//			}*/
+//		}
+//	}
+//	UBall* pBall = HeadBall;
+//	while (pBall != nullptr)
+//	{
+//		CollisionMgr::CollisionPlayerAndBall(pPlayer, pBall);
+//		pBall = pBall->NextBall;
+//	}
+//	pPlayer->Update(elapsedTime);
+
+//	HandleCollisions(HeadBall, e);
+
+//	// 렌더링 준비 (프레임 클리어, 뷰포트 설정 등)
+//	renderer.Prepare();
+//	renderer.PrepareShader();
+
+//	// ImGui 초기화
+//	
+//	ImGui_ImplDX11_NewFrame();
+//	ImGui_ImplWin32_NewFrame();
+//	ImGui::NewFrame();
+//	ImGui::Begin("Jungle Property Window");
+//	ImGui::Text("Hello Jungle World!");
+//	ImGui::SliderFloat("COR", &e, 0.0f, 1.0f);
+//	ImGui::Checkbox("Gravity", &bApplyGravity);
+//	//각속도 미완
+//	//ImGui::Checkbox("Angular Velocity", &bApplyAngularVelocity);
+//	ImGui::Checkbox("Magnetic Repulsion", &bMagnetic);
+
+//	// 공 개수 카운팅
+//	ImGui::InputInt("Number of Balls", &targetBallCount);
+//	if (targetBallCount < 0)
+//		targetBallCount = 0;
+//	
+
+//	// 공 개수에 따라 조절.
+//	int currentCount = CountBalls();
+//	while (currentCount < targetBallCount) {
+//		AddBall();
+//		currentCount++;
+//	}
+//	while (currentCount > targetBallCount) {
+//		RemoveRandomBall();
+//		currentCount--;
+//	}
+
+//	// 각 볼들 렌더링
+//	for (UBall* curBall = HeadBall; curBall != nullptr; curBall = curBall->NextBall) {
+//		renderer.UpdateConstant(curBall->Location, curBall->Radius);
+//		renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+//	}
+
+//	//Player Rendering
+//	renderer.UpdateConstant(pPlayer->GetLoc(), pPlayer->GetScale());
+//	renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+
+//	// Player Rendering 종료
+//	ImGui::End();
+//	ImGui::Render();
+//	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+//	// 프레임 조절 관련
+//	do {
+//		Sleep(0);
+//		QueryPerformanceCounter(&endTime);
+//		elapsedTime = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
+//	} while (elapsedTime < targetFrameTime);
+//	
+//	renderer.SwapBuffer();
+//}
+
+#pragma endregion
+
 
 	// 자원해제 및 종료.
 	while (HeadBall) {

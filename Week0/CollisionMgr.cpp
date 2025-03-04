@@ -2,11 +2,14 @@
 #include "CollisionMgr.h"
 #include "Define.h"
 #include "Player.h"
-void CollisionMgr::CollisionPlayerAndBall(UPlayer* _pPlayer, UBall* _pBall)
+#include "Ball.h"
+#include "Object.h"
+void CollisionMgr::CollisionPlayerAndBall(UObject* _pPlayer, UObject* _pBall)
 {
     if (CheckCollision(_pPlayer, _pBall))
     {
-        _pBall->Radius *= 0.5;
+        _pPlayer->BeginOverllaped(_pBall);
+        _pBall->BeginOverllaped(_pPlayer);
     }
 }
 
@@ -15,8 +18,10 @@ float clamp(float value, float minVal, float maxVal)
     return std::max(minVal, std::min(value, maxVal));
 }
 
-bool CollisionMgr::CheckCollision(UPlayer* _pPlayer, UBall* _pBall)
+bool CollisionMgr::CheckCollision(UObject* _pSrc, UObject* _pDst)
 {
+    UPlayer* _pPlayer = static_cast<UPlayer*>(_pSrc);
+    UBall* _pBall = static_cast<UBall*>(_pDst);
     float closestX = fmax(_pPlayer->GetLoc().x - _pPlayer->GetScale(), fmin(_pBall->Location.x, _pPlayer->GetLoc().x + _pPlayer->GetScale()));
     float closestY = fmax(_pPlayer->GetLoc().y - _pPlayer->GetScale(), fmin(_pBall->Location.y, _pPlayer->GetLoc().y + _pPlayer->GetScale()));
 

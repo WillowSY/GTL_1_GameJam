@@ -121,6 +121,7 @@ void UPlayer::Dash()
 
 }
 
-void UPlayer::BeginOverlapped(UBall* _Ball)
+void UPlayer::BeginOverllaped(UObject* _pOther)
 {
 }
+

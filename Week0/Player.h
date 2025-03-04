@@ -1,16 +1,17 @@
 #pragma once
 #include "Define.h"
+#include "Object.h"
 
 class UBall;
-class UPlayer
+class UPlayer : public UObject
 {
 public:
 	UPlayer();
 	~UPlayer();
 
 public:
+	virtual void	Update(float deltaTime);
 	void	Initialize();
-	void	Update(float deltaTime);
 	void	Release();
 
 	void	Move();
@@ -19,7 +20,8 @@ public:
 	void	Jump();
 	void	Dash();
 	
-	void	BeginOverlapped(UBall* _Ball);
+	virtual void BeginOverllaped(UObject* _pOther);
+
 private:
 	FVector3	m_Loc;
 	float		m_Scale = 0.1f;

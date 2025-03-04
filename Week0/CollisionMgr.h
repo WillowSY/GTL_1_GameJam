@@ -1,12 +1,11 @@
 #pragma once
-class UBall;
-class UPlayer;
+class UObject;
 class CollisionMgr
 {
 public:
-	static void CollisionPlayerAndBall(UPlayer* _pPlayer, UBall* _pBall);
+	static void CollisionPlayerAndBall(UObject* _pPlayer, UObject* _pBall);
 
 private:
-	static bool CheckCollision(UPlayer* _pPlayer, UBall* _pBall);
+	static bool CheckCollision(UObject* _pPlayer, UObject* _pBall);
 };
 
