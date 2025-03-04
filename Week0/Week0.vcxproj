@@ -137,7 +137,7 @@
     <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Sound.cpp" />
-    <ClCompile Include="UINumberRenderer.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -155,7 +155,7 @@
     <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Sphere.h" />
-    <ClInclude Include="UINumberRenderer.h" />
+    <ClInclude Include="TextRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="Attack.mp3" />

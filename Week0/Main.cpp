@@ -15,11 +15,11 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 #include "Sound.h"
-#include "UINumberRenderer.h"
+#include "TextRenderer.h"
 
-UINumberRenderer uiRenderer;
+
 SoundManager soundManager;
-
+TextRenderer textRenderer;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -464,17 +464,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Renderer 및 Direct3D 관련 초기화
 	URenderer renderer;
 
-	if (!uiRenderer.Initialize(hWnd)) {
-		MessageBoxW(nullptr, L"Direct2D 초기화 실패!", L"오류", MB_OK | MB_ICONERROR);
-		return -1;
-	}
-
 
 	// D3D11 생성 함수 호출.
 	renderer.Create(hWnd);
 	renderer.CreateShader();
 	renderer.CreateConstantBuffer();
 
+	if (!textRenderer.Initialize(renderer.SwapChain)) {
+		MessageBoxW(nullptr, L"텍스트 렌더러 초기화 실패!", L"오류", MB_OK | MB_ICONERROR);
+	}
 
 	// 구 정점 버퍼 1회 생성
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
@@ -665,6 +663,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.Prepare();
 		renderer.PrepareShader();
 
+		D3D11_VIEWPORT viewport = renderer.ViewportInfo;
+		float screenWidth = viewport.Width;
+		float screenHeight = viewport.Height;
+
+		// 점수 출력
+		std::wstring scoreText = L"Score: " + std::to_wstring(score);
+		textRenderer.RenderText(scoreText, screenWidth, screenHeight);
+
+
 		// ImGui 초기화
 		
 		ImGui_ImplDX11_NewFrame();
@@ -699,7 +706,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			renderer.UpdateConstant(curBall->Location, curBall->Radius);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
-		uiRenderer.Render(score);
+
 		ImGui::End();
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -725,7 +732,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-	uiRenderer.Cleanup();
+
+	textRenderer.Cleanup();
 	renderer.ReleaseVertexBuffer(vertexBufferSphere);
 	renderer.ReleaseConstantBuffer();
 	renderer.ReleaseShader();
