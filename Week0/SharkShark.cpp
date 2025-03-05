@@ -1,6 +1,7 @@
 #include "SharkShark.h"
 #include "Player.h"
 #include "Ball.h"
+#include "Dagger.h"
 #include "CollisionMgr.h"
 
 const float sphereRadius = 1.0f;
@@ -13,6 +14,7 @@ SharkShark::SharkShark()
 
 SharkShark::~SharkShark()
 {
+	Release();
 }
 
 void SharkShark::Initialize()
@@ -22,6 +24,7 @@ void SharkShark::Initialize()
 		m_pObjectList.push_back(std::list<UObject*>());
 	}
 	UObject* pPlayer = new UPlayer;
+	static_cast<UPlayer*>(pPlayer)->SetMainGame(this);
 	m_pObjectList[OL_PLAYER].push_back(pPlayer);
 }
 
@@ -39,6 +42,13 @@ void SharkShark::Update(float deltaTime)
 
 void SharkShark::Release()
 {
+	for (auto iter = m_pObjectList.begin(); iter != m_pObjectList.end(); iter++)
+	{
+		for (auto iter1 = (*iter).begin(); iter1 != (*iter).end(); iter1++)
+		{
+			delete *iter1;
+		}
+	}
 }
 
 void SharkShark::Render()
@@ -51,6 +61,7 @@ void SharkShark::FixedUpdate()
 		CollisionMgr::CollisionPlayerAndBall(GetPlayer(), *iter);
 		if (static_cast<UBall*>(*iter)->bDead)
 		{
+			delete* iter;
 			iter = GetBallList().erase(iter);
 		}
 		else
@@ -62,6 +73,22 @@ void SharkShark::FixedUpdate()
 			CollisionMgr::CollisionBallAndBall((*iter), (*iter2));
 		}
 	}
+	for (auto iter = GetBallList().begin(); iter != GetBallList().end();iter++) {
+		for (auto iter2 = GetDaggerList().begin(); iter2 != GetDaggerList().end(); iter2++)
+		{
+			CollisionMgr::CollisionBallAndBall((*iter), (*iter2));
+		}
+	}
+	for (auto iter = GetDaggerList().begin(); iter != GetDaggerList().end();) {
+		if (static_cast<UDagger*>(*iter)->IsDead())
+		{
+			delete* iter;
+			iter = GetDaggerList().erase(iter);
+		}
+		else
+			iter++;
+	}
+
 }
 
 void SharkShark::DeleteRandomBall(int& ballCount)

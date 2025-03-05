@@ -20,18 +20,12 @@ public:
 	float AngularVelocity = 0.01f;
 	float RotationAngle = 0.1f;
 
-	UBall* NextBall;
-	UBall* PrevBall;
-	static int ballCount;
-
-	float Index = 0;
-
 	bool bDead = false;
 
-	bool CreateBall(); // 새로운 공 생성
-	void DeleteRandomBall(); // 랜덤 위치의 공 지우기
-	void DeleteBall(); // 지금 공 지우기
-	
+	//bool CreateBall(); // 새로운 공 생성
+	//void DeleteRandomBall(); // 랜덤 위치의 공 지우기
+	//void DeleteBall(); // 지금 공 지우기
+	//
 private:
 	const float sphereRadius = 1.0f;
 	const float ballSpeed = 0.000005f;
