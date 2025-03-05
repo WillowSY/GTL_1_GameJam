@@ -18,6 +18,7 @@ void UDagger::Update(float deltaTime)
 	Move(deltaTime);
 	if (m_Loc.x > 1.0f || m_Loc.x < -1.f || m_Loc.y >1.0f || m_Loc.y < -1.0f)
 		m_bDead = true;
+	Rotate(deltaTime);
 }
 
 void UDagger::BeginOverllaped(UObject* _pOther)
@@ -38,4 +39,5 @@ void UDagger::Move(float deltaTime)
 
 void UDagger::Rotate(float deltaTime)
 {
+	m_Rot.z += 30;
 }

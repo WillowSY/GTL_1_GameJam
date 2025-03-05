@@ -25,7 +25,6 @@ class UDagger : public UObject
 	private:
 		void Move(float deltaTime); // 이동 함수
 		void Rotate(float deltaTime); // 회전 함수
-
 	public:
 		float		GetScale() { return m_Scale; }
 		OBJECTLIST	GetIsntigator() { return m_Instigator; }

@@ -47,7 +47,13 @@ FVertexSimple box_vertices[] =
 	{  1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }  // 우하
 };
 
-
+FVector4 ConvertV3ToV4(FVector3 vec3) {
+	FVector4 newVec4;
+	newVec4.x = vec3.x;
+	newVec4.y = vec3.y;
+	newVec4.z = vec3.z;
+	return newVec4;
+}
 float GetRandomFloat(float min, float max);
 
 FVector3 MultVector3(FVector3 v1, float f);
@@ -404,14 +410,13 @@ public:
 			FConstants* constants = (FConstants*)constantbufferMSR.pData;
 			{
 				constants->Offset = Offset;
-				constants->Rotation = Rotation;
-				constants->Scale = Scale;
+				constants->Rotation = Rotation; // 변경됨: 회전 적용
+				constants->Scale = Scale;       // 변경됨: 각 축별 스케일 적용
 			}
 			DeviceContext->Unmap(ConstantBuffer, 0);
 		}
 
 	}
-
 	void PrepareShader()
 	{
 		DeviceContext->VSSetShader(SimpleVertexShader, nullptr, 0);
@@ -561,22 +566,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// ball Rendering
 		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
 		{
-			float scale = static_cast<UBall*>(*iter)->Radius;
-			FVector3 V3scale = FVector3(scale, scale, scale);
-			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UBall*>(*iter)->GetLoc()), ConvertV3ToV4(V3scale), 0);
+			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UBall*>(*iter)->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UBall*>(*iter)->Radius,true)), ConvertV3ToV4((*iter)->GetRot()));
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
 		for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
 		{
-			float scale = static_cast<UDagger*>(*iter)->GetScale();
-			FVector3 V3scale = FVector3(scale, scale, scale);
-			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UDagger*>(*iter)->GetLoc()), ConvertV3ToV4(V3scale), 0);
+			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UDagger*>(*iter)->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UDagger*>(*iter)->GetScale(),true)), ConvertV3ToV4((*iter)->GetRot()));
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
 		//Player Rendering
-		float scale = static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale();
-		FVector3 V3scale = FVector3(scale, scale, scale);
-		renderer.UpdateConstant(ConvertV3ToV4(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc()), ConvertV3ToV4(V3scale), 0);
+		renderer.UpdateConstant(ConvertV3ToV4(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale(),true)),
+			ConvertV3ToV4(pMainGame->GetPlayer()->GetRot()));
 		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 
 		// 텍스트 렌더링
@@ -588,14 +588,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		std::wstring scoreText = L"Score: " + std::to_wstring(gameMode->score);
 		textRenderer.RenderText(scoreText, 8, 128);
 
-		if (gameMode->bGameOver)
-		{
-			textRenderer.RenderText(L"Game Over", 442, 424);
-			textRenderer.RenderText(L"Press 'R'", 460, 464);
-			textRenderer.RenderButton(L"Restart", buttonX, buttonY, buttonWidth, buttonHeight);
-			textRenderer.RenderText(scoreText, 460, 560);
-		}
-
+			if (gameMode->bGameOver)
+			{
+				textRenderer.RenderText(L"Game Over", 442, 424);
+				textRenderer.RenderText(L"Press 'R'", 460, 464);
+				textRenderer.RenderButton(L"Restart", buttonX, buttonY, buttonWidth, buttonHeight);
+				textRenderer.RenderText(scoreText, 460, 560);
+			}
+			textRenderer.RenderButton(L"", 260, 920, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetMaxHp()*5, 20);
+			textRenderer.SetButtonColor(D2D1::ColorF::Red);
+			textRenderer.RenderButton(L"", 260, 920, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetHp() * 5, 20);
+			textRenderer.SetButtonColor(D2D1::ColorF::Gray);
+			textRenderer.RenderButton(L"", 400, 950, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDragonBladeNeedGage() * 20, 20);
+			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
+			textRenderer.RenderButton(L"", 400, 950, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDragonBladeGage() * 20, 20);
+			textRenderer.SetButtonColor(D2D1::ColorF::Gray);
 
 		// ImGui 렌더링
 		ImGui_ImplDX11_NewFrame();
@@ -607,10 +614,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		ImGui::Text("Hello Jungle World!");
 
-		ImGui::Text("%d", pMainGame->GetBallList().size());
-		ImGui::Text("%f", elapsedTime);
-		ImGui::Text("%f", static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDashTimer());
-		ImGui::Text("%d", pMainGame->GetDaggerList().size());
+			ImGui::Text("%d", pMainGame->GetBallList().size());
+			ImGui::Text("%f", elapsedTime);
+			ImGui::Text("%f",static_cast<UPlayer*>(pMainGame->GetPlayer())->GetHp());
+			ImGui::Text("%d", pMainGame->GetDaggerList().size());
 
 
 		ImGui::PushItemWidth(80);
