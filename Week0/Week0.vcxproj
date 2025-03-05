@@ -159,6 +159,7 @@
     <ClInclude Include="Boxs.h" />
     <ClInclude Include="CollisionMgr.h" />
     <ClInclude Include="Dagger.h" />
+    <ClInclude Include="Define.h" />
     <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="LevelShapeKey.h" />

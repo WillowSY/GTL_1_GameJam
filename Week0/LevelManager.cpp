@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <windows.h>
 #include "Utils.h"
+#include "SharkShark.h"
 #define MAX_PATH 10000
 using namespace std;
 LevelManager::LevelManager() {
@@ -21,7 +22,7 @@ LevelManager::LevelManager() {
 	AddStage(9, "stages/stage_9.txt");
 }
 
-string LevelManager ::GetStagePath(int id) {
+string LevelManager::GetStagePath(int id) {
 	if (id >= 0 && id < stages.size()) {
 		return stages[id].path;
 	}
@@ -32,8 +33,7 @@ void LevelManager::AddStage(int id, string path) {
 	stages.push_back(newStage);
 }
 
-vector<ObjectData> LevelManager::LevelLoad(int id) {
+void LevelManager::LevelLoad(int id, SharkShark* mG) {
 	string path = GetStagePath(id );
-	vector<ObjectData> levelObjs = levelLoader.FileLoader(path);
-	return levelObjs;
+	levelLoader.FileLoader(path, mG);
 }

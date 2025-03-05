@@ -22,6 +22,14 @@ void CollisionMgr::CollisionBallAndBall(UObject* _pSrc, UObject* _pDst)
     }
 }
 
+void CollisionMgr::CollisionUIAndBall(UObject* _pSrc, UObject* _pDst) {
+
+    if (CheckCollisionUIAndCircle(_pSrc, _pDst)) {
+        _pDst->BeginOverllaped(_pDst);
+        _pSrc->BeginOverllaped(_pSrc);
+        
+    }
+}
 float clamp(float value, float minVal, float maxVal)
 {
     return std::max(minVal, std::min(value, maxVal));
@@ -52,4 +60,20 @@ bool CollisionMgr::CheckCollisionBallAndBall(UObject* _pSrc, UObject* _pDst)
     float distance = (pSrc->GetLoc() - pDst->GetLoc()).Magnitude();
     float radiusSum = pSrc->Radius + pDst->Radius;
     return distance <= radiusSum;
+}
+
+bool CollisionMgr::CheckCollisionUIAndCircle(UObject* _pSrc, UObject* _pDst)
+{
+    
+    UBall* _pBall = static_cast<UBall*>(_pDst);
+    float closestX = fmax(_pSrc->GetLoc().x - _pSrc->GetScale().x, fmin(_pBall->GetLoc().x, _pSrc->GetLoc().x + _pSrc->GetScale().x));
+    float closestY = fmax(_pSrc->GetLoc().y - _pSrc->GetScale().y, fmin(_pBall->GetLoc().y, _pSrc->GetLoc().y + _pSrc->GetScale().x));
+
+    // 원의 중심과 가장 가까운 점 사이의 거리 계산
+    float distanceX = _pBall->GetLoc().x - closestX;
+    float distanceY = _pBall->GetLoc().y - closestY;
+
+    // 충돌이 발생했는지 확인 (거리가 원의 반지름보다 작거나 같으면 충돌)
+    float distanceSquared = distanceX * distanceX + distanceY * distanceY;
+    return distanceSquared <= (_pBall->Radius * _pBall->Radius);
 }

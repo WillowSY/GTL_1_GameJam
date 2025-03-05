@@ -4,25 +4,24 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
-
+#include "SharkShark.h"
 using namespace std;
 
-vector<ObjectData> LevelLoader::FileLoader(const std::string& fName) {
-    readFile.open(fName); // 파일 열기
+void FileLoader(string& fName, SharkShark* mG) {
+    LevelLoader::readFile.open(fName); // 파일 열기
 
-    if (!readFile.is_open()) { // 파일이 열리지 않았는지 확인
+    if (!LevelLoader::readFile.is_open()) { // 파일이 열리지 않았는지 확인
         MessageBoxW(nullptr, L"레벨 파일 로드 실패", L"Error", MB_ICONERROR);
-        return datas; // 빈 데이터 반환
+        return;
     }
-
-    objects = ObjectParser(readFile);
+    
+    LevelLoader::objects = LevelLoader::ObjectParser(LevelLoader::readFile);
    
-    for (const auto& v : objects) {
-        datas.push_back(ObjectDataParser(v));
+    for (const auto& v : LevelLoader::objects) {
+        ObjectDataParser(v, mG);
     }
 
-    readFile.close(); // 파일 닫기
-    return datas;
+    LevelLoader::readFile.close(); // 파일 닫기
 }
 
 // 스트림 객체에서 한 줄씩 읽어 벡터에 저장
@@ -36,12 +35,16 @@ vector<string> LevelLoader::ObjectParser(ifstream& fileData) {
 }
 
 // 한 줄을 파싱하여 ObjectData 구조체에 저장
-ObjectData LevelLoader::ObjectDataParser(const string& orgStr) {
-    ObjectData newData;
-    stringstream ss(orgStr);
-    ss >> newData.objIndex >> newData.position.x >> newData.position.y >> newData.position.z
-        >> newData.rotation.x >> newData.rotation.y >> newData.rotation.z
-        >> newData.scale.x >> newData.scale.y >> newData.scale.z;
+void ObjectDataParser(const string& orgStr, SharkShark* mG) {
+    int objIndex;
+    FVector3 pos;
+    FVector3 rot;
+    FVector3 scale;
 
-    return newData;
+    stringstream ss(orgStr);
+    ss >> objIndex >> pos.x >> pos.y >> pos.z
+        >> rot.x >> rot.y >> rot.z
+        >> scale.x >> scale.y >> scale.z;
+
+    mG->CreateUI(objIndex, pos, rot, scale);
 }

@@ -96,6 +96,11 @@ void SharkShark::FixedUpdate()
 		else
 			iter++;
 	}
+	for (auto iter = GetUIList().begin(); iter != GetUIList().end();) {
+		for (auto iter2 = GetBallList().begin(); iter != GetBallList().end();) {
+			CollisionMgr::CollisionUIAndBall((*iter), (*iter2));
+		}
+	}
 
 }
 
@@ -164,4 +169,13 @@ bool SharkShark::CreateBall()
 		delete PossibleBall;
 		return false;
 	}
+}
+
+void  SharkShark::CreateUI(int index, FVector3 pos, FVector3 scale, FVector3 rot) {
+	UObject* NewObj = new UObject;
+	NewObj->SetIndex(index);
+	NewObj->SetLoc(pos);
+	NewObj->SetRot(rot);
+	NewObj->SetScale(scale);
+	m_pObjectList[OL_UI].push_back(NewObj);
 }

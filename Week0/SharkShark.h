@@ -15,6 +15,7 @@ public:
 	void FixedUpdate();
 	void DeleteRandomBall(int& ballCount);
 	bool CreateBall();
+	void CreateUI(int index, FVector3 pos, FVector3 scale, FVector3 rot);
 private:
 	std::vector<std::list<UObject*>> m_pObjectList;
 
