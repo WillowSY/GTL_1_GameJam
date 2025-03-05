@@ -544,6 +544,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			gameMode->bGameOver ? player->Initialize() : player->Reposition();
 			/* 지형 */
 			//TODO: LevelLoader는 스테이지 구성 전까지 주석처리
+			pMainGame->DeleteAllUI();
 			levelManager.LevelLoad(gameMode->stage, pMainGame);
 			/* 적 (UBall) */
 			numBalls = gameMode->stage + 1;
@@ -556,6 +557,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				pMainGame->DeleteRandomBall(numBalls);
 			}
 			gameMode->bHasInit = true;
+			
 		}
 
 		gameMode->Update(elapsedTime * 0.001f);

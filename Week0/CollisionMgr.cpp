@@ -30,7 +30,6 @@ void CollisionMgr::CollisionUIAndBall(UObject* _pSrc, UObject* _pDst) {
     
     ULevel* pLevel = static_cast<ULevel*>(_pSrc);
     if (CheckCollisionUIAndCircle(_pSrc, _pDst)) {
-        MessageBoxW(nullptr, L"Collision", L"¿À·ù", MB_OK | MB_ICONERROR);
         pLevel->BeginOverllaped(_pDst);
         _pDst->BeginOverllaped(_pSrc);
      

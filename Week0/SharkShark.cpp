@@ -179,3 +179,11 @@ void  SharkShark::CreateUI(int index, FVector3 pos, FVector3 rot, FVector3 scale
 	NewObj->SetScale(scale);
 	m_pObjectList[OL_UI].push_back(NewObj);
 }
+void SharkShark::DeleteAllUI() {
+	list<UObject*>& list = GetUIList();
+	for (UObject* obj : list) {
+		delete obj;
+	}
+
+	list.clear();
+}
