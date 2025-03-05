@@ -344,8 +344,8 @@ public:
 	struct FConstants
 	{
 		FVector4 Offset;
-		FVector4 Scale;    // 변경됨: 각 축별 스케일 추가
-		//FVector3 Rotation; // 변경됨: 회전 추가
+		FVector4 Scale;
+		FVector4 Rotation;
 	};
 
 	void CreateConstantBuffer()
@@ -367,7 +367,7 @@ public:
 			ConstantBuffer = nullptr;
 		}
 	}
-	void UpdateConstant(FVector4 Offset, FVector4 Scale)
+	void UpdateConstant(FVector4 Offset, FVector4 Scale, FVector4 Rotation)
 	{
 		if (ConstantBuffer)
 		{
@@ -377,7 +377,7 @@ public:
 			FConstants* constants = (FConstants*)constantbufferMSR.pData;
 			{
 				constants->Offset = Offset;
-				//constants->Rotation = Rotation; // 변경됨: 회전 적용
+				constants->Rotation = Rotation; // 변경됨: 회전 적용
 				constants->Scale = Scale;       // 변경됨: 각 축별 스케일 적용
 			}
 			DeviceContext->Unmap(ConstantBuffer, 0);
@@ -582,7 +582,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			sc.y = v.scale.y;
 			sc.z = v.scale.z;
 
-			renderer.UpdateConstant(pos, sc);
+			FVector4 rot;
+			rot.x = v.rotation.x;
+			rot.y = v.rotation.y;
+			rot.z = v.rotation.z;
+
+			renderer.UpdateConstant(pos, sc, rot);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
 
