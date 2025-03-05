@@ -55,6 +55,11 @@ void UPlayer::Update(float deltaTime)
 		if ((m_Reflectionlasting -= deltaTime) < 0)
 			FinishReflection();
 	}
+	if (m_bDragonBlading)
+	{
+		if ((m_DragonBladeLasting -= deltaTime) < 0)
+			FinishDragonBlade();
+	}
 	m_Velocity.y -= 0.0005f; // gravity
 	Move();
 }
@@ -86,6 +91,10 @@ void UPlayer::Move()
 	if (GetAsyncKeyState('E') & 0x8000)
 	{
 		Reflection();
+	}
+	if (GetAsyncKeyState('Q') & 0x8000)
+	{
+		DragonBlade();
 	}
 	// Reposition 이후 Dash 재적용 되는 문제 해결
 	if (GetAsyncKeyState(VK_RBUTTON) & 0x0001)
@@ -204,6 +213,34 @@ void UPlayer::FinishReflection()
 	m_ReflectionTimer = m_ReflectionCDT;
 }
 
+void UPlayer::DragonBlade()
+{
+	if (m_DragonBladeGage < 10.0f)
+		return;
+	DashReset();
+	m_bDragonBlading = true;
+	m_DragonBladeGage = 0.0f;
+	m_Scale *= 2;
+}
+
+void UPlayer::FinishDragonBlade()
+{
+	m_bDragonBlading = false;
+	m_DragonBladeGage = 0.0f;
+	m_DragonBladeLasting = 5.0f;
+	m_Scale /= 2;
+}
+
+void UPlayer::AddDragonBladeGage(float _Add)
+{
+	m_DragonBladeGage += _Add;
+}
+
+void UPlayer::DashReset()
+{
+	m_DashTimer = 0.0f;
+}
+
 void UPlayer::Reposition()
 {
 	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
@@ -211,7 +248,12 @@ void UPlayer::Reposition()
 	m_Velocity = FVector3(0.0f, 0.0f, 0.0f);
 	m_Dead = false;
 	m_Dashing = false;
-	m_Scale = 0.1f;
+	if (m_bDragonBlading) { // 이겼을 때는 유지? 
+		FinishDragonBlade();
+		m_Scale = 0.05f;
+	}
+	if (m_bReflecting)
+		FinishReflection();
 }
 
 void UPlayer::BeginOverllaped(UObject* _pOther)

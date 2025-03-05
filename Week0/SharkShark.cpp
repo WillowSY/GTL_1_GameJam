@@ -61,6 +61,10 @@ void SharkShark::FixedUpdate()
 		CollisionMgr::CollisionPlayerAndBall(GetPlayer(), *iter);
 		if (static_cast<UBall*>(*iter)->bDead)
 		{
+			if (!static_cast<UPlayer*>(GetPlayer())->IsDragonBlading())
+				static_cast<UPlayer*>(GetPlayer())->AddDragonBladeGage(2.0f);
+			else
+				static_cast<UPlayer*>(GetPlayer())->DashReset();
 			delete* iter;
 			iter = GetBallList().erase(iter);
 		}
