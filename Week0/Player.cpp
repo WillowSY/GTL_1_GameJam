@@ -5,6 +5,10 @@
 #include "Ball.h"
 #include "Dagger.h"
 #include "Sound.h"
+#include <windows.h>
+#include <Xinput.h>
+#pragma comment(lib, "xinput.lib")
+
 extern FVector3 MousePosition;
 
 UPlayer::UPlayer() : UObject(FVector3(0.0f, -1.0f, 0.0f), FVector3(0.05f,0.05f,0.05f)
@@ -72,6 +76,7 @@ void UPlayer::Update(float deltaTime)
 	m_Velocity.y -= 0.0005f; // gravity
 	Move();
 }
+
 void UPlayer::Release()
 {
 }
@@ -83,41 +88,90 @@ void UPlayer::SetMainGame(SharkShark* _MainGame)
 
 void UPlayer::Move()
 {
+	XINPUT_STATE state;
+	ZeroMemory(&state, sizeof(XINPUT_STATE));
+	bool gamepadConnected = (XInputGetState(0, &state) == ERROR_SUCCESS);
+
+	// 위치 업데이트
 	m_Loc = m_Loc + m_Velocity;
 
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-	{
+	// 점프 (키보드: SPACE, 게임패드: A 버튼)
+	if ((GetAsyncKeyState(VK_SPACE) & 0x8000) || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_A))) {
 		if (m_bJumping)
 			DoubleJump();
 		else
 			Jump();
 	}
-	if (GetAsyncKeyState('A') & 0x8000)
-	{
-		Move(-0.01f, D_RIGHT);
+
+	// 이동 (키보드: A/D, 게임패드: 왼쪽 스틱)
+	float moveSpeed = 0.01f;
+	const SHORT deadZone = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
+	SHORT leftStickX = gamepadConnected ? state.Gamepad.sThumbLX : 0;
+
+	if (GetAsyncKeyState('A') & 0x8000 || leftStickX < -deadZone) {
+		Move(-moveSpeed, D_RIGHT);
 	}
-	if (GetAsyncKeyState('D') & 0x8000)
-	{
-		Move(0.01f, D_RIGHT);
+	if (GetAsyncKeyState('D') & 0x8000 || leftStickX > deadZone) {
+		Move(moveSpeed, D_RIGHT);
 	}
-	if (GetAsyncKeyState('E') & 0x8000)
-	{
+
+	// Reflection (키보드: E, 게임패드: X 버튼)
+	if ((GetAsyncKeyState('E') & 0x8000) || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_X))) {
 		Reflection();
 	}
-	if (GetAsyncKeyState('Q') & 0x8000)
-	{
+
+	// DragonBlade (키보드: Q, 게임패드: Y 버튼)
+	if ((GetAsyncKeyState('Q') & 0x8000) || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y))) {
 		DragonBlade();
 	}
-	// Reposition 이후 Dash 재적용 되는 문제 해결
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x0001)
-	{
+
+	// Dash (키보드: 우클릭, 게임패드: RB 버튼)
+	if ((GetAsyncKeyState(VK_RBUTTON) & 0x0001) || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER))) {
 		Dash();
-	}	
-	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
-	{
+	}
+
+	// 공격 (키보드: 좌클릭, 게임패드: RT 트리거)
+	if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) || (gamepadConnected && state.Gamepad.bRightTrigger > 100)) {
 		Attack();
 	}
+
+	// 충돌 체크
 	SideCheck();
+	//m_Loc = m_Loc + m_Velocity;
+
+	//if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+	//{
+	//	if (m_bJumping)
+	//		DoubleJump();
+	//	else
+	//		Jump();
+	//}
+	//if (GetAsyncKeyState('A') & 0x8000)
+	//{
+	//	Move(-0.01f, D_RIGHT);
+	//}
+	//if (GetAsyncKeyState('D') & 0x8000)
+	//{
+	//	Move(0.01f, D_RIGHT);
+	//}
+	//if (GetAsyncKeyState('E') & 0x8000)
+	//{
+	//	Reflection();
+	//}
+	//if (GetAsyncKeyState('Q') & 0x8000)
+	//{
+	//	DragonBlade();
+	//}
+	//// Reposition 이후 Dash 재적용 되는 문제 해결
+	//if (GetAsyncKeyState(VK_RBUTTON) & 0x0001)
+	//{
+	//	Dash();
+	//}	
+	//if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+	//{
+	//	Attack();
+	//}
+	//SideCheck();
 }
 
 void UPlayer::Move(float _Scale, Direction _Dir)
