@@ -518,10 +518,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SharkShark* pMainGame = new SharkShark;
 	pMainGame->Initialize();
-	//UPlayer* pPlayer = new UPlayer;
 
-	UBall* HeadBall = new UBall;
-	HeadBall->CreateBall();
 	static int numBalls = 1;  // 공의 개수 초기값
 
 	const int targetFPS = 60;
@@ -561,7 +558,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			pMainGame->DeleteRandomBall(numBalls);
 		}
 		
-		pMainGame->Update(elapsedTime);
+		pMainGame->Update(elapsedTime * 0.001f);
 		pMainGame->FixedUpdate();
 		numBalls = pMainGame->GetBallList().size();
 
@@ -593,6 +590,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ImGui::Text("Hello Jungle World!");
 
 		ImGui::Text("%d", pMainGame->GetBallList().size());
+		ImGui::Text("%f", elapsedTime);
+		ImGui::Text("%f",static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDashTimer());
 
 
 		ImGui::PushItemWidth(80);
@@ -793,13 +792,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	// 자원해제 및 종료.
-	while (HeadBall) {
-		UBall* temp = HeadBall;
-		HeadBall = HeadBall->NextBall;
-		delete temp;
-	}
-	//delete pPlayer;
-
+	delete pMainGame;
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();

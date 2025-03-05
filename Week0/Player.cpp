@@ -18,6 +18,7 @@ void UPlayer::Initialize()
 
 void UPlayer::Update(float deltaTime)
 {
+	m_DashTimer -= deltaTime;
 	if (m_Dashing)
 	{
 		// 남은 거리 계산
@@ -100,19 +101,27 @@ void UPlayer::SideCheck()
 		m_Loc.x = -1.0f + m_Scale;
 	if (m_Loc.x + m_Scale> 1.0f)
 		m_Loc.x = 1.0f - m_Scale;
-	if (m_Loc.y - m_Scale< -1.0f)
+	if (m_Loc.y - m_Scale < -1.0f)
+	{
 		m_Loc.y = -1.0f + m_Scale;
+		m_bJumping = false;
+	}
 	if (m_Loc.y + m_Scale > 1.0f)
 		m_Loc.y = 1.0f - m_Scale;
 }
 
 void UPlayer::Jump()
 {
+	if (m_bJumping)
+		return; 
 	m_Velocity.y = 0.02f;
+	m_bJumping = true;
 }
 
 void UPlayer::Dash()
 {
+	if (m_DashTimer > 0.0f)
+		return;
 	FVector3 direction = (MousePosition - m_Loc).Normalize();
 	// 목표 지점에 따른 대쉬 거리 계산 (최소 0.2, 최대 0.7)
 	float dashDistance = min((MousePosition - m_Loc).Magnitude() + 0.2f, 0.7f);
@@ -131,6 +140,7 @@ void UPlayer::Dash()
 	m_DashTarget = potentialDashTarget;
 	m_Velocity.y = 0;
 	m_Dashing = true;
+	m_DashTimer = m_DashCDT;
 
 }
 

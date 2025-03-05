@@ -31,8 +31,9 @@ private:
 	bool		m_Dead = false;
 	float		m_Hp;
 	bool		m_Dashing = false;
-
-
+	float		m_DashCDT = 10.0f;
+	float		m_DashTimer = 10.0f;
+	bool		m_bJumping = false;
 public:
 	FVector3	GetLoc() { return m_Loc; }
 	float		GetScale() { return m_Scale; }
@@ -40,5 +41,6 @@ public:
 	FVector3	GetVelocity() { return m_Velocity; }
 	bool		IsDead() { return m_Dead; }
 	bool		IsDash() { return m_Dashing; }
+	float		GetDashTimer() { return m_DashTimer; }
 };
 

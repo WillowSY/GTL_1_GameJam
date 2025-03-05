@@ -13,6 +13,7 @@ SharkShark::SharkShark()
 
 SharkShark::~SharkShark()
 {
+	Release();
 }
 
 void SharkShark::Initialize()
@@ -39,6 +40,13 @@ void SharkShark::Update(float deltaTime)
 
 void SharkShark::Release()
 {
+	for (auto iter = m_pObjectList.begin(); iter != m_pObjectList.end(); iter++)
+	{
+		for (auto iter1 = (*iter).begin(); iter1 != (*iter).end(); iter1++)
+		{
+			delete *iter1;
+		}
+	}
 }
 
 void SharkShark::Render()
@@ -51,6 +59,7 @@ void SharkShark::FixedUpdate()
 		CollisionMgr::CollisionPlayerAndBall(GetPlayer(), *iter);
 		if (static_cast<UBall*>(*iter)->bDead)
 		{
+			delete* iter;
 			iter = GetBallList().erase(iter);
 		}
 		else
