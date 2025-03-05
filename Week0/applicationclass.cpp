@@ -7,7 +7,6 @@
 ApplicationClass::ApplicationClass()
 {
 	m_Direct3D = 0;
-	m_Camera = 0;
     m_Timer = 0;
 	m_ParticleSystem = 0;
 	m_ParticleShader = 0;
@@ -39,12 +38,6 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBoxW(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
 		return false;
 	}
-
-	// Create and initialize the camera object.
-	m_Camera = new CameraClass;
-
-	m_Camera->SetPosition(0.0f, -1.0f, -10.0f);
-	m_Camera->Render();
 
 	// Create and initialize the timer object.
 	m_Timer = new TimerClass;
@@ -108,13 +101,6 @@ void ApplicationClass::Shutdown()
         delete m_Timer;
         m_Timer = 0;
     }
-
-	// Release the camera object.
-	if(m_Camera)
-	{
-		delete m_Camera;
-		m_Camera = 0;
-	}
 
 	// Release the Direct3D object.
 	if(m_Direct3D)
