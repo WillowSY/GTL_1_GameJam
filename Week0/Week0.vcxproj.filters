@@ -63,9 +63,6 @@
     <ClCompile Include="SharkShark.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LevelLoader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GameMode.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -79,6 +76,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TextRenderer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelLoader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="LevelManager.cpp">
@@ -133,12 +133,6 @@
     <ClInclude Include="SharkShark.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LevelLoader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Dagger.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -146,6 +140,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TextRenderer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLoader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="LevelManager.h">
@@ -156,37 +153,13 @@
     <Media Include="BGM.mp3">
       <Filter>리소스 파일</Filter>
     </Media>
-    <Media Include="Dash.mp3">
+    <Media Include="ReflectMetal.wav">
       <Filter>리소스 파일</Filter>
     </Media>
-    <Media Include="DragonBlade.mp3">
+    <Media Include="Hit.mp3">
       <Filter>리소스 파일</Filter>
     </Media>
-    <Media Include="Hit_Dash.mp3">
-      <Filter>리소스 파일</Filter>
-    </Media>
-    <Media Include="Jump2.mp3">
-      <Filter>리소스 파일</Filter>
-    </Media>
-    <Media Include="Jump0.mp3">
-      <Filter>리소스 파일</Filter>
-    </Media>
-    <Media Include="Jump1.mp3">
-      <Filter>리소스 파일</Filter>
-    </Media>
-    <Media Include="Attack_1_0.mp3">
-      <Filter>리소스 파일</Filter>
-    </Media>
-    <Media Include="Attack_1_1.mp3">
-      <Filter>리소스 파일</Filter>
-    </Media>
-    <Media Include="Attack_1_2.mp3">
-      <Filter>리소스 파일</Filter>
-    </Media>
-    <Media Include="Attack_1_3.mp3">
-      <Filter>리소스 파일</Filter>
-    </Media>
-    <Media Include="Attack_0.mp3">
+    <Media Include="Attack.mp3">
       <Filter>리소스 파일</Filter>
     </Media>
   </ItemGroup>

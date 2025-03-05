@@ -315,6 +315,7 @@ void UPlayer::BeginOverllaped(UObject* _pOther)
 		{
 			pDagger->SetVel(pDagger->GetVelocity() * -1);
 			pDagger->SetInstigator(m_Type);
+			SoundManager::GetInstance().PlayEffect(L"ReflectMetal.wav");
 		}
 	}
 }
