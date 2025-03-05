@@ -53,6 +53,7 @@ bool UBall::CreateBall()
 		PossibleBall->Mass = PossibleBall->Radius * 100.0f;
 		PossibleBall->NextBall = NextBall;
 		PossibleBall->PrevBall = this;
+	
 		if (NextBall)
 			NextBall->PrevBall = PossibleBall;
 		NextBall = PossibleBall;

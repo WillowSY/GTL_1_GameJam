@@ -181,6 +181,7 @@ public:
 		framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // 2D 텍스처
 
 		Device->CreateRenderTargetView(FrameBuffer, &framebufferRTVdesc, &FrameBufferRTV);
+
 	}
 
 	// 프레임 버퍼를 해제하는 함수
@@ -250,7 +251,7 @@ public:
 		ID3DBlob* pixelshaderCSO;
 
 		D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
-
+		
 		Device->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
 
 		D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
@@ -350,7 +351,8 @@ public:
 	struct FConstants
 	{
 		FVector3 Offset;
-		float Radius;
+		FVector3 Rotation; // 변경됨: 회전 추가
+		FVector3 Scale;    // 변경됨: 각 축별 스케일 추가
 		float Pad;
 	};
 
@@ -373,7 +375,7 @@ public:
 			ConstantBuffer = nullptr;
 		}
 	}
-	void UpdateConstant(FVector3 Offset, float Radius)
+	void UpdateConstant(FVector3 Offset, FVector3 Rotation, FVector3 Scale)
 	{
 		if (ConstantBuffer)
 		{
@@ -383,7 +385,8 @@ public:
 			FConstants* constants = (FConstants*)constantbufferMSR.pData;
 			{
 				constants->Offset = Offset;
-				constants->Radius = Radius;
+				constants->Rotation = Rotation; // 변경됨: 회전 적용
+				constants->Scale = Scale;       // 변경됨: 각 축별 스케일 적용
 			}
 			DeviceContext->Unmap(ConstantBuffer, 0);
 		}
@@ -431,7 +434,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 구 정점 버퍼 1회 생성
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
-
 	ID3D11Buffer* vertexBufferBox = renderer.CreateVertexBuffer(box_vertices, numVerticesBox * sizeof(FVertexSimple));
 
 
@@ -520,9 +522,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	pMainGame->Initialize();
 	//UPlayer* pPlayer = new UPlayer;
 
-	UBall* HeadBall = new UBall;
-	HeadBall->CreateBall();
-	static int numBalls = 1;  // 공의 개수 초기값
+	//UBall* HeadBall = new UBall;
+	//HeadBall->CreateBall();
+	//static int numBalls = 1;  // 공의 개수 초기값
 
 	const int targetFPS = 60;
 	const double targetFrameTime = 1000.0 / targetFPS; // 한 프레임의 목표 시간 (밀리초 단위)
@@ -552,42 +554,57 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		UpdateMousePosition(hWnd);
 
-		//while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
-		//{
-		//	pMainGame->CreateBall();
-		//}
-		//while (numBalls < pMainGame->GetpObejectList()[OL_BALL].size())
-		//{
-		//	pMainGame->DeleteRandomBall(numBalls);
-		//}
-		//
-		//pMainGame->Update(elapsedTime);
-		//pMainGame->FixedUpdate();
-		//numBalls = pMainGame->GetBallList().size();
+		/*while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
+		{
+			pMainGame->CreateBall();
+		}
+		while (numBalls < pMainGame->GetpObejectList()[OL_BALL].size())
+		{
+			pMainGame->DeleteRandomBall(numBalls);
+		}
+		
+		pMainGame->Update(elapsedTime);
+		pMainGame->FixedUpdate();
+		numBalls = pMainGame->GetBallList().size();*/
 
 		// 준비 작업
 		renderer.Prepare();
 		renderer.PrepareShader();
 
+		// 원 하나를 중앙에 그리기
+		FVector3 circlePosition = FVector3(0.0, 0.0, 0.0);
+		FVector3 circleRotation = FVector3(0.0, 0.0, 0.0);
+		FVector3 circleScale = FVector3(0.5, 0.5, 0.5); // 반지름 0.5 크기로 설정
 
-		// ball Rendering
-		/*for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
-		{
-			renderer.UpdateConstant(static_cast<UBall*>(*iter)->Location, static_cast<UBall*>(*iter)->Radius);
-			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
-		}*/
-		
-		//Player Rendering
-		//renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
+		renderer.UpdateConstant(circlePosition, circleRotation, circleScale);
+		renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+		// Ball Rendering
+		//for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
+		//{
+		//	FVector3 ballLocation = static_cast<UBall*>(*iter)->Location;
+		//	FVector3 ballRotation = static_cast<UBall*>(*iter)->Rotation; // 변경됨: 회전 적용
+		//	FVector3 ballScale = FVector3(static_cast<UBall*>(*iter)->Radius, static_cast<UBall*>(*iter)->Radius, static_cast<UBall*>(*iter)->Radius); // 변경됨: 각 축별 Scale 적용
+
+		//	renderer.UpdateConstant(ballLocation, ballRotation, ballScale);
+		//	renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+		//}
+
+		//// Player Rendering
+		//FVector3 playerLocation = static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc();
+		//FVector3 playerRotation = static_cast<UPlayer*>(pMainGame->GetPlayer())->GetRotation(); // 변경됨: 회전 적용
+		//FVector3 playerScale = static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale(); // 변경됨: 각 축별 Scale 적용
+
+		//renderer.UpdateConstant(playerLocation, playerRotation, playerScale);
 		//renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 
-		FVector3 tempV;
+
+		/*FVector3 tempV;
 		tempV.x = 0;
 		tempV.y = 0;
 		tempV.z = 0;
 
 		renderer.UpdateConstant(tempV, 1);
-		renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+		renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);*/
 		// Player Rendering 종료
 
 		ImGui_ImplDX11_NewFrame();
@@ -603,7 +620,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 		ImGui::PushItemWidth(80);
-		ImGui::InputInt("##balls", &numBalls);
+		//ImGui::InputInt("##balls", &numBalls);
 		ImGui::PopItemWidth();
 
 		ImGui::SameLine();
@@ -800,11 +817,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	// 자원해제 및 종료.
-	while (HeadBall) {
+	/*while (HeadBall) {
 		UBall* temp = HeadBall;
 		HeadBall = HeadBall->NextBall;
 		delete temp;
-	}
+	}*/
 	//delete pPlayer;
 
 	ImGui_ImplDX11_Shutdown();
