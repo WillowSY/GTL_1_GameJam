@@ -10,16 +10,26 @@
 #pragma comment(lib, "d2d1")
 #pragma comment(lib, "dwrite")
 
+
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
+
 #include "Define.h"
 #include "GameMode.h"
 #include "Player.h"
 #include "CollisionMgr.h"
 #include "Ball.h"
 #include "SharkShark.h"
+#include "Sound.h"
+#include "TextRenderer.h"
+
+
+SoundManager soundManager;
+TextRenderer textRenderer;
+bool isMouseDown = false;
+int mouseX = 0, mouseY = 0;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -74,6 +84,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 
 	switch (message) {
+	case WM_LBUTTONDOWN:
+		isMouseDown = true;
+		mouseX = LOWORD(lParam);
+		mouseY = HIWORD(lParam);
+		break;
+	case WM_LBUTTONUP:
+		isMouseDown = false;
+		break;
+	case WM_MOUSEMOVE:
+		mouseX = LOWORD(lParam);
+		mouseY = HIWORD(lParam);
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
@@ -102,12 +124,6 @@ public:
 	FLOAT ClearColor[4] = { 0.025f, 0.025f, 0.025, 1.0f }; // 화면을 초기화(clear) 할 때 사용할 색상(RGBA)
 	D3D11_VIEWPORT ViewportInfo; // 렌더링 영역을 정의하는 뷰포트 정보
 
-	ID2D1Factory* pD2DFactory = nullptr;
-	ID2D1RenderTarget* pRenderTarget = nullptr;
-	IDWriteFactory* pDWriteFactory = nullptr;
-	IDWriteTextFormat* pTextFormat = nullptr;
-	ID2D1SolidColorBrush* pWhiteBrush = nullptr;
-
 public:
 	// 렌더러 초기화 함수
 	void Create(HWND hWindow) {
@@ -119,8 +135,6 @@ public:
 
 		// 래스터라이저 상태 생성
 		CreateRasterizerState();
-
-		CreateTextFactory(hWindow);
 	}
 
 	//Direct3D 장치 및 스왑 체인을 생성하는 함수
@@ -230,58 +244,6 @@ public:
 		}
 	}
 
-	void CreateTextFactory(HWND hWindow)
-	{
-		// Direct2D 팩토리 생성
-		D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
-		// DWrite 팩토리 생성
-		DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&pDWriteFactory));
-
-		// 텍스트 포맷 생성
-		pDWriteFactory->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 32.0f, L"en-us", &pTextFormat);
-		//pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-		
-		// 렌더 타겟 생성
-		IDXGISurface* pDXGISurface;
-		SwapChain->GetBuffer(0, __uuidof(IDXGISurface), (void**)&pDXGISurface);
-
-		D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED));
-		pD2DFactory->CreateDxgiSurfaceRenderTarget(pDXGISurface, &props, &pRenderTarget);
-
-		// 브러시 생성
-		pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pWhiteBrush);
-
-	}
-
-	void ReleaseTextFactory()
-	{
-		if (pTextFormat)
-		{
-			pTextFormat->Release();
-			pTextFormat = nullptr;
-		}
-		if (pWhiteBrush)
-		{
-			pWhiteBrush->Release();
-			pWhiteBrush = nullptr;
-		}
-		if (pRenderTarget)
-		{
-			pRenderTarget->Release();
-			pRenderTarget = nullptr;
-		}
-		if (pD2DFactory)
-		{
-			pD2DFactory->Release();
-			pD2DFactory = nullptr;
-		}
-		if (pDWriteFactory)
-		{
-			pDWriteFactory->Release();
-			pDWriteFactory = nullptr;
-		}
-	}
-
 	// 렌더러에 사용된 모든 리소스를 해제하는 함수
 	void Release()
 	{
@@ -292,7 +254,6 @@ public:
 
 		ReleaseFrameBuffer();
 		ReleaseDeviceAndSwapChain();
-		ReleaseTextFactory();
 	}
 
 	// 스왑 체인의 백 버퍼와 프론트 버퍼를 교체하여 화면에 출력
@@ -465,27 +426,9 @@ public:
 		}
 	}
 
-	void RenderText(const wchar_t* text, float x, float y, float width, float height)
-	{
-		pRenderTarget->BeginDraw();
-		//배경색을 안칠하면 투명하다!!
-		//pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black, 0.f));
-
-		pRenderTarget->DrawText(
-			text,
-			wcslen(text),
-			pTextFormat,
-			D2D1::RectF(x, y, x + width, y + height),
-			pWhiteBrush
-		);
-
-		pRenderTarget->EndDraw();
-	}
-};
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	
 	WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
@@ -501,6 +444,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return -1;
 	}
 
+
+	if (!soundManager.PlayBGM(L"BGM.mp3")) {
+		MessageBoxW(nullptr, L"BGM 재생 실패!", L"Error", MB_ICONERROR);
+	}
+
 	// Renderer 및 Direct3D 관련 초기화
 	URenderer renderer;
 
@@ -508,6 +456,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.Create(hWnd);
 	renderer.CreateShader();
 	renderer.CreateConstantBuffer();
+
+	if (!textRenderer.Initialize(renderer.SwapChain)) {
+		MessageBoxW(nullptr, L"텍스트 렌더러 초기화 실패!", L"오류", MB_OK | MB_ICONERROR);
+	}
+
+	float buttonX = 700, buttonY = 20, buttonWidth = 120, buttonHeight = 50;
 
 	// 구 정점 버퍼 1회 생성
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
@@ -918,6 +872,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
+	textRenderer.Cleanup();
 	renderer.ReleaseVertexBuffer(vertexBufferSphere);
 	renderer.ReleaseConstantBuffer();
 	renderer.ReleaseShader();
@@ -939,6 +894,7 @@ void HandleCollisions(UBall* headBall, float e = 0.5f) {
 			float radiusSum = b1->Radius + b2->Radius;
 
 			if (distanceSq < radiusSum * radiusSum) {
+				soundManager.PlayEffect(L"Hit.mp3");
 				float distance = sqrt(distanceSq);
 				if (distance == 0.0f) distance = 0.001f;
 

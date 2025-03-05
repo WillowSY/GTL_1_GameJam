@@ -142,6 +142,8 @@
     <ClCompile Include="imgui_tables.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="SharkShark.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,8 +165,14 @@
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="SharkShark.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="Sphere.h" />
-    <ClInclude Include="Define.h" />
+    <ClInclude Include="TextRenderer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Attack.mp3" />
+    <Media Include="BGM.mp3" />
+    <Media Include="Hit.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
