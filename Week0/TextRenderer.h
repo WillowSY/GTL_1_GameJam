@@ -15,6 +15,7 @@ public:
     bool IsButtonClicked(float x, float y, float width, float height, int mouseX, int mouseY, bool isMouseDown);
     void Cleanup();
     D2D1_COLOR_F SetButtonColor(D2D1::ColorF color);
+    void ChangeFontSize(float newFontSize);
 private:
     Microsoft::WRL::ComPtr<ID2D1Factory> d2dFactory;
     Microsoft::WRL::ComPtr<ID2D1RenderTarget> d2dRenderTarget;

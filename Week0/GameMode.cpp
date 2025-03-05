@@ -45,3 +45,8 @@ void CGameMode::Update(float deltaTime)
 		}
 	}
 }
+
+void CGameMode::AddScore(int _Add)
+{
+	score += _Add;
+}

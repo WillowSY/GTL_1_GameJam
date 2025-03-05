@@ -28,7 +28,7 @@ bool TextRenderer::Initialize(IDXGISwapChain* swapChain) {
 
     if (FAILED(dwriteFactory->CreateTextFormat(
         L"Arial", nullptr, DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
-        DWRITE_FONT_STRETCH_NORMAL, 36.0f, L"en-us", textFormat.GetAddressOf())))
+        DWRITE_FONT_STRETCH_NORMAL, 24.0f, L"en-us", textFormat.GetAddressOf())))
         return false;
 
     //textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
@@ -90,5 +90,12 @@ D2D1_COLOR_F TextRenderer::SetButtonColor(D2D1::ColorF color)
     D2D1_COLOR_F newColor = color;
     buttonBrush->SetColor(newColor);
     return oldColor;
+}
+
+void TextRenderer::ChangeFontSize(float newFontSize)
+{
+    dwriteFactory->CreateTextFormat(
+        L"Arial", nullptr, DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
+        DWRITE_FONT_STRETCH_NORMAL, newFontSize, L"en-us", textFormat.GetAddressOf());
 }
 

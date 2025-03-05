@@ -5,6 +5,8 @@
 #include "Ball.h"
 #include "Dagger.h"
 #include "Sound.h"
+#include "LeaderBoard.h"
+#include "GameMode.h"
 #include <windows.h>
 #include <Xinput.h>
 #pragma comment(lib, "xinput.lib")
@@ -153,41 +155,7 @@ void UPlayer::Move()
 
 	// 충돌 체크
 	SideCheck();
-	//m_Loc = m_Loc + m_Velocity;
 
-	//if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-	//{
-	//	if (m_bJumping)
-	//		DoubleJump();
-	//	else
-	//		Jump();
-	//}
-	//if (GetAsyncKeyState('A') & 0x8000)
-	//{
-	//	Move(-0.01f, D_RIGHT);
-	//}
-	//if (GetAsyncKeyState('D') & 0x8000)
-	//{
-	//	Move(0.01f, D_RIGHT);
-	//}
-	//if (GetAsyncKeyState('E') & 0x8000)
-	//{
-	//	Reflection();
-	//}
-	//if (GetAsyncKeyState('Q') & 0x8000)
-	//{
-	//	DragonBlade();
-	//}
-	//// Reposition 이후 Dash 재적용 되는 문제 해결
-	//if (GetAsyncKeyState(VK_RBUTTON) & 0x0001)
-	//{
-	//	Dash();
-	//}	
-	//if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
-	//{
-	//	Attack();
-	//}
-	//SideCheck();
 }
 
 void UPlayer::Move(float _Scale, Direction _Dir)
@@ -346,11 +314,14 @@ void UPlayer::DashReset()
 
 void UPlayer::TakeDamage(float _Damage)
 {
+	if (m_Hp <= 0.0f)
+		return;
 	m_Hp -= _Damage;
 	if (m_Hp <= 0.f)
 	{
 		m_Dead = true;
 		m_Hp = 0.0f;
+		m_pMainGame->GetLeaderboard()->AddScore(m_pMainGame->GetGameMode()->score);
 	}
 }
 

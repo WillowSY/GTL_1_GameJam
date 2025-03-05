@@ -3,7 +3,8 @@
 #include "Ball.h"
 #include "Dagger.h"
 #include "CollisionMgr.h"
-
+#include "GameMode.h"
+#include "LeaderBoard.h"
 const float sphereRadius = 1.0f;
 const float ballSpeed = 0.000005f;
 float scaleMod = 0.1f;
@@ -19,6 +20,10 @@ SharkShark::~SharkShark()
 
 void SharkShark::Initialize()
 {
+	m_pMyGameMode = new CGameMode;
+	m_pMyGameMode->Initialize();
+	m_pLeaderBoard = new ULeaderboard;
+	m_pLeaderBoard->LoadScores();
 	for (int i = 0;i < OL_END;i++)
 	{
 		m_pObjectList.push_back(std::list<UObject*>());
@@ -38,7 +43,6 @@ void SharkShark::Update(float deltaTime)
 			(*iter1)->Update(deltaTime);
 		}
 	}
-
 }
 
 void SharkShark::Release()
@@ -50,6 +54,9 @@ void SharkShark::Release()
 			delete *iter1;
 		}
 	}
+	delete m_pMyGameMode;
+	m_pLeaderBoard->SaveScores();
+	delete m_pLeaderBoard;
 }
 
 void SharkShark::Render()
@@ -68,6 +75,7 @@ void SharkShark::FixedUpdate()
 				static_cast<UPlayer*>(GetPlayer())->DashReset();
 			delete* iter;
 			iter = GetBallList().erase(iter);
+			m_pMyGameMode->AddScore(100);
 		}
 		else
 			iter++;

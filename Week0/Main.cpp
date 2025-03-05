@@ -28,7 +28,7 @@
 #include "Sound.h"
 #include "TextRenderer.h"
 #include "LevelManager.h"
-
+#include "LeaderBoard.h"
 
 SoundManager soundManager;
 TextRenderer textRenderer;
@@ -472,7 +472,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	// 재시작 버튼 위치 및 크기
-	float buttonX = 430, buttonY = 512, buttonWidth = 200, buttonHeight = 50;
+	float buttonX = 450, buttonY = 540, buttonWidth = 200, buttonHeight = 50;
 
 	//정점 버퍼 1회 생성
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
@@ -487,14 +487,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
 
 
+
 	SharkShark* pMainGame = new SharkShark;
 	pMainGame->Initialize();
+	CGameMode* pGameMode = pMainGame->GetGameMode();
 
-	CGameMode* gameMode = new CGameMode;
-	gameMode->Initialize();
-
-	UBall* HeadBall = new UBall;
-	//HeadBall->CreateBall();
 	static int numBalls = 0;  // 공의 개수 초기값
 
 	const int targetFPS = 60;
@@ -528,24 +525,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		UpdateMousePosition(hWnd);
 		// UI 로직
-		if (gameMode->bGameOver)
+		if (pGameMode->bGameOver)
 		{
-			gameMode->bTryAgain = textRenderer.IsButtonClicked(buttonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY, isMouseDown);
+			pGameMode->bTryAgain = textRenderer.IsButtonClicked(buttonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY, isMouseDown);
 			isMouseDown = false;
 		}
 
 		UPlayer* player = (UPlayer*)pMainGame->GetPlayer();
-		gameMode->bGameOver = player->IsDead();
-		if (gameMode->bHasInit) gameMode->bStageClear = numBalls == 0;
-		if (!gameMode->bHasInit)
+		pGameMode->bGameOver = player->IsDead();
+
+		if (pGameMode->bHasInit) pGameMode->bStageClear = numBalls == 0;
+		if (!pGameMode->bHasInit)
 		{
 			/* 플레이어 */
-			gameMode->bGameOver ? player->Initialize() : player->Reposition();
+			pGameMode->bGameOver ? player->Initialize() : player->Reposition();
+	
 			/* 지형 */
 			//TODO: LevelLoader는 스테이지 구성 전까지 주석처리
 			//levelObjs = levelManager.LevelLoad(gameMode->stage);
 			/* 적 (UBall) */
-			numBalls = gameMode->stage + 1;
+			numBalls = pGameMode->stage + 1;
 			while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
 			{
 				pMainGame->CreateBall();
@@ -554,10 +553,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			{
 				pMainGame->DeleteRandomBall(numBalls);
 			}
-			gameMode->bHasInit = true;
+			pGameMode->bHasInit = true;
 		}
 
-		gameMode->Update(elapsedTime * 0.001f);
+		pGameMode->Update(elapsedTime * 0.001f);
 		pMainGame->Update(elapsedTime * 0.001f);
 		pMainGame->FixedUpdate();
 		numBalls = pMainGame->GetBallList().size();
@@ -595,22 +594,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.UpdateConstant(ConvertV3ToV4(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale(),true)),
 			ConvertV3ToV4(pMainGame->GetPlayer()->GetRot()));
 		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+		textRenderer.ChangeFontSize(24.0f);
 
 		// 텍스트 렌더링
 		textRenderer.RenderText(L"Shark, Shark", 8, 8);
 		std::wstring numBallsText = L"Number of Balls: " + std::to_wstring(numBalls);
 		textRenderer.RenderText(numBallsText, 8, 48);
-		std::wstring stageText = L"Stage: " + std::to_wstring(gameMode->stage);
+		std::wstring stageText = L"Stage: " + std::to_wstring(pGameMode->stage);
 		textRenderer.RenderText(stageText, 8, 88);
-		std::wstring scoreText = L"Score: " + std::to_wstring(gameMode->score);
+		std::wstring scoreText = L"Score: " + std::to_wstring(pGameMode->score);
 		textRenderer.RenderText(scoreText, 8, 128);
 
-			if (gameMode->bGameOver)
+			if (pGameMode->bGameOver)
 			{
-				textRenderer.RenderText(L"Game Over", 442, 424);
-				textRenderer.RenderText(L"Press 'R'", 460, 464);
-				textRenderer.RenderButton(L"Restart", buttonX, buttonY, buttonWidth, buttonHeight);
-				textRenderer.RenderText(scoreText, 460, 560);
+				textRenderer.ChangeFontSize(56.0f);
+
+				textRenderer.RenderText(L"Game Over", 400, 300);
+
+				textRenderer.ChangeFontSize(24.0f);
+				for (int i = 0; i < 5;i++)
+				{
+					std::wstring LeaderBoardText = L"" + std::to_wstring(pMainGame->GetLeaderboard()->Scores[i]);
+					textRenderer.RenderText(LeaderBoardText, 530, 370 + i*30);
+				}
+				textRenderer.ChangeFontSize(24.0f);
+				textRenderer.RenderButton(L"", buttonX, buttonY, buttonWidth, buttonHeight);
+				textRenderer.RenderText(L"Restart 'R'", 490, 550);
+				textRenderer.RenderText(scoreText, 500, 600);
 			}
 			//체력, 궁극기 게이지
 			UPlayer* pPlayer = static_cast<UPlayer*>(pMainGame->GetPlayer());
@@ -623,7 +633,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			textRenderer.RenderButton(L"", 400, 950, pPlayer->GetDragonBladeGage() * 20, 20);
 			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
 			//
-			
+			textRenderer.ChangeFontSize(36.0f);
+
 			// 스킬 UI
 			textRenderer.RenderButton(L"", 50, 920, pPlayer->GetDashCDT()*5.5f, 50);
 			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
@@ -694,7 +705,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	renderer.ReleaseConstantBuffer();
 	renderer.ReleaseShader();
 	renderer.Release();
-
 	return 0;
 }
 
