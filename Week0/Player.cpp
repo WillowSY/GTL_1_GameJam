@@ -114,7 +114,28 @@ void UPlayer::Move()
 	if (GetAsyncKeyState('D') & 0x8000 || leftStickX > deadZone) {
 		Move(moveSpeed, D_RIGHT);
 	}
+	if (gamepadConnected) {
+		SHORT rightStickX = state.Gamepad.sThumbRX;
+		SHORT rightStickY = state.Gamepad.sThumbRY;
 
+		if (abs(rightStickX) > deadZone || abs(rightStickY) > deadZone) {
+			POINT cursorPos;
+			GetCursorPos(&cursorPos);
+
+			// 마우스 이동 감도 조절
+			float mouseSensitivity = 0.05f;
+			cursorPos.x += static_cast<int>(rightStickX * mouseSensitivity / 32768.0f);
+			cursorPos.y -= static_cast<int>(rightStickY * mouseSensitivity / 32768.0f); // Y축 반전
+
+			// 화면 경계를 넘지 않도록 제한
+			int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+			int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+			cursorPos.x = max(0, min(screenWidth - 1, cursorPos.x));
+			cursorPos.y = max(0, min(screenHeight - 1, cursorPos.y));
+
+			SetCursorPos(cursorPos.x, cursorPos.y);
+		}
+	}
 	// Reflection (키보드: E, 게임패드: X 버튼)
 	if ((GetAsyncKeyState('E') & 0x8000) || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_X))) {
 		Reflection();
