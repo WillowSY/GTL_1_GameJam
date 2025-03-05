@@ -10,7 +10,6 @@
 ///////////////////////
 #include "d3dclass.h"
 #include "inputclass.h"
-#include "cameraclass.h"
 #include "timerclass.h"
 #include "particlesystemclass.h"
 #include "particleshaderclass.h"
@@ -43,7 +42,6 @@ public:
 
 private:
 	D3DClass* m_Direct3D;
-	CameraClass* m_Camera;
 	TimerClass* m_Timer;
 	ParticleSystemClass* m_ParticleSystem;
 	ParticleShaderClass* m_ParticleShader;

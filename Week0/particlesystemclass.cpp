@@ -154,7 +154,7 @@ bool ParticleSystemClass::InitializeParticleSystem()
 
 
 	// Set the random deviation of where the particles can be located when emitted.
-	m_particleDeviationX = 0.5f;
+	m_particleDeviationX = 0.5;
 	m_particleDeviationY = 0.1f;
 	m_particleDeviationZ = 2.0f;
 
@@ -357,9 +357,9 @@ void ParticleSystemClass::EmitParticles(float frameTime)  // 파티클 생성
 		m_currentParticleCount++;
 		std::cout << m_currentParticleCount;
 		// Now generate the randomized particle properties.
-		positionX = (((float)rand() - (float)rand())/RAND_MAX) * m_particleDeviationX;
-		positionY = (((float)rand() - (float)rand())/RAND_MAX) * m_particleDeviationY;
-		positionZ = (((float)rand() - (float)rand())/RAND_MAX) * m_particleDeviationZ;
+		positionX = 0;
+		positionY = 0;
+		positionZ = 0.5;
 
 		velocity = m_particleVelocity + (((float)rand() - (float)rand())/RAND_MAX) * m_particleVelocityVariation;
 
