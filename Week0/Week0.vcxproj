@@ -134,6 +134,7 @@
     <ClCompile Include="GameMode.h" />
     <ClCompile Include="Dagger.cpp" />
     <ClCompile Include="LevelLoader.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="imgui.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="CollisionMgr.h" />
     <ClInclude Include="Dagger.h" />
     <ClInclude Include="LevelLoader.h" />
+    <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="imconfig.h" />

@@ -28,6 +28,7 @@
 #include "Dagger.h"
 #include "Sound.h"
 #include "TextRenderer.h"
+#include "LevelManager.h"
 
 
 SoundManager soundManager;
@@ -557,26 +558,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		//FVector3 circlePosition = FVector3(0.0, 0.0, 0.0);
 		//FVector3 circleRotation = FVector3(0.0, 0.0, 0.0);
 		//FVector3 circleScale = FVector3(0.5, 1, 0.5); // 반지름 0.5 크기로 설정
-
+		LevelManager levelManager;
 		LevelLoader levelLoader;
-		vector<ObjectData> levelObjs = levelLoader.FileLoader("C:/Users/Jungle/Desktop/tempData.txt");
+
+		levelManager.AddStage(0, "C:/Users/Jungle/Desktop/tempData.txt");
+		string path = levelManager.GetStagePath(0);
+		vector<ObjectData> levelObjs = levelLoader.FileLoader(path);
 		for (auto v : levelObjs) {
-			/*FVector4 pos;
-			pos.x = v.position.x;
-			pos.y = v.position.y;
-			pos.z = v.position.z;
-
-			FVector4 sc;
-			sc.x = v.scale.x;
-			sc.y = v.scale.y;
-			sc.z = v.scale.z;
-
-			FVector4 rot;
-			rot.x = v.rotation.x;
-			rot.y = v.rotation.y;
-			rot.z = v.rotation.z;
-
-			*/
 			renderer.UpdateConstant(ConvertV3ToV4(v.position), ConvertV3ToV4(v.scale), ConvertV3ToV4(v.rotation));
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 			// ball Rendering
