@@ -568,7 +568,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.PrepareShader();
 
 		// Level Rendering
-		for (auto iter = pMainGame->GetUIList().begin(); iter != pMainGame->GetBallList().end(); iter++) {
+		for (auto iter = pMainGame->GetUIList().begin(); iter != pMainGame->GetUIList().end(); iter++) {
 			renderer.UpdateConstant(ConvertV3ToV4((*iter)->GetLoc()), ConvertV3ToV4((*iter)->GetScale()), ConvertV3ToV4((*iter)->GetRot()));
 			int idx = (*iter)->GetIndex();
 			if (idx == int(ShapeKey::Circle_rainbow)) {

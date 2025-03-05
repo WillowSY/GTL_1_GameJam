@@ -14,12 +14,13 @@ struct StageInfo {
 
 class LevelManager {
 public:
-	LevelLoader levelLoader;
 	LevelManager();
+	vector<StageInfo> stages;
+	
 	string GetStagePath(int id);
 	void AddStage(int id, string path);
 	void LevelLoad(int id, SharkShark* mG);
 
 private:
-	vector<StageInfo> stages;
+	
 };

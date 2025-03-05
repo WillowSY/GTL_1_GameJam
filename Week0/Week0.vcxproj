@@ -135,6 +135,7 @@
     <ClCompile Include="Dagger.cpp" />
     <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="LevelManager.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="imgui.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="LevelShapeKey.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="imconfig.h" />

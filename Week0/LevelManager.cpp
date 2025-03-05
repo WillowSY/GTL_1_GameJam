@@ -35,5 +35,5 @@ void LevelManager::AddStage(int id, string path) {
 
 void LevelManager::LevelLoad(int id, SharkShark* mG) {
 	string path = GetStagePath(id );
-	levelLoader.FileLoader(path, mG);
+	LevelLoader::FileLoader(path, mG);
 }
