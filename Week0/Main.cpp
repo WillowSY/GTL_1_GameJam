@@ -544,7 +544,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			gameMode->bGameOver ? player->Initialize() : player->Reposition();
 			/* 지형 */
 			//TODO: LevelLoader는 스테이지 구성 전까지 주석처리
-			levelObjs = levelManager.LevelLoad(gameMode->stage);
+			pMainGame->DeleteAllUI();
+			levelManager.LevelLoad(gameMode->stage, pMainGame);
 			/* 적 (UBall) */
 			numBalls = gameMode->stage + 1;
 			while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
@@ -556,6 +557,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				pMainGame->DeleteRandomBall(numBalls);
 			}
 			gameMode->bHasInit = true;
+			
 		}
 
 		gameMode->Update(elapsedTime * 0.001f);
@@ -567,19 +569,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.Prepare();
 		renderer.PrepareShader();
 
-		// 레벨 도형 렌더링
-		for (auto v : levelObjs) {
-			renderer.UpdateConstant(ConvertV3ToV4(v.position), ConvertV3ToV4(v.scale), ConvertV3ToV4(v.rotation));
-			if (v.objIndex == int(ShapeKey::Circle_rainbow)) {
+		// Level Rendering
+		for (auto iter = pMainGame->GetUIList().begin(); iter != pMainGame->GetUIList().end(); iter++) {
+			renderer.UpdateConstant(ConvertV3ToV4((*iter)->GetLoc()), ConvertV3ToV4((*iter)->GetScale()), ConvertV3ToV4((*iter)->GetRot()));
+			int idx = (*iter)->GetIndex();
+			if (idx == int(ShapeKey::Circle_rainbow)) {
 				renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 			}
-			else if (v.objIndex == ShapeKey::Rect_blue) {
+			else if (idx == ShapeKey::Rect_blue) {
 				renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 			}
-			else if (v.objIndex == ShapeKey::Tri_blue) {
+			else if (idx == ShapeKey::Tri_blue) {
 				renderer.RenderPrimitive(vertexBufferTriangle, numVerticesTriangle);
 			}
-			else if (v.objIndex == ShapeKey::Rect_black) {
+			else if (idx == ShapeKey::Rect_black) {
 				renderer.RenderPrimitive(vBB_black, numVerticesBox);
 			}
 		}

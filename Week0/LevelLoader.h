@@ -1,24 +1,21 @@
-#ifndef LEVELLOADER_H
-#define LEVELLOADER_H
+#pragma once
 
 #include <fstream>
 #include <vector>
 #include <string>
 #include <sstream> // ObjectData 구조체를 포함하는 파일
 #include "Utils.h"
+#include "SharkShark.h"
 
+using namespace std; 
 class LevelLoader {
 public:
-    LevelLoader() = default;
-    std::vector<ObjectData> FileLoader(const std::string& fName);
+    static void FileLoader(string& fName, SharkShark* mG);
+    static void ObjectDataParser(const string& orgStr, SharkShark* mG);
+    static ifstream readFile;
+    static vector<string> objects;
 
+    static vector<string> ObjectParser(std::ifstream& fileData);
 private:
-    std::ifstream readFile;
-    std::vector<ObjectData> datas;
-    std::vector<std::string> objects;
-
-    std::vector<std::string> ObjectParser(std::ifstream& fileData);
-    ObjectData ObjectDataParser(const std::string& orgStr);
+    LevelLoader() {}
 };
-
-#endif // LEVELLOADER_H

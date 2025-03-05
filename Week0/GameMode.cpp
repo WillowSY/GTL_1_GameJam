@@ -14,6 +14,7 @@ void CGameMode::Initialize()
 	score = 0;
 	bGameOver = false;
 	bHasInit = false;
+	bool bStageClear = false;
 	bTryAgain = false;
 	m_fStageTime = 0.0f;
 }

@@ -31,4 +31,5 @@ void UObject::Update(float deltaTime)
 
 void UObject::BeginOverllaped(UObject* _pOther)
 {
+
 }

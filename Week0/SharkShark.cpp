@@ -3,7 +3,7 @@
 #include "Ball.h"
 #include "Dagger.h"
 #include "CollisionMgr.h"
-
+#include "Level.h"
 const float sphereRadius = 1.0f;
 const float ballSpeed = 0.000005f;
 float scaleMod = 0.1f;
@@ -96,6 +96,11 @@ void SharkShark::FixedUpdate()
 		else
 			iter++;
 	}
+	for (auto iter = GetUIList().begin(); iter != GetUIList().end(); iter++) {
+		for (auto iter2 = GetBallList().begin(); iter2 != GetBallList().end();iter2++) {
+			CollisionMgr::CollisionUIAndBall((*iter), (*iter2));
+		}
+	}
 
 }
 
@@ -164,4 +169,21 @@ bool SharkShark::CreateBall()
 		delete PossibleBall;
 		return false;
 	}
+}
+
+void  SharkShark::CreateUI(int index, FVector3 pos, FVector3 rot, FVector3 scale) {
+	UObject* NewObj = new ULevel;
+	NewObj->SetIndex(index);
+	NewObj->SetLoc(pos);
+	NewObj->SetRot(rot);
+	NewObj->SetScale(scale);
+	m_pObjectList[OL_UI].push_back(NewObj);
+}
+void SharkShark::DeleteAllUI() {
+	list<UObject*>& list = GetUIList();
+	for (UObject* obj : list) {
+		delete obj;
+	}
+
+	list.clear();
 }

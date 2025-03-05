@@ -2,7 +2,9 @@
 
 #include <string>
 #include <vector>
+#include "Object.h"
 #include "LevelLoader.h"
+#include "SharkShark.h"
 using namespace std;
 
 struct StageInfo {
@@ -12,12 +14,13 @@ struct StageInfo {
 
 class LevelManager {
 public:
-	LevelLoader levelLoader;
 	LevelManager();
+	vector<StageInfo> stages;
+	
 	string GetStagePath(int id);
 	void AddStage(int id, string path);
-	vector<ObjectData> LevelLoad(int id);
+	void LevelLoad(int id, SharkShark* mG);
 
 private:
-	vector<StageInfo> stages;
+	
 };
