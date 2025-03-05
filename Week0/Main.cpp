@@ -596,15 +596,33 @@ public:
 				textRenderer.RenderButton(L"Restart", buttonX, buttonY, buttonWidth, buttonHeight);
 				textRenderer.RenderText(scoreText, 460, 560);
 			}
-			textRenderer.RenderButton(L"", 260, 920, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetMaxHp()*5, 20);
+			//Ã¼·Â, ±Ã±Ø±â °ÔÀÌÁö
+			UPlayer* pPlayer = static_cast<UPlayer*>(pMainGame->GetPlayer());
+			textRenderer.RenderButton(L"", 260, 920,pPlayer->GetMaxHp()*5, 20);
 			textRenderer.SetButtonColor(D2D1::ColorF::Red);
-			textRenderer.RenderButton(L"", 260, 920, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetHp() * 5, 20);
+			textRenderer.RenderButton(L"", 260, 920, pPlayer->GetHp() * 5, 20);
 			textRenderer.SetButtonColor(D2D1::ColorF::Gray);
-			textRenderer.RenderButton(L"", 400, 950, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDragonBladeNeedGage() * 20, 20);
+			textRenderer.RenderButton(L"", 400, 950, pPlayer->GetDragonBladeNeedGage() * 20, 20);
 			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
-			textRenderer.RenderButton(L"", 400, 950, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDragonBladeGage() * 20, 20);
-			textRenderer.SetButtonColor(D2D1::ColorF::Gray);
+			textRenderer.RenderButton(L"", 400, 950, pPlayer->GetDragonBladeGage() * 20, 20);
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+			//
+			
+			// ½ºÅ³ UI
+			textRenderer.RenderButton(L"", 50, 920, pPlayer->GetDashCDT()*5.5f, 50);
+			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
+			textRenderer.RenderButton(L"", 50, 920, (pPlayer->GetDashCDT()-pPlayer->GetDashTimer())*5.5f, 50);
+			textRenderer.RenderText(L"RB", 50, 925);
 
+
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+			textRenderer.RenderButton(L"E", 150, 920, pPlayer->GetReflectionCDT()*6.3f, 50);
+			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
+			textRenderer.RenderButton(L"E", 150, 920, (pPlayer->GetReflectionCDT()-pPlayer->GetReflectionTimer()) * 6.3f, 50);
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+
+			textRenderer.RenderButton(L"LB", 820, 920, 50, 50);
+			textRenderer.RenderButton(L"Q", 920, 920, 50, 50);
 			// ImGui ·»´õ¸µ
 			ImGui_ImplDX11_NewFrame();
 			ImGui_ImplWin32_NewFrame();

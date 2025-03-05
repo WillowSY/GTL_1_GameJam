@@ -71,10 +71,13 @@ public:
 	float		GetMaxHp() { return m_MaxHp; }
 	float		GetDragonBladeGage() { return m_DragonBladeGage; }
 	float		GetDragonBladeNeedGage() { return m_NeedGage; }
+	float		GetDashCDT() { return m_DashCDT; }
+	float		GetDashTimer() { return m_DashTimer; }
+	float		GetReflectionCDT() { return m_ReflectionCDT; }
+	float		GetReflectionTimer() { return m_ReflectionTimer; }
 
 	bool		IsDead() { return m_Dead; }
 	bool		IsDash() { return m_Dashing; }
-	float		GetDashTimer() { return m_DashTimer; }
 	bool		IsDragonBlading() { return m_bDragonBlading; }
 };
 

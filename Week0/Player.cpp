@@ -31,9 +31,13 @@ void UPlayer::Initialize()
 
 void UPlayer::Update(float deltaTime)
 {
-	m_DashTimer -= deltaTime;
+	if ((m_DashTimer -= deltaTime) < 0.f)
+		m_DashTimer = 0.f;
+
 	m_AttackTimer -= deltaTime;
-	m_ReflectionTimer -= deltaTime;
+	if ((m_ReflectionTimer -= deltaTime) < 0.f)
+		m_ReflectionTimer = 0.f;
+	
 	if (m_Dashing)
 	{
 		// 남은 거리 계산
