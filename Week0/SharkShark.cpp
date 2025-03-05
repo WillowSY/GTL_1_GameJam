@@ -136,7 +136,7 @@ bool SharkShark::CreateBall()
 	//생성 가능 여부 확인
 	while (!locationValid && attempts < maxAttempts)
 	{
-		newLocation = FVector3(((rand() % 2000) / 1000.0f) - 1.0f, ((rand() % 2000) / 1000.0f) - 1.0f, 0.f);
+		newLocation = FVector3(((rand() % 2000) / 1000.0f) - 1.0f, 0.6f+((rand() % 400) / 1000.0f), 0.f);
 
 
 		locationValid = true;

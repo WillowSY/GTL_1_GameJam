@@ -1,5 +1,6 @@
 #include "Object.h"
 
+static const float MaxSpeed = 0.003f;
 UObject::UObject()
 {
 }
@@ -32,4 +33,15 @@ void UObject::Update(float deltaTime)
 void UObject::BeginOverllaped(UObject* _pOther)
 {
 
+}
+
+void UObject::SetVel(FVector3 _Vec) {
+
+	// 속도가 최대 속도를 초과하면 정규화 후 조정
+	if (_Vec.Magnitude() > MaxSpeed) {
+		_Vec = _Vec.Normalize() * MaxSpeed;
+	}
+
+	// 속도 설정
+	m_Velocity = _Vec;
 }
