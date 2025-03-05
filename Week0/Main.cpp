@@ -535,8 +535,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			/* 플레이어 */
 			gameMode->bGameOver ? player->Initialize() : player->Reposition();
 			/* 지형 */
-			// LevelLoader
-			levelObjs = levelManager.LevelLoad(gameMode->stage);
+			//TODO: LevelLoader는 스테이지 구성 전까지 주석처리
+			//levelObjs = levelManager.LevelLoad(gameMode->stage);
 			/* 적 (UBall) */
 			numBalls = gameMode->stage + 1;
 			while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
@@ -724,12 +724,4 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		FVector3 repulsiveForce = MultVector3(DivideVector3(direction, distance), forceMagnitude);
 		return repulsiveForce;
-	}
-
-	FVector4 ConvertV3ToV4(FVector3 vec3) {
-		FVector4 newVec4;
-		newVec4.x = vec3.x;
-		newVec4.y = vec3.y;
-		newVec4.z = vec3.z;
-		return newVec4;
 	}
