@@ -19,6 +19,7 @@ public:
 	void	Reposition();
 	void	AddDragonBladeGage(float _Add);
 	void	DashReset();
+	void	TakeDamage(float _Damage);
 private:
 	void	Move();
 	void	Move(float _Scale, Direction _Dir);
@@ -26,17 +27,18 @@ private:
 	void	Jump();
 	void	Attack();
 	void	Dash();
-	void	Dumbling();
+	void	Rotate();
 	void	Reflection();
 	void	FinishReflection();
 	void	DragonBlade();
 	void	FinishDragonBlade();
+	void	DoubleJump();
 private:
 	float		m_Scale = 0.05f;
-	FVector3	m_Rot;
-	
+
 	FVector3	m_DashTarget;
 	bool		m_Dead = false;
+	float		m_MaxHp;
 	float		m_Hp;
 	bool		m_bJumping = false;
 	//질풍참
@@ -52,9 +54,12 @@ private:
 	float		m_Reflectionlasting = 2.0f;
 	bool		m_bReflecting = false;
 	// 용검
+	float		m_NeedGage = 10.0f;
 	float		m_DragonBladeGage = 0.0f;
 	float		m_DragonBladeLasting = 5.0f;
 	bool		m_bDragonBlading = false;
+	//더블 점프
+	bool		m_bDoubleJump = true;
 private:
 	SharkShark* m_pMainGame;
 
@@ -62,6 +67,10 @@ public:
 
 	float		GetScale() { return m_Scale; }
 	FVector3	GetRot() { return m_Rot; }
+	float		GetHp() { return m_Hp; }
+	float		GetMaxHp() { return m_MaxHp; }
+	float		GetDragonBladeGage() { return m_DragonBladeGage; }
+	float		GetDragonBladeNeedGage() { return m_NeedGage; }
 
 	bool		IsDead() { return m_Dead; }
 	bool		IsDash() { return m_Dashing; }

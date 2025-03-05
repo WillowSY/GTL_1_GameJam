@@ -7,7 +7,8 @@
 #include "Sound.h"
 extern FVector3 MousePosition;
 
-UPlayer::UPlayer() : UObject(OL_PLAYER)
+UPlayer::UPlayer() : UObject(FVector3(0.0f, -1.0f, 0.0f), FVector3(0.05f,0.05f,0.05f)
+	, FVector3(), FVector3(), OL_PLAYER)
 {
 }
 
@@ -18,12 +19,14 @@ UPlayer::~UPlayer()
 void UPlayer::Initialize()
 {
 	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
+	//m_Scale = FVector3(0.05f, 0.05f, 0.05f);
 	m_Rot = FVector3(0.0f, 0.0f, 0.0f);
 	m_Velocity = FVector3(0.0f, 0.0f, 0.0f);
-	m_Hp = 1.0f;
+	m_MaxHp = 100.0f;
+	m_Hp = 100.0f;
 	m_Dead = false;
 	m_Dashing = false;
-	m_Scale = 0.1f;
+	m_Scale = 0.05f;
 }
 
 void UPlayer::Update(float deltaTime)
@@ -53,6 +56,7 @@ void UPlayer::Update(float deltaTime)
 	}
 	if (m_bReflecting)
 	{
+		Rotate();
 		if ((m_Reflectionlasting -= deltaTime) < 0)
 			FinishReflection();
 	}
@@ -79,15 +83,18 @@ void UPlayer::Move()
 
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
-		Jump();
+		if (m_bJumping)
+			DoubleJump();
+		else
+			Jump();
 	}
 	if (GetAsyncKeyState('A') & 0x8000)
 	{
-		Move(-0.005f, D_RIGHT);
+		Move(-0.01f, D_RIGHT);
 	}
 	if (GetAsyncKeyState('D') & 0x8000)
 	{
-		Move(0.005f, D_RIGHT);
+		Move(0.01f, D_RIGHT);
 	}
 	if (GetAsyncKeyState('E') & 0x8000)
 	{
@@ -129,10 +136,11 @@ void UPlayer::SideCheck()
 		m_Loc.x = -1.0f + m_Scale;
 	if (m_Loc.x + m_Scale> 1.0f)
 		m_Loc.x = 1.0f - m_Scale;
-	if (m_Loc.y - m_Scale < -1.0f)
+	if (m_Loc.y - m_Scale < -0.8f)
 	{
-		m_Loc.y = -1.0f + m_Scale;
+		m_Loc.y = -0.8f + m_Scale;
 		m_bJumping = false;
+		m_bDoubleJump = true;
 	}
 	if (m_Loc.y + m_Scale > 1.0f)
 		m_Loc.y = 1.0f - m_Scale;
@@ -168,7 +176,7 @@ void UPlayer::Attack()
 	static_cast<UDagger*>(newDagger)->SetInstigator(m_Type);
 	m_pMainGame->GetDaggerList().push_back(newDagger);
 	m_AttackTimer = m_AttackCDT;
-	SoundManager::GetInstance().PlayEffect(L"Attack.mp3");
+	SoundManager::GetInstance().PlayEffect(L"Attack_0.mp3");
 
 }
 
@@ -198,9 +206,12 @@ void UPlayer::Dash()
 	SoundManager::GetInstance().PlayEffect(L"Dash.mp3");
 }
 
-void UPlayer::Dumbling()
+void UPlayer::Rotate()
 {
+	m_Rot.z += 20;
 }
+
+
 
 void UPlayer::Reflection()
 {
@@ -214,11 +225,12 @@ void UPlayer::FinishReflection()
 	m_bReflecting = false;
 	m_Reflectionlasting = 2.0f;
 	m_ReflectionTimer = m_ReflectionCDT;
+	m_Rot.z = 0;
 }
 
 void UPlayer::DragonBlade()
 {
-	if (m_DragonBladeGage < 10.0f)
+	if (m_DragonBladeGage < m_NeedGage)
 		return;
 	DashReset();
 	m_bDragonBlading = true;
@@ -235,14 +247,37 @@ void UPlayer::FinishDragonBlade()
 	m_Scale /= 2;
 }
 
+void UPlayer::DoubleJump()
+{
+
+	if (m_bJumping && m_bDoubleJump && (m_Loc.x < -0.95f + m_Scale || m_Loc.x == 1.0f - m_Scale))
+	{
+
+		m_Velocity.y = 0.02f;
+		m_bDoubleJump = false;
+	}
+}
+
 void UPlayer::AddDragonBladeGage(float _Add)
 {
 	m_DragonBladeGage += _Add;
+	if (m_DragonBladeGage > m_NeedGage)
+		m_DragonBladeGage = m_NeedGage;
 }
 
 void UPlayer::DashReset()
 {
 	m_DashTimer = 0.0f;
+}
+
+void UPlayer::TakeDamage(float _Damage)
+{
+	m_Hp -= _Damage;
+	if (m_Hp <= 0.f)
+	{
+		m_Dead = true;
+		m_Hp = 0.0f;
+	}
 }
 
 void UPlayer::Reposition()
@@ -264,13 +299,14 @@ void UPlayer::BeginOverllaped(UObject* _pOther)
 {
 	UBall* pBall = dynamic_cast<UBall*>(_pOther);
 	if (pBall && !m_Dashing)
-		m_Dead = true;
-
+	{
+		TakeDamage(2.0f);
+	}
 	UDagger* pDagger = dynamic_cast<UDagger*>(_pOther);
 	if (pDagger && pDagger->GetIsntigator() != GetType())
 	{
-		if(!m_bReflecting)
-			m_Dead = true;
+		if (!m_bReflecting)
+			TakeDamage(1.0f);
 		else 
 		{
 			pDagger->SetVel(pDagger->GetVelocity() * -1);

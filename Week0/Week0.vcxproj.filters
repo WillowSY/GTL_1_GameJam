@@ -153,10 +153,41 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="Attack.mp3" />
-    <Media Include="Dash.mp3" />
-    <Media Include="BGM.mp3" />
-    <Media Include="DragonBlade.mp3" />
-    <Media Include="Hit_Dash.mp3" />
+    <Media Include="BGM.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Dash.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="DragonBlade.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Hit_Dash.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Jump2.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Jump0.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Jump1.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_1_0.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_1_1.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_1_2.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_1_3.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_0.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
   </ItemGroup>
 </Project>
