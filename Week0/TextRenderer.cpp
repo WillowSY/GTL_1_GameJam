@@ -31,7 +31,7 @@ bool TextRenderer::Initialize(IDXGISwapChain* swapChain) {
         DWRITE_FONT_STRETCH_NORMAL, 36.0f, L"en-us", textFormat.GetAddressOf())))
         return false;
 
-    textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+    //textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
     textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
     if (FAILED(d2dRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), textBrush.GetAddressOf())))
@@ -44,7 +44,7 @@ bool TextRenderer::Initialize(IDXGISwapChain* swapChain) {
 }
 
 void TextRenderer::RenderText(const std::wstring& text, float x, float y) {
-    D2D1_RECT_F layoutRect = D2D1::RectF(x, y, x + 200, y + 50);
+    D2D1_RECT_F layoutRect = D2D1::RectF(x, y, x + 400, y + 50);
 
     d2dRenderTarget->BeginDraw();
     d2dRenderTarget->DrawTextW(text.c_str(), (UINT32)text.length(), textFormat.Get(),

@@ -11,6 +11,7 @@ public:
 	bool bGameOver = false;
 	bool bHasInit = false;
 	bool bStageClear = false;
+	bool bTryAgain = false;
 
 public:
 	void Initialize();

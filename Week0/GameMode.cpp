@@ -14,6 +14,7 @@ void CGameMode::Initialize()
 	score = 0;
 	bGameOver = false;
 	bHasInit = false;
+	bTryAgain = false;
 	m_fStageTime = 0.0f;
 }
 
@@ -24,6 +25,10 @@ void CGameMode::Update(float deltaTime)
 		highScore = (score > highScore) ? score : highScore;
 		// Game over logic
 		if (GetAsyncKeyState('R') & 0x8000)
+		{
+			bTryAgain = true;
+		}
+		if (bTryAgain)
 		{
 			Initialize();
 		}
