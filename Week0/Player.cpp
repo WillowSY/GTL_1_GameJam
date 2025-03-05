@@ -224,6 +224,7 @@ void UPlayer::DragonBlade()
 	m_bDragonBlading = true;
 	m_DragonBladeGage = 0.0f;
 	m_Scale *= 2;
+	SoundManager::GetInstance().PlayEffect(L"DragonBlade.mp3");
 }
 
 void UPlayer::FinishDragonBlade()
