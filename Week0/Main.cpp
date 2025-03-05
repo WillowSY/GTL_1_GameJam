@@ -56,6 +56,7 @@ FVector3 SumVector3(FVector3 v1, FVector3 v2);
 FVector3 SubVector3(FVector3 v1, FVector3 v2);
 FVector3 DivideVector3(FVector3 v1, float f);
 float SqVector3(FVector3 diff);
+FVector4 ConvertV3ToV4(FVector3 vec3);
 
 void HandleCollisions(UBall* headBall, float restitution);
 
@@ -560,7 +561,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		LevelLoader levelLoader;
 		vector<ObjectData> levelObjs = levelLoader.FileLoader("C:/Users/Jungle/Desktop/tempData.txt");
 		for (auto v : levelObjs) {
-			FVector4 pos;
+			/*FVector4 pos;
 			pos.x = v.position.x;
 			pos.y = v.position.y;
 			pos.z = v.position.z;
@@ -575,7 +576,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			rot.y = v.rotation.y;
 			rot.z = v.rotation.z;
 
-			renderer.UpdateConstant(pos, sc, rot);
+			*/
+			renderer.UpdateConstant(ConvertV3ToV4(v.position), ConvertV3ToV4(v.scale), ConvertV3ToV4(v.rotation));
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 			// ball Rendering
 			for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
@@ -733,4 +735,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		FVector3 repulsiveForce = MultVector3(DivideVector3(direction, distance), forceMagnitude);
 		return repulsiveForce;
+	}
+
+	FVector4 ConvertV3ToV4(FVector3 vec3) {
+		FVector4 newVec4;
+		newVec4.x = vec3.x;
+		newVec4.y = vec3.y;
+		newVec4.z = vec3.z;
+		return newVec4;
 	}
