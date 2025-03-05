@@ -22,9 +22,12 @@
 #include "CollisionMgr.h"
 #include "Ball.h"
 #include "SharkShark.h"
+#include "Sphere.h";
+#include "Utils.h"
 #include "Dagger.h"
 #include "Sound.h"
 #include "TextRenderer.h"
+#include "LevelManager.h"
 
 
 SoundManager soundManager;
@@ -33,13 +36,6 @@ bool isMouseDown = false;
 int mouseX = 0, mouseY = 0;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-// 각종 메시지를 처리할 함수
-struct FVertexSimple {
-	// 각 정점에 위치 정보와 색상 정보가 함께 저장.
-	float x, y, z;			// Position(위치)
-	float r, g, b, a;		// Color (색상)
-};
 
 FVertexSimple box_vertices[] =
 {
@@ -60,15 +56,13 @@ FVector3 SumVector3(FVector3 v1, FVector3 v2);
 FVector3 SubVector3(FVector3 v1, FVector3 v2);
 FVector3 DivideVector3(FVector3 v1, float f);
 float SqVector3(FVector3 diff);
+FVector4 ConvertV3ToV4(FVector3 vec3);
 
 void HandleCollisions(UBall* headBall, float restitution);
 
 void UpdateMousePosition(HWND hWnd);
 FVector3 ComputeRepulsiveForce(UBall* ball, const FVector3& mousePos, float strength);
 
-
-
-#include "Sphere.h"
 UINT numVerticesSphere = sizeof(sphere_vertices) / sizeof(FVertexSimple);
 UINT numVerticesBox = sizeof(box_vertices) / sizeof(FVertexSimple);
 
@@ -207,6 +201,7 @@ public:
 		framebufferRTVdesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // 2D 텍스처
 
 		Device->CreateRenderTargetView(FrameBuffer, &framebufferRTVdesc, &FrameBufferRTV);
+
 	}
 
 	// 프레임 버퍼를 해제하는 함수
@@ -375,9 +370,9 @@ public:
 
 	struct FConstants
 	{
-		FVector3 Offset;
-		float Radius;
-		float Pad;
+		FVector4 Offset;
+		FVector4 Scale;
+		FVector4 Rotation;
 	};
 
 	void CreateConstantBuffer()
@@ -399,7 +394,7 @@ public:
 			ConstantBuffer = nullptr;
 		}
 	}
-	void UpdateConstant(FVector3 Offset, float Radius)
+	void UpdateConstant(FVector4 Offset, FVector4 Scale, FVector4 Rotation)
 	{
 		if (ConstantBuffer)
 		{
@@ -409,10 +404,12 @@ public:
 			FConstants* constants = (FConstants*)constantbufferMSR.pData;
 			{
 				constants->Offset = Offset;
-				constants->Radius = Radius;
+				constants->Rotation = Rotation;
+				constants->Scale = Scale;
 			}
 			DeviceContext->Unmap(ConstantBuffer, 0);
 		}
+
 	}
 
 	void PrepareShader()
@@ -428,212 +425,221 @@ public:
 	}
 };
 
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+{
+	WCHAR WindowClass[] = L"JungleWindowClass";
+	WCHAR Title[] = L"Game Tech Lab";
+	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
 
-	int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+	if (!RegisterClassW(&wndclass)) {
+		MessageBoxW(nullptr, L"윈도우 클래스 등록 실패!", L"오류", MB_OK | MB_ICONERROR);
+		return -1;
+	}
+	HWND hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024, nullptr, nullptr, hInstance, nullptr);
+	if (!hWnd) {
+		MessageBoxW(nullptr, L"윈도우 생성 실패!", L"오류", MB_OK | MB_ICONERROR);
+		return -1;
+	}
+
+	if (!soundManager.PlayBGM(L"BGM.mp3")) {
+		MessageBoxW(nullptr, L"BGM 재생 실패!", L"Error", MB_ICONERROR);
+	}
+
+	// Renderer 및 Direct3D 관련 초기화
+	URenderer renderer;
+
+	// D3D11 생성 함수 호출.
+	renderer.Create(hWnd);
+	renderer.CreateShader();
+	renderer.CreateConstantBuffer();
+
+	if (!textRenderer.Initialize(renderer.SwapChain)) {
+		MessageBoxW(nullptr, L"텍스트 렌더러 초기화 실패!", L"오류", MB_OK | MB_ICONERROR);
+	}
+
+	// 재시작 버튼 위치 및 크기
+	float buttonX = 430, buttonY = 512, buttonWidth = 200, buttonHeight = 50;
+
+	// 구 정점 버퍼 1회 생성
+	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
+
+	ID3D11Buffer* vertexBufferBox = renderer.CreateVertexBuffer(box_vertices, numVerticesBox * sizeof(FVertexSimple));
+
+
+	// IMGUI 초기화
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui_ImplWin32_Init(hWnd);
+	ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
+
+
+	SharkShark* pMainGame = new SharkShark;
+	pMainGame->Initialize();
+
+	CGameMode* gameMode = new CGameMode;
+	gameMode->Initialize();
+
+	UBall* HeadBall = new UBall;
+	//HeadBall->CreateBall();
+	static int numBalls = 0;  // 공의 개수 초기값
+
+	const int targetFPS = 60;
+	const double targetFrameTime = 1000.0 / targetFPS; // 한 프레임의 목표 시간 (밀리초 단위)
+	LARGE_INTEGER frequency;
+	QueryPerformanceFrequency(&frequency);
+
+	LevelManager levelManager;						// 레벨 로드 관련 매니저 클래스
+	vector<ObjectData> levelObjs;					// 해당 레벨 오브젝트들 정보
+
+	LARGE_INTEGER startTime, endTime;
+	double elapsedTime = 1.0;
+	bool bIsExit = false;
+
+	while (bIsExit == false)
 	{
-		WCHAR WindowClass[] = L"JungleWindowClass";
-		WCHAR Title[] = L"Game Tech Lab";
-		WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
+		QueryPerformanceCounter(&startTime);
 
-		if (!RegisterClassW(&wndclass)) {
-			MessageBoxW(nullptr, L"윈도우 클래스 등록 실패!", L"오류", MB_OK | MB_ICONERROR);
-			return -1;
-		}
-		HWND hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024, nullptr, nullptr, hInstance, nullptr);
-		if (!hWnd) {
-			MessageBoxW(nullptr, L"윈도우 생성 실패!", L"오류", MB_OK | MB_ICONERROR);
-			return -1;
-		}
-
-		if (!soundManager.PlayBGM(L"BGM.mp3")) {
-			MessageBoxW(nullptr, L"BGM 재생 실패!", L"Error", MB_ICONERROR);
-		}
-
-		// Renderer 및 Direct3D 관련 초기화
-		URenderer renderer;
-
-		// D3D11 생성 함수 호출.
-		renderer.Create(hWnd);
-		renderer.CreateShader();
-		renderer.CreateConstantBuffer();
-
-		if (!textRenderer.Initialize(renderer.SwapChain)) {
-			MessageBoxW(nullptr, L"텍스트 렌더러 초기화 실패!", L"오류", MB_OK | MB_ICONERROR);
-		}
-
-		// 재시작 버튼 위치 및 크기
-		float buttonX = 430, buttonY = 512, buttonWidth = 200, buttonHeight = 50;
-
-		// 구 정점 버퍼 1회 생성
-		ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
-
-		ID3D11Buffer* vertexBufferBox = renderer.CreateVertexBuffer(box_vertices, numVerticesBox * sizeof(FVertexSimple));
-
-
-		// IMGUI 초기화
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
-		ImGui_ImplWin32_Init(hWnd);
-		ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
-
-
-		SharkShark* pMainGame = new SharkShark;
-		pMainGame->Initialize();
-
-		CGameMode* gameMode = new CGameMode;
-		gameMode->Initialize();
-
-
-
-		UBall* HeadBall = new UBall;
-		//HeadBall->CreateBall();
-		static int numBalls = 0;  // 공의 개수 초기값
-
-		const int targetFPS = 60;
-		const double targetFrameTime = 1000.0 / targetFPS; // 한 프레임의 목표 시간 (밀리초 단위)
-		LARGE_INTEGER frequency;
-		QueryPerformanceFrequency(&frequency);
-
-		LARGE_INTEGER startTime, endTime;
-		double elapsedTime = 1.0;
-		bool bIsExit = false;
-
-		while (bIsExit == false)
+		MSG msg;
+		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
-			QueryPerformanceCounter(&startTime);
+			TranslateMessage(&msg); // 키보드 입력 메시지를 문자메시지로 변경
+			DispatchMessage(&msg); // 메시지를 WndProc에 전달
 
-			MSG msg;
-			while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+			if (msg.message == WM_QUIT)
 			{
-				TranslateMessage(&msg); // 키보드 입력 메시지를 문자메시지로 변경
-				DispatchMessage(&msg); // 메시지를 WndProc에 전달
-
-				if (msg.message == WM_QUIT)
-				{
-					bIsExit = true;
-					break;
-				}
-
-			}
-			UpdateMousePosition(hWnd);
-			// UI 로직
-			if (gameMode->bGameOver)
-			{
-				gameMode->bTryAgain = textRenderer.IsButtonClicked(buttonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY, isMouseDown);
-				isMouseDown = false;
+				bIsExit = true;
+				break;
 			}
 
-			UPlayer* player = (UPlayer*)pMainGame->GetPlayer();
-			gameMode->bGameOver = player->IsDead();
-			if (gameMode->bHasInit) gameMode->bStageClear = numBalls == 0;
-			if (!gameMode->bHasInit)
+		}
+		UpdateMousePosition(hWnd);
+		// UI 로직
+		if (gameMode->bGameOver)
+		{
+			gameMode->bTryAgain = textRenderer.IsButtonClicked(buttonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY, isMouseDown);
+			isMouseDown = false;
+		}
+
+		UPlayer* player = (UPlayer*)pMainGame->GetPlayer();
+		gameMode->bGameOver = player->IsDead();
+		if (gameMode->bHasInit) gameMode->bStageClear = numBalls == 0;
+		if (!gameMode->bHasInit)
+		{
+			/* 플레이어 */
+			gameMode->bGameOver ? player->Initialize() : player->Reposition();
+			/* 지형 */
+			// LevelLoader
+			levelObjs = levelManager.LevelLoad(gameMode->stage);
+			/* 적 (UBall) */
+			numBalls = gameMode->stage + 1;
+			while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
 			{
-				/* 플레이어 */
-				gameMode->bGameOver ? player->Initialize() : player->Reposition();
-				/* 지형 */
-				// LevelLoader
-				/* 적 (UBall) */
-				numBalls = gameMode->stage;
-				while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
-				{
-					pMainGame->CreateBall();
-				}
-				while (numBalls < pMainGame->GetpObejectList()[OL_BALL].size())
-				{
-					pMainGame->DeleteRandomBall(numBalls);
-				}
-				gameMode->bHasInit = true;
+				pMainGame->CreateBall();
 			}
+			while (numBalls < pMainGame->GetpObejectList()[OL_BALL].size())
+			{
+				pMainGame->DeleteRandomBall(numBalls);
+			}
+			gameMode->bHasInit = true;
+		}
 
-			gameMode->Update(elapsedTime * 0.001f);
-			pMainGame->Update(elapsedTime * 0.001f);
-			pMainGame->FixedUpdate();
-			numBalls = pMainGame->GetBallList().size();
+		gameMode->Update(elapsedTime * 0.001f);
+		pMainGame->Update(elapsedTime * 0.001f);
+		pMainGame->FixedUpdate();
+		numBalls = pMainGame->GetBallList().size();
 
-			// 준비 작업
-			renderer.Prepare();
-			renderer.PrepareShader();
+		// 준비 작업
+		renderer.Prepare();
+		renderer.PrepareShader();
 
-
+		for (auto v : levelObjs) {
+			renderer.UpdateConstant(ConvertV3ToV4(v.position), ConvertV3ToV4(v.scale), ConvertV3ToV4(v.rotation));
+			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+		}
 		// ball Rendering
 		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
 		{
-			renderer.UpdateConstant(static_cast<UBall*>(*iter)->GetLoc(), static_cast<UBall*>(*iter)->Radius);
+			float scale = static_cast<UBall*>(*iter)->Radius;
+			FVector3 V3scale = FVector3(scale, scale, scale);
+			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UBall*>(*iter)->GetLoc()), ConvertV3ToV4(V3scale), 0);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
 		for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
 		{
-			renderer.UpdateConstant(static_cast<UDagger*>(*iter)->GetLoc(), static_cast<UDagger*>(*iter)->GetScale());
+			float scale = static_cast<UDagger*>(*iter)->GetScale();
+			FVector3 V3scale = FVector3(scale, scale, scale);
+			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UDagger*>(*iter)->GetLoc()), ConvertV3ToV4(V3scale), 0);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
 		//Player Rendering
-		renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
+		float scale = static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale();
+		FVector3 V3scale = FVector3(scale, scale, scale);
+		renderer.UpdateConstant(ConvertV3ToV4(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc()), ConvertV3ToV4(V3scale), 0);
 		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 
-			// 텍스트 렌더링
-			textRenderer.RenderText(L"Shark, Shark", 8, 8);
-			std::wstring numBallsText = L"Number of Balls: " + std::to_wstring(numBalls);
-			textRenderer.RenderText(numBallsText, 8, 48);
-			std::wstring stageText = L"Stage: " + std::to_wstring(gameMode->stage);
-			textRenderer.RenderText(stageText, 8, 88);
-			std::wstring scoreText = L"Score: " + std::to_wstring(gameMode->score);
-			textRenderer.RenderText(scoreText, 8, 128);
+		// 텍스트 렌더링
+		textRenderer.RenderText(L"Shark, Shark", 8, 8);
+		std::wstring numBallsText = L"Number of Balls: " + std::to_wstring(numBalls);
+		textRenderer.RenderText(numBallsText, 8, 48);
+		std::wstring stageText = L"Stage: " + std::to_wstring(gameMode->stage);
+		textRenderer.RenderText(stageText, 8, 88);
+		std::wstring scoreText = L"Score: " + std::to_wstring(gameMode->score);
+		textRenderer.RenderText(scoreText, 8, 128);
 
-			if (gameMode->bGameOver)
-			{
-				textRenderer.RenderText(L"Game Over", 442, 424);
-				textRenderer.RenderText(L"Press 'R'", 460, 464);
-				textRenderer.RenderButton(L"Restart", buttonX, buttonY, buttonWidth, buttonHeight);
-				textRenderer.RenderText(scoreText, 460, 560);
-			}
-
-
-			// ImGui 렌더링
-			ImGui_ImplDX11_NewFrame();
-			ImGui_ImplWin32_NewFrame();
-			ImGui::NewFrame();
-
-			// 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
-			ImGui::Begin("Jungle Property Window");
-
-			ImGui::Text("Hello Jungle World!");
-
-		ImGui::Text("%d", pMainGame->GetBallList().size());
-		ImGui::Text("%f", elapsedTime);
-		ImGui::Text("%f",static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDashTimer());
-		ImGui::Text("%d", pMainGame->GetDaggerList().size());
-
-
-			ImGui::PushItemWidth(80);
-			ImGui::InputInt("##balls", &numBalls);
-			ImGui::PopItemWidth();
-
-			ImGui::SameLine();
-			ImGui::Text("Number of Balls");
-
-			ImGui::End();
-			/////////////////////////////////////////////////////////////////////////
-			ImGui::Render();
-			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-			//버퍼 교체
-			renderer.SwapBuffer();
-			do
-			{
-				Sleep(0);
-
-				// 루프 종료 시간 기록
-				QueryPerformanceCounter(&endTime);
-
-				// 한 프레임이 소요된 시간 계산 (밀리초 단위로 변환)
-				elapsedTime = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
-
-			} while (elapsedTime < targetFrameTime);
+		if (gameMode->bGameOver)
+		{
+			textRenderer.RenderText(L"Game Over", 442, 424);
+			textRenderer.RenderText(L"Press 'R'", 460, 464);
+			textRenderer.RenderButton(L"Restart", buttonX, buttonY, buttonWidth, buttonHeight);
+			textRenderer.RenderText(scoreText, 460, 560);
 		}
 
 
+		// ImGui 렌더링
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		// 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
+		ImGui::Begin("Jungle Property Window");
+
+		ImGui::Text("Hello Jungle World!");
+
+		ImGui::Text("%d", pMainGame->GetBallList().size());
+		ImGui::Text("%f", elapsedTime);
+		ImGui::Text("%f", static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDashTimer());
+		ImGui::Text("%d", pMainGame->GetDaggerList().size());
+
+
+		ImGui::PushItemWidth(80);
+		ImGui::InputInt("##balls", &numBalls);
+		ImGui::PopItemWidth();
+
+		ImGui::SameLine();
+		ImGui::Text("Number of Balls");
+
+		ImGui::End();
+		/////////////////////////////////////////////////////////////////////////
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+		//버퍼 교체
+		renderer.SwapBuffer();
+		do
+		{
+			Sleep(0);
+
+			// 루프 종료 시간 기록
+			QueryPerformanceCounter(&endTime);
+
+			// 한 프레임이 소요된 시간 계산 (밀리초 단위로 변환)
+			elapsedTime = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
+
+		} while (elapsedTime < targetFrameTime);
+		
+	}
 
 	// 자원해제 및 종료.
 	delete pMainGame;
@@ -641,14 +647,14 @@ public:
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-		textRenderer.Cleanup();
-		renderer.ReleaseVertexBuffer(vertexBufferSphere);
-		renderer.ReleaseConstantBuffer();
-		renderer.ReleaseShader();
-		renderer.Release();
+	textRenderer.Cleanup();
+	renderer.ReleaseVertexBuffer(vertexBufferSphere);
+	renderer.ReleaseConstantBuffer();
+	renderer.ReleaseShader();
+	renderer.Release();
 
-		return 0;
-	}
+	return 0;
+}
 
 	float GetRandomFloat(float min, float max) {
 		return min + (rand() / (float)RAND_MAX) * (max - min);
@@ -711,4 +717,12 @@ public:
 
 		FVector3 repulsiveForce = MultVector3(DivideVector3(direction, distance), forceMagnitude);
 		return repulsiveForce;
+	}
+
+	FVector4 ConvertV3ToV4(FVector3 vec3) {
+		FVector4 newVec4;
+		newVec4.x = vec3.x;
+		newVec4.y = vec3.y;
+		newVec4.z = vec3.z;
+		return newVec4;
 	}
