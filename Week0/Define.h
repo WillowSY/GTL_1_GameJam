@@ -73,6 +73,7 @@ enum OBJECTLIST
 	OL_PLAYER,
 	OL_BALL,
 	OL_DAGGER,
+	OL_UI,
 	OL_END
 };
 

@@ -28,7 +28,8 @@
 #include "Sound.h"
 #include "TextRenderer.h"
 #include "LevelManager.h"
-
+#include "LevelShapeKey.h"
+#include "Boxs.h"
 
 SoundManager soundManager;
 TextRenderer textRenderer;
@@ -478,7 +479,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
 	ID3D11Buffer* vertexBufferBox = renderer.CreateVertexBuffer(box_vertices, numVerticesBox * sizeof(FVertexSimple));
 	ID3D11Buffer* vertexBufferTriangle = renderer.CreateVertexBuffer(triangle_vertices, numVerticesTriangle * sizeof(FVertexSimple));
-
+	ID3D11Buffer* vBB_black = renderer.CreateVertexBuffer(box_vertices_black, numVerticesBox * sizeof(FVertexSimple));
 	// IMGUI 초기화
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -543,7 +544,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			gameMode->bGameOver ? player->Initialize() : player->Reposition();
 			/* 지형 */
 			//TODO: LevelLoader는 스테이지 구성 전까지 주석처리
-			//levelObjs = levelManager.LevelLoad(gameMode->stage);
+			levelObjs = levelManager.LevelLoad(gameMode->stage);
 			/* 적 (UBall) */
 			numBalls = gameMode->stage + 1;
 			while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
@@ -566,19 +567,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.Prepare();
 		renderer.PrepareShader();
 
-
+		// 레벨 도형 렌더링
 		for (auto v : levelObjs) {
 			renderer.UpdateConstant(ConvertV3ToV4(v.position), ConvertV3ToV4(v.scale), ConvertV3ToV4(v.rotation));
-			if (v.objIndex == 0) {
+			if (v.objIndex == int(ShapeKey::Circle_rainbow)) {
 				renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 			}
-			else if (v.objIndex == 1) {
+			else if (v.objIndex == ShapeKey::Rect_blue) {
 				renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 			}
-			else if (v.objIndex == 2) {
+			else if (v.objIndex == ShapeKey::Tri_blue) {
 				renderer.RenderPrimitive(vertexBufferTriangle, numVerticesTriangle);
 			}
-			
+			else if (v.objIndex == ShapeKey::Rect_black) {
+				renderer.RenderPrimitive(vBB_black, numVerticesBox);
+			}
 		}
 		// ball Rendering
 		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
