@@ -1,6 +1,8 @@
 #include "Ball.h"
 #include "Player.h"
 #include "Dagger.h"
+#include "Sound.h"
+
 UBall::UBall()
 {
 }
@@ -114,7 +116,10 @@ void UBall::BeginOverllaped(UObject* _pOther)
 {
 	UPlayer* pPlayer = dynamic_cast<UPlayer*>(_pOther);
 	if (pPlayer && pPlayer->IsDash())
+	{
+		SoundManager::GetInstance().PlayEffect(L"Hit_Dash.mp3");
 		bDead = true;
+	}
 	UBall* pBall = dynamic_cast<UBall*>(_pOther);
 	if(pBall)
 		CollisionHandle(_pOther);

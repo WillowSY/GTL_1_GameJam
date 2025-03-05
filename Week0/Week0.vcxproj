@@ -173,8 +173,9 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="Attack.mp3" />
+    <Media Include="Dash.mp3" />
     <Media Include="BGM.mp3" />
-    <Media Include="Hit.mp3" />
+    <Media Include="Hit_Dash.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

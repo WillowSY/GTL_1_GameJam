@@ -4,6 +4,7 @@
 #include "SharkShark.h"
 #include "Ball.h"
 #include "Dagger.h"
+#include "Sound.h"
 extern FVector3 MousePosition;
 
 UPlayer::UPlayer()
@@ -155,6 +156,8 @@ void UPlayer::Attack()
 	m_pMainGame->GetDaggerList().push_back(new UDagger(m_Loc, CurDir2));
 	m_pMainGame->GetDaggerList().push_back(new UDagger(m_Loc, CurDir3));
 	m_AttackTimer = m_AttackCDT;
+	SoundManager::GetInstance().PlayEffect(L"Attack.mp3");
+
 }
 
 void UPlayer::Dash()
@@ -180,7 +183,7 @@ void UPlayer::Dash()
 	m_Velocity.y = 0;
 	m_Dashing = true;
 	m_DashTimer = m_DashCDT;
-
+	SoundManager::GetInstance().PlayEffect(L"Dash.mp3");
 }
 
 void UPlayer::Dumbling()
