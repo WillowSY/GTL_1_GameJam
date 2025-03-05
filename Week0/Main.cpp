@@ -17,6 +17,7 @@
 #include "CollisionMgr.h"
 #include "Ball.h"
 #include "SharkShark.h"
+#include "Dagger.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -573,7 +574,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			renderer.UpdateConstant(static_cast<UBall*>(*iter)->Location, static_cast<UBall*>(*iter)->Radius);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
-		
+		for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
+		{
+			renderer.UpdateConstant(static_cast<UDagger*>(*iter)->GetLoc(), static_cast<UDagger*>(*iter)->GetScale());
+			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+		}
 		//Player Rendering
 		renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
 		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
@@ -592,6 +597,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ImGui::Text("%d", pMainGame->GetBallList().size());
 		ImGui::Text("%f", elapsedTime);
 		ImGui::Text("%f",static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDashTimer());
+		ImGui::Text("%d", pMainGame->GetDaggerList().size());
 
 
 		ImGui::PushItemWidth(80);
@@ -809,57 +815,57 @@ float GetRandomFloat(float min, float max) {
 	return min + (rand() / (float)RAND_MAX) * (max - min);
 }
 
-void HandleCollisions(UBall* headBall, float e = 0.5f) {
-	for (UBall* b1 = headBall; b1 != nullptr; b1 = b1->NextBall) {
-		for (UBall* b2 = b1->NextBall; b2 != nullptr; b2 = b2->NextBall) {
-			// 두 공 간 거리 계산
-			FVector3 diff = SubVector3(b2->Location, b1->Location);
-			float distanceSq = SqVector3(diff);
-			float radiusSum = b1->Radius + b2->Radius;
-
-			if (distanceSq < radiusSum * radiusSum) {
-				float distance = sqrt(distanceSq);
-				if (distance == 0.0f) distance = 0.001f;
-
-				// 충돌 벡터 정규화
-				FVector3 normal = DivideVector3(diff, distance);
-
-				// 상대 속도 벡터
-				FVector3 relativeVelocity = SubVector3(b2->Velocity, b1->Velocity);
-
-				// 충돌 방향으로의 상대 속도 크기
-				float velocityAlongNormal = relativeVelocity.x * normal.x + relativeVelocity.y * normal.y;
-				if (velocityAlongNormal > 0) continue;
-				
-				// 운동량 보존 법칙으로 충돌 후 속도 계산
-				float m1 = b1->Mass;
-				float m2 = b2->Mass;
-
-				float impulseMagnitude = (-(1+e) * velocityAlongNormal) / (1 / m1 + 1 / m2);
-
-				FVector3 impulse = MultVector3(normal, impulseMagnitude);
-
-
-				b1->Velocity = SubVector3(b1->Velocity, MultVector3(impulse, 1/m1));
-				b2->Velocity = SumVector3(b2->Velocity, MultVector3(impulse, 1/m2));
-
-				// 충돌 후 겹침 방지
-				float penetrationDepth = radiusSum - distance;
-				FVector3 correction = MultVector3(normal, penetrationDepth / 2.0f);
-				b1->Location = SubVector3(b1->Location, correction);
-				b2->Location = SumVector3(b2->Location, correction);
-
-				//각속도 미완
-				//FVector3 tangential = { -normal.y, normal.x, 0 }; // 접선 방향
-				//float spinForce = DotProductVector3(relativeVelocity, tangential);
-				
-				//각속도 미완
-				/*b1->AngularVelocity = SumVector3(b1->AngularVelocity, MultVector3(tangential, spinForce * 0.1f));
-				b2->AngularVelocity = SubVector3(b2->AngularVelocity, MultVector3(tangential, spinForce * 0.1f));*/
-			}
-		}
-	}
-}
+//void HandleCollisions(UBall* headBall, float e = 0.5f) {
+//	for (UBall* b1 = headBall; b1 != nullptr; b1 = b1->NextBall) {
+//		for (UBall* b2 = b1->NextBall; b2 != nullptr; b2 = b2->NextBall) {
+//			// 두 공 간 거리 계산
+//			FVector3 diff = SubVector3(b2->Location, b1->Location);
+//			float distanceSq = SqVector3(diff);
+//			float radiusSum = b1->Radius + b2->Radius;
+//
+//			if (distanceSq < radiusSum * radiusSum) {
+//				float distance = sqrt(distanceSq);
+//				if (distance == 0.0f) distance = 0.001f;
+//
+//				// 충돌 벡터 정규화
+//				FVector3 normal = DivideVector3(diff, distance);
+//
+//				// 상대 속도 벡터
+//				FVector3 relativeVelocity = SubVector3(b2->Velocity, b1->Velocity);
+//
+//				// 충돌 방향으로의 상대 속도 크기
+//				float velocityAlongNormal = relativeVelocity.x * normal.x + relativeVelocity.y * normal.y;
+//				if (velocityAlongNormal > 0) continue;
+//				
+//				// 운동량 보존 법칙으로 충돌 후 속도 계산
+//				float m1 = b1->Mass;
+//				float m2 = b2->Mass;
+//
+//				float impulseMagnitude = (-(1+e) * velocityAlongNormal) / (1 / m1 + 1 / m2);
+//
+//				FVector3 impulse = MultVector3(normal, impulseMagnitude);
+//
+//
+//				b1->Velocity = SubVector3(b1->Velocity, MultVector3(impulse, 1/m1));
+//				b2->Velocity = SumVector3(b2->Velocity, MultVector3(impulse, 1/m2));
+//
+//				// 충돌 후 겹침 방지
+//				float penetrationDepth = radiusSum - distance;
+//				FVector3 correction = MultVector3(normal, penetrationDepth / 2.0f);
+//				b1->Location = SubVector3(b1->Location, correction);
+//				b2->Location = SumVector3(b2->Location, correction);
+//
+//				//각속도 미완
+//				//FVector3 tangential = { -normal.y, normal.x, 0 }; // 접선 방향
+//				//float spinForce = DotProductVector3(relativeVelocity, tangential);
+//				
+//				//각속도 미완
+//				/*b1->AngularVelocity = SumVector3(b1->AngularVelocity, MultVector3(tangential, spinForce * 0.1f));
+//				b2->AngularVelocity = SubVector3(b2->AngularVelocity, MultVector3(tangential, spinForce * 0.1f));*/
+//			}
+//		}
+//	}
+//}
 
 FVector3 MultVector3(FVector3 v1, float f) {
 	return FVector3(v1.x * f, v1.y * f, v1.z * f);

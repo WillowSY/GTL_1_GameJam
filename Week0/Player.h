@@ -3,24 +3,27 @@
 #include "Object.h"
 
 class UBall;
+class SharkShark;
 class UPlayer : public UObject
 {
 public:
 	UPlayer();
 	~UPlayer();
 
-public:
 	virtual void	Update(float deltaTime);
+	virtual void	BeginOverllaped(UObject* _pOther);
+public:
 	void	Initialize();
 	void	Release();
-
+	void	SetMainGame(SharkShark* _MainGame);
+private:
 	void	Move();
 	void	Move(float _Scale, Direction _Dir);
 	void	SideCheck();
 	void	Jump();
+	void	Attack();
 	void	Dash();
-	
-	virtual void BeginOverllaped(UObject* _pOther);
+	void	Dumbling();
 
 private:
 	FVector3	m_Loc;
@@ -34,6 +37,11 @@ private:
 	float		m_DashCDT = 10.0f;
 	float		m_DashTimer = 10.0f;
 	bool		m_bJumping = false;
+	float		m_AttackCDT = 0.5f;
+	float		m_AttackTimer = 0.0f;
+private:
+	SharkShark* m_pMainGame;
+
 public:
 	FVector3	GetLoc() { return m_Loc; }
 	float		GetScale() { return m_Scale; }
@@ -42,5 +50,6 @@ public:
 	bool		IsDead() { return m_Dead; }
 	bool		IsDash() { return m_Dashing; }
 	float		GetDashTimer() { return m_DashTimer; }
+
 };
 

@@ -1,6 +1,7 @@
 #include "SharkShark.h"
 #include "Player.h"
 #include "Ball.h"
+#include "Dagger.h"
 #include "CollisionMgr.h"
 
 const float sphereRadius = 1.0f;
@@ -23,6 +24,7 @@ void SharkShark::Initialize()
 		m_pObjectList.push_back(std::list<UObject*>());
 	}
 	UObject* pPlayer = new UPlayer;
+	static_cast<UPlayer*>(pPlayer)->SetMainGame(this);
 	m_pObjectList[OL_PLAYER].push_back(pPlayer);
 }
 
@@ -71,6 +73,22 @@ void SharkShark::FixedUpdate()
 			CollisionMgr::CollisionBallAndBall((*iter), (*iter2));
 		}
 	}
+	for (auto iter = GetBallList().begin(); iter != GetBallList().end();iter++) {
+		for (auto iter2 = GetDaggerList().begin(); iter2 != GetDaggerList().end(); iter2++)
+		{
+			CollisionMgr::CollisionBallAndBall((*iter), (*iter2));
+		}
+	}
+	for (auto iter = GetDaggerList().begin(); iter != GetDaggerList().end();) {
+		if (static_cast<UDagger*>(*iter)->IsDead())
+		{
+			delete* iter;
+			iter = GetDaggerList().erase(iter);
+		}
+		else
+			iter++;
+	}
+
 }
 
 void SharkShark::DeleteRandomBall(int& ballCount)

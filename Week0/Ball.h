@@ -20,12 +20,6 @@ public:
 	float AngularVelocity = 0.01f;
 	float RotationAngle = 0.1f;
 
-	UBall* NextBall;
-	UBall* PrevBall;
-	static int ballCount;
-
-	float Index = 0;
-
 	bool bDead = false;
 
 	//bool CreateBall(); // 货肺款 傍 积己

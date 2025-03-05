@@ -1,7 +1,8 @@
+#include "Windows.h"
 #include "Player.h"
 #include "Define.h"
-#include "Windows.h"
-
+#include "SharkShark.h"
+#include "Dagger.h"
 extern FVector3 MousePosition;
 
 UPlayer::UPlayer()
@@ -19,6 +20,7 @@ void UPlayer::Initialize()
 void UPlayer::Update(float deltaTime)
 {
 	m_DashTimer -= deltaTime;
+	m_AttackTimer -= deltaTime;
 	if (m_Dashing)
 	{
 		// 남은 거리 계산
@@ -47,21 +49,26 @@ void UPlayer::Release()
 {
 }
 
+void UPlayer::SetMainGame(SharkShark* _MainGame)
+{
+	m_pMainGame = _MainGame;
+}
+
 void UPlayer::Move()
 {
 	m_Loc = m_Loc + m_Velocity;
-	if (m_Velocity.x > 0)
-	{
-		m_Velocity.x -= 0.001f;
-		if (m_Velocity.x < 0)
-			m_Velocity.x = 0.f;
-	}
-	else if (m_Velocity.x < 0)
-	{
-		m_Velocity.x += 0.001f;
-		if (m_Velocity.x > 0)
-			m_Velocity.x = 0.f;
-	}
+	//if (m_Velocity.x > 0)
+	//{
+	//	m_Velocity.x -= 0.001f;
+	//	if (m_Velocity.x < 0)
+	//		m_Velocity.x = 0.f;
+	//}
+	//else if (m_Velocity.x < 0)
+	//{
+	//	m_Velocity.x += 0.001f;
+	//	if (m_Velocity.x > 0)
+	//		m_Velocity.x = 0.f;
+	//}
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
 		Jump();
@@ -77,6 +84,10 @@ void UPlayer::Move()
 	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
 	{
 		Dash();
+	}	
+	if (GetAsyncKeyState('R') & 0x8000)
+	{
+		Attack();
 	}
 	SideCheck();
 }
@@ -118,6 +129,25 @@ void UPlayer::Jump()
 	m_bJumping = true;
 }
 
+void UPlayer::Attack()
+{
+	if (m_AttackTimer > 0)
+		return;
+	FVector3 CurDir = MousePosition - m_Loc;
+	CurDir = CurDir.Normalize();
+	FVector3 CurDir2 = CurDir;
+	CurDir2.x = CurDir2.x * cos(0.25) - CurDir2.y * sin(0.25);
+	CurDir2.y = CurDir2.x * sin(0.25) + CurDir2.y * cos(0.25);
+	FVector3 CurDir3 = CurDir;
+	CurDir3.x = CurDir3.x * cos(-0.25) - CurDir3.y * sin(-0.25);
+	CurDir3.y = CurDir3.x * sin(-0.25) + CurDir3.y * cos(-0.25);
+
+	m_pMainGame->GetDaggerList().push_back(new UDagger(m_Loc, CurDir));
+	m_pMainGame->GetDaggerList().push_back(new UDagger(m_Loc, CurDir2));
+	m_pMainGame->GetDaggerList().push_back(new UDagger(m_Loc, CurDir3));
+	m_AttackTimer = m_AttackCDT;
+}
+
 void UPlayer::Dash()
 {
 	if (m_DashTimer > 0.0f)
@@ -142,6 +172,10 @@ void UPlayer::Dash()
 	m_Dashing = true;
 	m_DashTimer = m_DashCDT;
 
+}
+
+void UPlayer::Dumbling()
+{
 }
 
 void UPlayer::BeginOverllaped(UObject* _pOther)

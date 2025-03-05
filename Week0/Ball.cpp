@@ -1,5 +1,6 @@
 #include "Ball.h"
 #include "Player.h"
+#include "Dagger.h"
 UBall::UBall()
 {
 }
@@ -105,6 +106,8 @@ UBall::~UBall()
 void UBall::Update(float deltaTime)
 {
 	Move(deltaTime);
+	if (Radius < 0.01f)
+		bDead = true;
 }
 
 void UBall::BeginOverllaped(UObject* _pOther)
@@ -115,6 +118,9 @@ void UBall::BeginOverllaped(UObject* _pOther)
 	UBall* pBall = dynamic_cast<UBall*>(_pOther);
 	if(pBall)
 		CollisionHandle(_pOther);
+	UDagger* pDagger = dynamic_cast<UDagger*>(_pOther);
+	if (pDagger)
+		Radius *= 0.9f;;
 }
 
 void UBall::ResolveOverlap(FVector3& pos1, FVector3& pos2, float penetrationDepth)
