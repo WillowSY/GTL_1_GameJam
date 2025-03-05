@@ -569,6 +569,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.Prepare();
 		renderer.PrepareShader();
 
+		// ¸ÊÁ¦ÀÛ¿ë ·»´õ¸µ ÄÚµå
+		/*pMainGame->DeleteAllUI();
+		levelManager.LevelLoad(5, pMainGame);*/
 		// Level Rendering
 		for (auto iter = pMainGame->GetUIList().begin(); iter != pMainGame->GetUIList().end(); iter++) {
 			renderer.UpdateConstant(ConvertV3ToV4((*iter)->GetLoc()), ConvertV3ToV4((*iter)->GetScale()), ConvertV3ToV4((*iter)->GetRot()));
