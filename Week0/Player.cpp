@@ -1,10 +1,13 @@
+#include "Windows.h"
 #include "Player.h"
 #include "Define.h"
-#include "Windows.h"
-
+#include "SharkShark.h"
+#include "Ball.h"
+#include "Dagger.h"
+#include "Sound.h"
 extern FVector3 MousePosition;
 
-UPlayer::UPlayer()
+UPlayer::UPlayer() : UObject(OL_PLAYER)
 {
 }
 
@@ -14,10 +17,20 @@ UPlayer::~UPlayer()
 
 void UPlayer::Initialize()
 {
+	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
+	m_Rot = FVector3(0.0f, 0.0f, 0.0f);
+	m_Velocity = FVector3(0.0f, 0.0f, 0.0f);
+	m_Hp = 1.0f;
+	m_Dead = false;
+	m_Dashing = false;
+	m_Scale = 0.1f;
 }
 
 void UPlayer::Update(float deltaTime)
 {
+	m_DashTimer -= deltaTime;
+	m_AttackTimer -= deltaTime;
+	m_ReflectionTimer -= deltaTime;
 	if (m_Dashing)
 	{
 		// 남은 거리 계산
@@ -38,7 +51,16 @@ void UPlayer::Update(float deltaTime)
 		}
 		return;
 	}
-
+	if (m_bReflecting)
+	{
+		if ((m_Reflectionlasting -= deltaTime) < 0)
+			FinishReflection();
+	}
+	if (m_bDragonBlading)
+	{
+		if ((m_DragonBladeLasting -= deltaTime) < 0)
+			FinishDragonBlade();
+	}
 	m_Velocity.y -= 0.0005f; // gravity
 	Move();
 }
@@ -46,21 +68,15 @@ void UPlayer::Release()
 {
 }
 
+void UPlayer::SetMainGame(SharkShark* _MainGame)
+{
+	m_pMainGame = _MainGame;
+}
+
 void UPlayer::Move()
 {
 	m_Loc = m_Loc + m_Velocity;
-	if (m_Velocity.x > 0)
-	{
-		m_Velocity.x -= 0.001f;
-		if (m_Velocity.x < 0)
-			m_Velocity.x = 0.f;
-	}
-	else if (m_Velocity.x < 0)
-	{
-		m_Velocity.x += 0.001f;
-		if (m_Velocity.x > 0)
-			m_Velocity.x = 0.f;
-	}
+
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
 		Jump();
@@ -73,9 +89,22 @@ void UPlayer::Move()
 	{
 		Move(0.005f, D_RIGHT);
 	}
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
+	if (GetAsyncKeyState('E') & 0x8000)
+	{
+		Reflection();
+	}
+	if (GetAsyncKeyState('Q') & 0x8000)
+	{
+		DragonBlade();
+	}
+	// Reposition 이후 Dash 재적용 되는 문제 해결
+	if (GetAsyncKeyState(VK_RBUTTON) & 0x0001)
 	{
 		Dash();
+	}	
+	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+	{
+		Attack();
 	}
 	SideCheck();
 }
@@ -100,28 +129,152 @@ void UPlayer::SideCheck()
 		m_Loc.x = -1.0f + m_Scale;
 	if (m_Loc.x + m_Scale> 1.0f)
 		m_Loc.x = 1.0f - m_Scale;
-	if (m_Loc.y - m_Scale< -1.0f)
+	if (m_Loc.y - m_Scale < -1.0f)
+	{
 		m_Loc.y = -1.0f + m_Scale;
+		m_bJumping = false;
+	}
 	if (m_Loc.y + m_Scale > 1.0f)
 		m_Loc.y = 1.0f - m_Scale;
 }
 
 void UPlayer::Jump()
 {
+	if (m_bJumping)
+		return; 
 	m_Velocity.y = 0.02f;
+	m_bJumping = true;
+}
+
+void UPlayer::Attack()
+{
+	if (m_AttackTimer > 0)
+		return;
+	FVector3 CurDir = MousePosition - m_Loc;
+	CurDir = CurDir.Normalize();
+	FVector3 CurDir2 = CurDir;
+	CurDir2.x = CurDir2.x * cos(0.25) - CurDir2.y * sin(0.25);
+	CurDir2.y = CurDir2.x * sin(0.25) + CurDir2.y * cos(0.25);
+	FVector3 CurDir3 = CurDir;
+	CurDir3.x = CurDir3.x * cos(-0.25) - CurDir3.y * sin(-0.25);
+	CurDir3.y = CurDir3.x * sin(-0.25) + CurDir3.y * cos(-0.25);
+	UObject* newDagger = new UDagger(m_Loc, CurDir);
+	static_cast<UDagger*>(newDagger)->SetInstigator(m_Type);
+	m_pMainGame->GetDaggerList().push_back(newDagger);
+	newDagger = new UDagger(m_Loc, CurDir2);
+	static_cast<UDagger*>(newDagger)->SetInstigator(m_Type);
+	m_pMainGame->GetDaggerList().push_back(newDagger);
+	newDagger = new UDagger(m_Loc, CurDir3);
+	static_cast<UDagger*>(newDagger)->SetInstigator(m_Type);
+	m_pMainGame->GetDaggerList().push_back(newDagger);
+	m_AttackTimer = m_AttackCDT;
+	SoundManager::GetInstance().PlayEffect(L"Attack.mp3");
+
 }
 
 void UPlayer::Dash()
 {
+	if (m_DashTimer > 0.0f)
+		return;
 	FVector3 direction = (MousePosition - m_Loc).Normalize();
-	float dashDistance = 0.7f; 
-	m_DashTarget = m_Loc + direction * dashDistance;
+	// 목표 지점에 따른 대쉬 거리 계산 (최소 0.2, 최대 0.7)
+	float dashDistance = min((MousePosition - m_Loc).Magnitude() + 0.2f, 0.7f);
+	FVector3 potentialDashTarget = m_Loc + direction * dashDistance;
+
+	// 벽의 경계를 침범하지 않도록 대쉬 목표 지점 조정
+	if (potentialDashTarget.x - m_Scale < -1.0f)
+		potentialDashTarget.x = -1.0f + m_Scale;
+	if (potentialDashTarget.x + m_Scale > 1.0f)
+		potentialDashTarget.x = 1.0f - m_Scale;
+	if (potentialDashTarget.y - m_Scale < -1.0f)
+		potentialDashTarget.y = -1.0f + m_Scale;
+	if (potentialDashTarget.y + m_Scale > 1.0f)
+		potentialDashTarget.y = 1.0f - m_Scale;
+
+	m_DashTarget = potentialDashTarget;
 	m_Velocity.y = 0;
 	m_Dashing = true;
+	m_DashTimer = m_DashCDT;
+	SoundManager::GetInstance().PlayEffect(L"Dash.mp3");
+}
 
+void UPlayer::Dumbling()
+{
+}
+
+void UPlayer::Reflection()
+{
+	if (m_ReflectionTimer > 0.0f)
+		return;
+	m_bReflecting = true;
+}
+
+void UPlayer::FinishReflection()
+{
+	m_bReflecting = false;
+	m_Reflectionlasting = 2.0f;
+	m_ReflectionTimer = m_ReflectionCDT;
+}
+
+void UPlayer::DragonBlade()
+{
+	if (m_DragonBladeGage < 10.0f)
+		return;
+	DashReset();
+	m_bDragonBlading = true;
+	m_DragonBladeGage = 0.0f;
+	m_Scale *= 2;
+	SoundManager::GetInstance().PlayEffect(L"DragonBlade.mp3");
+}
+
+void UPlayer::FinishDragonBlade()
+{
+	m_bDragonBlading = false;
+	m_DragonBladeGage = 0.0f;
+	m_DragonBladeLasting = 5.0f;
+	m_Scale /= 2;
+}
+
+void UPlayer::AddDragonBladeGage(float _Add)
+{
+	m_DragonBladeGage += _Add;
+}
+
+void UPlayer::DashReset()
+{
+	m_DashTimer = 0.0f;
+}
+
+void UPlayer::Reposition()
+{
+	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
+	m_Rot = FVector3(0.0f, 0.0f, 0.0f);
+	m_Velocity = FVector3(0.0f, 0.0f, 0.0f);
+	m_Dead = false;
+	m_Dashing = false;
+	if (m_bDragonBlading) { // 이겼을 때는 유지? 
+		FinishDragonBlade();
+		m_Scale = 0.05f;
+	}
+	if (m_bReflecting)
+		FinishReflection();
 }
 
 void UPlayer::BeginOverllaped(UObject* _pOther)
 {
-}
+	UBall* pBall = dynamic_cast<UBall*>(_pOther);
+	if (pBall && !m_Dashing)
+		m_Dead = true;
 
+	UDagger* pDagger = dynamic_cast<UDagger*>(_pOther);
+	if (pDagger && pDagger->GetIsntigator() != GetType())
+	{
+		if(!m_bReflecting)
+			m_Dead = true;
+		else 
+		{
+			pDagger->SetVel(pDagger->GetVelocity() * -1);
+			pDagger->SetInstigator(m_Type);
+		}
+	}
+}

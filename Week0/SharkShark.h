@@ -21,6 +21,7 @@ private:
 public:
 	std::vector<std::list<UObject*>>& GetpObejectList() { return m_pObjectList; }
 	std::list<UObject*>& GetBallList() { return m_pObjectList[OL_BALL]; }
+	std::list<UObject*>& GetDaggerList() { return m_pObjectList[OL_DAGGER]; }
 	UObject* GetPlayer() { return m_pObjectList[OL_PLAYER].front(); }
 };
 

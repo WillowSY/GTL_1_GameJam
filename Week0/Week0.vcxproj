@@ -130,7 +130,9 @@
   <ItemGroup>
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="CollisionMgr.cpp" />
-    <ClCompile Include="LevelLoader.cpp" />
+    <ClCompile Include="GameMode.cpp" />
+    <ClCompile Include="GameMode.h" />
+    <ClCompile Include="Dagger.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="imgui.cpp" />
@@ -141,6 +143,8 @@
     <ClCompile Include="imgui_tables.cpp" />
     <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="SharkShark.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,7 +155,7 @@
   <ItemGroup>
     <ClInclude Include="Ball.h" />
     <ClInclude Include="CollisionMgr.h" />
-    <ClInclude Include="LevelLoader.h" />
+    <ClInclude Include="Dagger.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="imconfig.h" />
@@ -163,9 +167,16 @@
     <ClInclude Include="imstb_textedit.h" />
     <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="SharkShark.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="Sphere.h" />
-    <ClInclude Include="Define.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="TextRenderer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Attack.mp3" />
+    <Media Include="Dash.mp3" />
+    <Media Include="BGM.mp3" />
+    <Media Include="DragonBlade.mp3" />
+    <Media Include="Hit_Dash.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
