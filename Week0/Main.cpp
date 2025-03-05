@@ -16,8 +16,8 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 
-#include "Define.h"
 #include "GameMode.h"
+#include "Define.h"
 #include "Player.h"
 #include "CollisionMgr.h"
 #include "Ball.h"
@@ -478,84 +478,14 @@ public:
 		ImGui_ImplWin32_Init(hWnd);
 		ImGui_ImplDX11_Init(renderer.Device, renderer.DeviceContext);
 
-#pragma region Seyoungs
-		/* Ball 관련 변수들 */
-	// 링크드리스트 헤더 볼
-	//UBall* HeadBall = nullptr;    
-
-	//static int targetBallCount = 0;
-	//// 구 질량 계산 시 비례 상수
-	//static int k = 1;
-
-	//// 존재하는 볼의 개수를 순회하며 카운트.
-	//auto CountBalls = [&HeadBall]() -> int {
-	//	int count = 0;
-	//	for (UBall* cur = HeadBall; cur != nullptr; cur = cur->NextBall)
-	//		count++;
-	//	return count;
-	//	};
-
-	//// 볼 추가
-	//auto AddBall = [&HeadBall]() {
-	//	UBall* newBall = new UBall();
-	//	
-	//	newBall->Radius = GetRandomFloat(0.05f, 0.2f);
-	//	newBall->Location = FVector3(
-	//		GetRandomFloat(-1.0f, 1.0f),
-	//		GetRandomFloat(-0.5f, 0.5f),
-	//		0.0f
-	//	);
-	//	newBall->Velocity = FVector3(0, 0, 0);
-
-	//	newBall->Mass = newBall->Radius * newBall->Radius * newBall->Radius * k;
-
-	//	newBall->NextBall = HeadBall;
-	//	HeadBall = newBall;
-	//	};
-
-	//// 볼 제거.
-	//auto RemoveRandomBall = [&HeadBall, &CountBalls]() {
-	//	int count = CountBalls();
-	//	if (count == 0) return;
-	//	// 0 ~ count-1 사이의 임의 인덱스 선택
-	//	int index = static_cast<int>(GetRandomFloat(0, static_cast<float>(count -1)));
-	//	UBall* current = HeadBall;
-	//	UBall* prev = nullptr;
-	//	for (int i = 0; i < index; i++) {
-	//		prev = current;
-	//		current = current->NextBall;
-	//	}
-	//	if (prev == nullptr) {  // HeadBall를 삭제
-	//		HeadBall = current->NextBall;
-	//	}
-	//	else {
-	//		prev->NextBall = current->NextBall;
-	//	}
-	//	delete current;
-	//	};
-
-	// 화면 경계 관련 변수.
-	//const float leftBorder = -1.0f;
-	//const float rightBorder = 1.0f;
-	//const float topBorder = -1.0f;
-	//const float bottomBorder = 1.0f;
-	//bool bBoundBallToScreen = true;
-	//bool bPinballMovement = true;
-	//bool bApplyGravity = true;
-	//각속도 미완
-	//bool bApplyAngularVelocity = false;
-	//bool bMagnetic = false;
-
-		//const float GravityAcceleration = -0.005f;
-		//float e = 0.8f;
-#pragma endregion
 
 		SharkShark* pMainGame = new SharkShark;
 		pMainGame->Initialize();
 
-		CGameMode* gameMode = new CGameMode();
+		CGameMode* gameMode = new CGameMode;
 		gameMode->Initialize();
-		//UPlayer* pPlayer = new UPlayer;
+
+
 
 		UBall* HeadBall = new UBall;
 		//HeadBall->CreateBall();
@@ -630,7 +560,7 @@ public:
 		// ball Rendering
 		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
 		{
-			renderer.UpdateConstant(static_cast<UBall*>(*iter)->Location, static_cast<UBall*>(*iter)->Radius);
+			renderer.UpdateConstant(static_cast<UBall*>(*iter)->GetLoc(), static_cast<UBall*>(*iter)->Radius);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
 		for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
@@ -702,175 +632,7 @@ public:
 
 			} while (elapsedTime < targetFrameTime);
 		}
-#pragma region Seyoungs
-		// 프레임 관련 변수.
-	//const int targetFPS = 60;
-	//const double targetFrameTime = 1000.0 / targetFPS;
-	//LARGE_INTEGER startTime, endTime, frequency;
-	//QueryPerformanceFrequency(&frequency);
-	//double elapsedTime = 0.0;
-	//bool bIsExit = false;
 
-	//// 렌더링 루프.
-	//while (!bIsExit) {
-	//	QueryPerformanceCounter(&startTime);
-
-	//	// 메시지 처리
-	//	MSG msg;
-	//	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-	//		TranslateMessage(&msg);
-	//		DispatchMessage(&msg);
-	//		if (msg.message == WM_QUIT) {
-	//			bIsExit = true;
-	//			break;
-	//		}
-	//	}
-
-	//	// 마우스 위치 업데이트
-	//	UpdateMousePosition(hWnd);
-
-	//	if (bPinballMovement) {
-	//		for (UBall* curBall = HeadBall; curBall != nullptr; curBall = curBall->NextBall) {
-	//			if (bMagnetic) {
-	//				// 척력 계산 및 적용
-	//				FVector3 repulsiveForce = ComputeRepulsiveForce(curBall, MousePosition, 0.01f);
-	//				curBall->Velocity = SumVector3(curBall->Velocity, repulsiveForce);
-	//			}
-	//			curBall->Location.x += curBall->Velocity.x;
-	//			curBall->Location.y += curBall->Velocity.y;
-	//			curBall->Location.z += curBall->Velocity.z;
-
-	//			if (bApplyGravity) {
-	//				curBall->Velocity.y += GravityAcceleration;
-	//			}
-
-	//			// 너무 느리게 움직여서 떨리는 문제 방지
-	//			if (curBall->Location.y >= bottomBorder - curBall->Radius && fabs(curBall->Velocity.y) < 0.01f) {
-	//				curBall->Velocity.y = 0.0f;
-	//			}
-
-	//			if (curBall->Location.y <= topBorder + curBall->Radius) {
-	//				curBall->Location.y = topBorder + curBall->Radius;
-
-	//				if (curBall->Velocity.y < 0) {
-	//					curBall->Velocity.y *= -e;
-	//				}
-
-	//				//if (fabs(curBall->Velocity.y) < 0.01f) {
-	//				//	curBall->Velocity.y = 0.01f;
-	//				//}
-	//			}
-
-	//			if (curBall->Location.x < leftBorder + curBall->Radius) {
-	//				curBall->Location.x = leftBorder + curBall->Radius;
-	//				curBall->Velocity.x *= -e;
-	//				
-	//				//각속도 미완
-	//				//curBall->AngularVelocity.z += curBall->Velocity.y * 0.1f;
-	//			}
-	//			else if (curBall->Location.x > rightBorder - curBall->Radius) {
-	//				curBall->Location.x = rightBorder - curBall->Radius;
-	//				curBall->Velocity.x *= -e;
-
-	//				//각속도 미완
-	//				//curBall->AngularVelocity.z -= curBall->Velocity.y * 0.1f;
-	//			}
-
-	//			// 상하 벽 충돌 (Y축 방향)
-	//			if (curBall->Location.y < topBorder + curBall->Radius) {
-	//				curBall->Location.y = topBorder + curBall->Radius;
-	//				curBall->Velocity.y *= -e;
-
-	//				//각속도 미완
-	//				//curBall->AngularVelocity.x += curBall->Velocity.x * 0.1f;
-	//			}
-	//			else if (curBall->Location.y > bottomBorder - curBall->Radius) {
-	//				curBall->Location.y = bottomBorder - curBall->Radius;
-	//				curBall->Velocity.y *= -e;
-
-	//				//각속도 미완
-	//				//curBall->AngularVelocity.x -= curBall->Velocity.x * 0.1f;
-	//			}
-
-	//			//각속도 미완
-	//			/*if (bApplyAngularVelocity) {
-	//				curBall->Velocity.x += curBall->AngularVelocity.y * 0.01f;
-	//				curBall->Velocity.y += curBall->AngularVelocity.x * 0.01f;
-
-	//				curBall->AngularVelocity = MultVector3(curBall->AngularVelocity, 0.98f);
-	//			}*/
-	//		}
-	//	}
-	//	UBall* pBall = HeadBall;
-	//	while (pBall != nullptr)
-	//	{
-	//		CollisionMgr::CollisionPlayerAndBall(pPlayer, pBall);
-	//		pBall = pBall->NextBall;
-	//	}
-	//	pPlayer->Update(elapsedTime);
-
-	//	HandleCollisions(HeadBall, e);
-
-	//	// 렌더링 준비 (프레임 클리어, 뷰포트 설정 등)
-	//	renderer.Prepare();
-	//	renderer.PrepareShader();
-
-	//	// ImGui 초기화
-	//	
-	//	ImGui_ImplDX11_NewFrame();
-	//	ImGui_ImplWin32_NewFrame();
-	//	ImGui::NewFrame();
-	//	ImGui::Begin("Jungle Property Window");
-	//	ImGui::Text("Hello Jungle World!");
-	//	ImGui::SliderFloat("COR", &e, 0.0f, 1.0f);
-	//	ImGui::Checkbox("Gravity", &bApplyGravity);
-	//	//각속도 미완
-	//	//ImGui::Checkbox("Angular Velocity", &bApplyAngularVelocity);
-	//	ImGui::Checkbox("Magnetic Repulsion", &bMagnetic);
-
-	//	// 공 개수 카운팅
-	//	ImGui::InputInt("Number of Balls", &targetBallCount);
-	//	if (targetBallCount < 0)
-	//		targetBallCount = 0;
-	//	
-
-	//	// 공 개수에 따라 조절.
-	//	int currentCount = CountBalls();
-	//	while (currentCount < targetBallCount) {
-	//		AddBall();
-	//		currentCount++;
-	//	}
-	//	while (currentCount > targetBallCount) {
-	//		RemoveRandomBall();
-	//		currentCount--;
-	//	}
-
-	//	// 각 볼들 렌더링
-	//	for (UBall* curBall = HeadBall; curBall != nullptr; curBall = curBall->NextBall) {
-	//		renderer.UpdateConstant(curBall->Location, curBall->Radius);
-	//		renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
-	//	}
-
-	//	//Player Rendering
-	//	renderer.UpdateConstant(pPlayer->GetLoc(), pPlayer->GetScale());
-	//	renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
-
-	//	// Player Rendering 종료
-	//	ImGui::End();
-	//	ImGui::Render();
-	//	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-	//	// 프레임 조절 관련
-	//	do {
-	//		Sleep(0);
-	//		QueryPerformanceCounter(&endTime);
-	//		elapsedTime = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
-	//	} while (elapsedTime < targetFrameTime);
-	//	
-	//	renderer.SwapBuffer();
-	//}
-
-#pragma endregion
 
 
 	// 자원해제 및 종료.
@@ -892,57 +654,6 @@ public:
 		return min + (rand() / (float)RAND_MAX) * (max - min);
 	}
 
-//void HandleCollisions(UBall* headBall, float e = 0.5f) {
-//	for (UBall* b1 = headBall; b1 != nullptr; b1 = b1->NextBall) {
-//		for (UBall* b2 = b1->NextBall; b2 != nullptr; b2 = b2->NextBall) {
-//			// 두 공 간 거리 계산
-//			FVector3 diff = SubVector3(b2->Location, b1->Location);
-//			float distanceSq = SqVector3(diff);
-//			float radiusSum = b1->Radius + b2->Radius;
-//
-//			if (distanceSq < radiusSum * radiusSum) {
-//				float distance = sqrt(distanceSq);
-//				if (distance == 0.0f) distance = 0.001f;
-//
-//				// 충돌 벡터 정규화
-//				FVector3 normal = DivideVector3(diff, distance);
-//
-//				// 상대 속도 벡터
-//				FVector3 relativeVelocity = SubVector3(b2->Velocity, b1->Velocity);
-//
-//				// 충돌 방향으로의 상대 속도 크기
-//				float velocityAlongNormal = relativeVelocity.x * normal.x + relativeVelocity.y * normal.y;
-//				if (velocityAlongNormal > 0) continue;
-//				
-//				// 운동량 보존 법칙으로 충돌 후 속도 계산
-//				float m1 = b1->Mass;
-//				float m2 = b2->Mass;
-//
-//				float impulseMagnitude = (-(1+e) * velocityAlongNormal) / (1 / m1 + 1 / m2);
-//
-//				FVector3 impulse = MultVector3(normal, impulseMagnitude);
-//
-//
-//				b1->Velocity = SubVector3(b1->Velocity, MultVector3(impulse, 1/m1));
-//				b2->Velocity = SumVector3(b2->Velocity, MultVector3(impulse, 1/m2));
-//
-//				// 충돌 후 겹침 방지
-//				float penetrationDepth = radiusSum - distance;
-//				FVector3 correction = MultVector3(normal, penetrationDepth / 2.0f);
-//				b1->Location = SubVector3(b1->Location, correction);
-//				b2->Location = SumVector3(b2->Location, correction);
-//
-//				//각속도 미완
-//				//FVector3 tangential = { -normal.y, normal.x, 0 }; // 접선 방향
-//				//float spinForce = DotProductVector3(relativeVelocity, tangential);
-//				
-//				//각속도 미완
-//				/*b1->AngularVelocity = SumVector3(b1->AngularVelocity, MultVector3(tangential, spinForce * 0.1f));
-//				b2->AngularVelocity = SubVector3(b2->AngularVelocity, MultVector3(tangential, spinForce * 0.1f));*/
-//			}
-//		}
-//	}
-//}
 
 	FVector3 MultVector3(FVector3 v1, float f) {
 		return FVector3(v1.x * f, v1.y * f, v1.z * f);
@@ -986,7 +697,7 @@ public:
 
 	// 척력 계산 함수
 	FVector3 ComputeRepulsiveForce(UBall* ball, const FVector3& mousePos, float strength = 1.0f) {
-		FVector3 direction = SubVector3(ball->Location, mousePos);
+		FVector3 direction = SubVector3(ball->GetLoc(), mousePos);
 		float distanceSq = SqVector3(direction);
 
 		if (distanceSq < 0.0001f) return FVector3(0, 0, 0);

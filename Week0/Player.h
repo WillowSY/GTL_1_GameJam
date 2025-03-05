@@ -25,12 +25,14 @@ private:
 	void	Attack();
 	void	Dash();
 	void	Dumbling();
+	void	Reflection();
+	void	FinishReflection();
+
 
 private:
-	FVector3	m_Loc;
 	float		m_Scale = 0.1f;
 	FVector3	m_Rot;
-	FVector3	m_Velocity;
+	
 	FVector3	m_DashTarget;
 	bool		m_Dead = false;
 	float		m_Hp;
@@ -40,14 +42,18 @@ private:
 	bool		m_bJumping = false;
 	float		m_AttackCDT = 0.5f;
 	float		m_AttackTimer = 0.0f;
+	float		m_ReflectionCDT = 8.0f;
+	float		m_ReflectionTimer = 8.0f;
+	float		m_Reflectionlasting = 2.0f;
+	bool		m_bReflecting = false;
 private:
 	SharkShark* m_pMainGame;
 
 public:
-	FVector3	GetLoc() { return m_Loc; }
+
 	float		GetScale() { return m_Scale; }
 	FVector3	GetRot() { return m_Rot; }
-	FVector3	GetVelocity() { return m_Velocity; }
+
 	bool		IsDead() { return m_Dead; }
 	bool		IsDash() { return m_Dashing; }
 	float		GetDashTimer() { return m_DashTimer; }

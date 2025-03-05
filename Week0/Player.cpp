@@ -6,7 +6,7 @@
 #include "Dagger.h"
 extern FVector3 MousePosition;
 
-UPlayer::UPlayer()
+UPlayer::UPlayer() : UObject(OL_PLAYER)
 {
 }
 
@@ -29,6 +29,7 @@ void UPlayer::Update(float deltaTime)
 {
 	m_DashTimer -= deltaTime;
 	m_AttackTimer -= deltaTime;
+	m_ReflectionTimer -= deltaTime;
 	if (m_Dashing)
 	{
 		// 남은 거리 계산
@@ -49,7 +50,11 @@ void UPlayer::Update(float deltaTime)
 		}
 		return;
 	}
-
+	if (m_bReflecting)
+	{
+		if ((m_Reflectionlasting -= deltaTime) < 0)
+			FinishReflection();
+	}
 	m_Velocity.y -= 0.0005f; // gravity
 	Move();
 }
@@ -65,18 +70,7 @@ void UPlayer::SetMainGame(SharkShark* _MainGame)
 void UPlayer::Move()
 {
 	m_Loc = m_Loc + m_Velocity;
-	//if (m_Velocity.x > 0)
-	//{
-	//	m_Velocity.x -= 0.001f;
-	//	if (m_Velocity.x < 0)
-	//		m_Velocity.x = 0.f;
-	//}
-	//else if (m_Velocity.x < 0)
-	//{
-	//	m_Velocity.x += 0.001f;
-	//	if (m_Velocity.x > 0)
-	//		m_Velocity.x = 0.f;
-	//}
+
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
 		Jump();
@@ -89,12 +83,16 @@ void UPlayer::Move()
 	{
 		Move(0.005f, D_RIGHT);
 	}
+	if (GetAsyncKeyState('E') & 0x8000)
+	{
+		Reflection();
+	}
 	// Reposition 이후 Dash 재적용 되는 문제 해결
 	if (GetAsyncKeyState(VK_RBUTTON) & 0x0001)
 	{
 		Dash();
 	}	
-	if (GetAsyncKeyState('R') & 0x8000)
+	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 	{
 		Attack();
 	}
@@ -150,10 +148,15 @@ void UPlayer::Attack()
 	FVector3 CurDir3 = CurDir;
 	CurDir3.x = CurDir3.x * cos(-0.25) - CurDir3.y * sin(-0.25);
 	CurDir3.y = CurDir3.x * sin(-0.25) + CurDir3.y * cos(-0.25);
-
-	m_pMainGame->GetDaggerList().push_back(new UDagger(m_Loc, CurDir));
-	m_pMainGame->GetDaggerList().push_back(new UDagger(m_Loc, CurDir2));
-	m_pMainGame->GetDaggerList().push_back(new UDagger(m_Loc, CurDir3));
+	UObject* newDagger = new UDagger(m_Loc, CurDir);
+	static_cast<UDagger*>(newDagger)->SetInstigator(m_Type);
+	m_pMainGame->GetDaggerList().push_back(newDagger);
+	newDagger = new UDagger(m_Loc, CurDir2);
+	static_cast<UDagger*>(newDagger)->SetInstigator(m_Type);
+	m_pMainGame->GetDaggerList().push_back(newDagger);
+	newDagger = new UDagger(m_Loc, CurDir3);
+	static_cast<UDagger*>(newDagger)->SetInstigator(m_Type);
+	m_pMainGame->GetDaggerList().push_back(newDagger);
 	m_AttackTimer = m_AttackCDT;
 }
 
@@ -187,6 +190,20 @@ void UPlayer::Dumbling()
 {
 }
 
+void UPlayer::Reflection()
+{
+	if (m_ReflectionTimer > 0.0f)
+		return;
+	m_bReflecting = true;
+}
+
+void UPlayer::FinishReflection()
+{
+	m_bReflecting = false;
+	m_Reflectionlasting = 2.0f;
+	m_ReflectionTimer = m_ReflectionCDT;
+}
+
 void UPlayer::Reposition()
 {
 	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
@@ -202,4 +219,16 @@ void UPlayer::BeginOverllaped(UObject* _pOther)
 	UBall* pBall = dynamic_cast<UBall*>(_pOther);
 	if (pBall && !m_Dashing)
 		m_Dead = true;
+
+	UDagger* pDagger = dynamic_cast<UDagger*>(_pOther);
+	if (pDagger && pDagger->GetIsntigator() != GetType())
+	{
+		if(!m_bReflecting)
+			m_Dead = true;
+		else 
+		{
+			pDagger->SetVel(pDagger->GetVelocity() * -1);
+			pDagger->SetInstigator(m_Type);
+		}
+	}
 }

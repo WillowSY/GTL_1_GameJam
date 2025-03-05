@@ -31,13 +31,13 @@ bool CollisionMgr::CheckCollisionBoxAndCircle(UObject* _pSrc, UObject* _pDst)
 {
     UPlayer* _pPlayer = static_cast<UPlayer*>(_pSrc);
     UBall* _pBall = static_cast<UBall*>(_pDst);
-    float closestX = fmax(_pPlayer->GetLoc().x - _pPlayer->GetScale(), fmin(_pBall->Location.x, _pPlayer->GetLoc().x + _pPlayer->GetScale()));
-    float closestY = fmax(_pPlayer->GetLoc().y - _pPlayer->GetScale(), fmin(_pBall->Location.y, _pPlayer->GetLoc().y + _pPlayer->GetScale()));
+    float closestX = fmax(_pPlayer->GetLoc().x - _pPlayer->GetScale(), fmin(_pBall->GetLoc().x, _pPlayer->GetLoc().x + _pPlayer->GetScale()));
+    float closestY = fmax(_pPlayer->GetLoc().y - _pPlayer->GetScale(), fmin(_pBall->GetLoc().y, _pPlayer->GetLoc().y + _pPlayer->GetScale()));
 
 
     // 원의 중심과 가장 가까운 점 사이의 거리 계산
-    float distanceX = _pBall->Location.x - closestX;
-    float distanceY = _pBall->Location.y - closestY;
+    float distanceX = _pBall->GetLoc().x - closestX;
+    float distanceY = _pBall->GetLoc().y - closestY;
 
     // 충돌이 발생했는지 확인 (거리가 원의 반지름보다 작거나 같으면 충돌)
     float distanceSquared = distanceX * distanceX + distanceY * distanceY;
@@ -49,7 +49,7 @@ bool CollisionMgr::CheckCollisionBallAndBall(UObject* _pSrc, UObject* _pDst)
     UBall* pSrc = static_cast<UBall*>(_pSrc);
     UBall* pDst = static_cast<UBall*>(_pDst);
 
-    float distance = (pSrc->Location - pDst->Location).Magnitude();
+    float distance = (pSrc->GetLoc() - pDst->GetLoc()).Magnitude();
     float radiusSum = pSrc->Radius + pDst->Radius;
     return distance <= radiusSum;
 }
