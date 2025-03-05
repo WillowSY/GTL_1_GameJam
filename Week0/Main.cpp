@@ -427,7 +427,6 @@ public:
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-
 	WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
@@ -534,7 +533,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			// LevelLoader
 			levelObjs = levelManager.LevelLoad(gameMode->stage);
 			/* 적 (UBall) */
-			numBalls = gameMode->stage;
+			numBalls = gameMode->stage + 1;
 			while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
 			{
 				pMainGame->CreateBall();
@@ -562,22 +561,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// ball Rendering
 		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
 		{
-			// FIXME : Cosntant 변경으로 인한 수정 필요
-			//renderer.UpdateConstant(static_cast<UBall*>(*iter)->GetLoc(), static_cast<UBall*>(*iter)->Radius);
-			//renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+			float scale = static_cast<UBall*>(*iter)->Radius;
+			FVector3 V3scale = FVector3(scale, scale, scale);
+			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UBall*>(*iter)->GetLoc()), ConvertV3ToV4(V3scale), 0);
+			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
 		for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
 		{
-			// FIXME : Cosntant 변경으로 인한 수정 필요
-			//renderer.UpdateConstant(static_cast<UDagger*>(*iter)->GetLoc(), static_cast<UDagger*>(*iter)->GetScale());
-			//renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+			float scale = static_cast<UDagger*>(*iter)->GetScale();
+			FVector3 V3scale = FVector3(scale, scale, scale);
+			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UDagger*>(*iter)->GetLoc()), ConvertV3ToV4(V3scale), 0);
+			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
 		//Player Rendering
-		// FIXME : Cosntant 변경으로 인한 수정 필요
-		//renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
-		//renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+		float scale = static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale();
+		FVector3 V3scale = FVector3(scale, scale, scale);
+		renderer.UpdateConstant(ConvertV3ToV4(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc()), ConvertV3ToV4(V3scale), 0);
+		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 
-			// 텍스트 렌더링
+		// 텍스트 렌더링
 		textRenderer.RenderText(L"Shark, Shark", 8, 8);
 		std::wstring numBallsText = L"Number of Balls: " + std::to_wstring(numBalls);
 		textRenderer.RenderText(numBallsText, 8, 48);
