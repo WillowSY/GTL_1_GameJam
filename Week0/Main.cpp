@@ -595,19 +595,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				textRenderer.RenderButton(L"Restart", buttonX, buttonY, buttonWidth, buttonHeight);
 				textRenderer.RenderText(scoreText, 460, 560);
 			}
-			textRenderer.RenderButton(L"", 260, 920, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetMaxHp()*5, 20);
+			//체력, 궁극기 게이지
+			UPlayer* pPlayer = static_cast<UPlayer*>(pMainGame->GetPlayer());
+			textRenderer.RenderButton(L"", 260, 920,pPlayer->GetMaxHp()*5, 20);
 			textRenderer.SetButtonColor(D2D1::ColorF::Red);
-			textRenderer.RenderButton(L"", 260, 920, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetHp() * 5, 20);
+			textRenderer.RenderButton(L"", 260, 920, pPlayer->GetHp() * 5, 20);
 			textRenderer.SetButtonColor(D2D1::ColorF::Gray);
-			textRenderer.RenderButton(L"", 400, 950, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDragonBladeNeedGage() * 20, 20);
+			textRenderer.RenderButton(L"", 400, 950, pPlayer->GetDragonBladeNeedGage() * 20, 20);
 			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
-			textRenderer.RenderButton(L"", 400, 950, static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDragonBladeGage() * 20, 20);
-			textRenderer.SetButtonColor(D2D1::ColorF::Gray);
+			textRenderer.RenderButton(L"", 400, 950, pPlayer->GetDragonBladeGage() * 20, 20);
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+			//
+			
+			// 스킬 UI
+			textRenderer.RenderButton(L"", 50, 920, pPlayer->GetDashCDT()*5.5f, 50);
+			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
+			textRenderer.RenderButton(L"", 50, 920, (pPlayer->GetDashCDT()-pPlayer->GetDashTimer())*5.5f, 50);
+			textRenderer.RenderText(L"RB", 50, 925);
 
-		// ImGui 렌더링
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
+
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+			textRenderer.RenderButton(L"E", 150, 920, pPlayer->GetReflectionCDT()*6.3f, 50);
+			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
+			textRenderer.RenderButton(L"E", 150, 920, (pPlayer->GetReflectionCDT()-pPlayer->GetReflectionTimer()) * 6.3f, 50);
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+
+			textRenderer.RenderButton(L"LB", 820, 920, 50, 50);
+			textRenderer.RenderButton(L"Q", 920, 920, 50, 50);
+			// ImGui 렌더링
+			ImGui_ImplDX11_NewFrame();
+			ImGui_ImplWin32_NewFrame();
+			ImGui::NewFrame();
 
 		// 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
 		ImGui::Begin("Jungle Property Window");
