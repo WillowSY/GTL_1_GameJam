@@ -56,6 +56,7 @@ void UPlayer::Update(float deltaTime)
 	}
 	if (m_bReflecting)
 	{
+		Rotate();
 		if ((m_Reflectionlasting -= deltaTime) < 0)
 			FinishReflection();
 	}
@@ -199,9 +200,12 @@ void UPlayer::Dash()
 
 }
 
-void UPlayer::Dumbling()
+void UPlayer::Rotate()
 {
+	m_Rot.z += 20;
 }
+
+
 
 void UPlayer::Reflection()
 {
@@ -215,6 +219,7 @@ void UPlayer::FinishReflection()
 	m_bReflecting = false;
 	m_Reflectionlasting = 2.0f;
 	m_ReflectionTimer = m_ReflectionCDT;
+	m_Rot.z = 0;
 }
 
 void UPlayer::DragonBlade()
@@ -250,8 +255,11 @@ void UPlayer::DashReset()
 void UPlayer::TakeDamage(float _Damage)
 {
 	m_Hp -= _Damage;
-	if (m_Hp < 0.f)
+	if (m_Hp <= 0.f)
+	{
 		m_Dead = true;
+		m_Hp = 0.0f;
+	}
 }
 
 void UPlayer::Reposition()

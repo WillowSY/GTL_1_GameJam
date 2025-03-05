@@ -27,7 +27,7 @@ private:
 	void	Jump();
 	void	Attack();
 	void	Dash();
-	void	Dumbling();
+	void	Rotate();
 	void	Reflection();
 	void	FinishReflection();
 	void	DragonBlade();

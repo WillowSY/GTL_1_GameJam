@@ -15,7 +15,7 @@ void UBall::Update(float deltaTime)
 {
 	AttackTimer -= deltaTime;
 	Move(deltaTime);
-	Rotate(deltaTime);
+	//Rotate(deltaTime);
 	if (Radius < 0.03f)
 		bDead = true;
 	if(AttackTimer<0)
@@ -153,5 +153,5 @@ void UBall::Rotate(float deltaTime)
 		RotationAngle -= 2 * 3.14f;
 	else if (RotationAngle < -2 * 3.14f)
 		RotationAngle += 2 * 3.14f;
-	m_Rot.z = RotationAngle;
+	m_Rot.z += 10;
 }
