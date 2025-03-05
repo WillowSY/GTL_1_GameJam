@@ -18,6 +18,11 @@ public:
    
     void ReleaseAll();
 
+	static SoundManager& GetInstance() {
+		static SoundManager instance;
+		return instance;
+	}
+
 private:
     bool SendMCICommand(const std::wstring& command, std::wstring& errorMsg);
     std::wstring bgmAlias; 
