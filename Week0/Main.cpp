@@ -351,9 +351,8 @@ public:
 	struct FConstants
 	{
 		FVector3 Offset;
-		FVector3 Rotation; // 변경됨: 회전 추가
 		FVector3 Scale;    // 변경됨: 각 축별 스케일 추가
-		float Pad;
+		FVector3 Rotation; // 변경됨: 회전 추가
 	};
 
 	void CreateConstantBuffer()
@@ -574,7 +573,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// 원 하나를 중앙에 그리기
 		FVector3 circlePosition = FVector3(0.0, 0.0, 0.0);
 		FVector3 circleRotation = FVector3(0.0, 0.0, 0.0);
-		FVector3 circleScale = FVector3(0.5, 0.5, 0.5); // 반지름 0.5 크기로 설정
+		FVector3 circleScale = FVector3(0.5, 1, 0.5); // 반지름 0.5 크기로 설정
 
 		renderer.UpdateConstant(circlePosition, circleRotation, circleScale);
 		renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);

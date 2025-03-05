@@ -1,9 +1,11 @@
 cbuffer constants : register(b0)
 {
     float3 Offset;
+    float Pad0;
+    float3 Scale;
+    float Pad1;
     float3 Rotation; // 변경됨: 회전 추가
-    float3 Scale; // 변경됨: 각 축별 스케일 추가
-    float Pad;
+    
 }
 
 struct VS_INPUT
