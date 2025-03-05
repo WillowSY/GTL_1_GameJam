@@ -32,9 +32,10 @@ private:
 	void	FinishReflection();
 	void	DragonBlade();
 	void	FinishDragonBlade();
+	void	DoubleJump();
 private:
 	float		m_Scale = 0.05f;
-	
+
 	FVector3	m_DashTarget;
 	bool		m_Dead = false;
 	float		m_MaxHp;
@@ -57,6 +58,8 @@ private:
 	float		m_DragonBladeGage = 0.0f;
 	float		m_DragonBladeLasting = 5.0f;
 	bool		m_bDragonBlading = false;
+	//더블 점프
+	bool		m_bDoubleJump = true;
 private:
 	SharkShark* m_pMainGame;
 

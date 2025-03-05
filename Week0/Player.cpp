@@ -83,15 +83,18 @@ void UPlayer::Move()
 
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
-		Jump();
+		if (m_bJumping)
+			DoubleJump();
+		else
+			Jump();
 	}
 	if (GetAsyncKeyState('A') & 0x8000)
 	{
-		Move(-0.005f, D_RIGHT);
+		Move(-0.01f, D_RIGHT);
 	}
 	if (GetAsyncKeyState('D') & 0x8000)
 	{
-		Move(0.005f, D_RIGHT);
+		Move(0.01f, D_RIGHT);
 	}
 	if (GetAsyncKeyState('E') & 0x8000)
 	{
@@ -137,6 +140,7 @@ void UPlayer::SideCheck()
 	{
 		m_Loc.y = -0.8f + m_Scale;
 		m_bJumping = false;
+		m_bDoubleJump = true;
 	}
 	if (m_Loc.y + m_Scale > 1.0f)
 		m_Loc.y = 1.0f - m_Scale;
@@ -238,6 +242,17 @@ void UPlayer::FinishDragonBlade()
 	m_DragonBladeGage = 0.0f;
 	m_DragonBladeLasting = 5.0f;
 	m_Scale /= 2;
+}
+
+void UPlayer::DoubleJump()
+{
+
+	if (m_bJumping && m_bDoubleJump && (m_Loc.x < -0.95f + m_Scale || m_Loc.x == 1.0f - m_Scale))
+	{
+
+		m_Velocity.y = 0.02f;
+		m_bDoubleJump = false;
+	}
 }
 
 void UPlayer::AddDragonBladeGage(float _Add)
