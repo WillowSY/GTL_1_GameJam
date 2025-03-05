@@ -581,6 +581,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		//renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
 		//renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 
+		FVector3 tempV;
+		tempV.x = 0;
+		tempV.y = 0;
+		tempV.z = 0;
+
+		renderer.UpdateConstant(tempV, 1);
+		renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		// Player Rendering Á¾·á
 
 		ImGui_ImplDX11_NewFrame();
