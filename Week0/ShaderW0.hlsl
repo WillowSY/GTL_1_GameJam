@@ -1,10 +1,9 @@
 cbuffer constants : register(b0)
 {
-    float3 Offset;
-    float Pad0;
-    float3 Scale;
-    float Pad1;
-    float3 Rotation; // 변경됨: 회전 추가
+    float4 Offset;
+    float4 Scale;
+    //float3 Rotation;
+    //float Pad2;
     
 }
 
@@ -30,11 +29,25 @@ float3x3 RotationMatrix(float3 rotation) // 변경됨: 회전 행렬 적용
     float cz = cos(rotation.z);
     float sz = sin(rotation.z);
 
-    return float3x3(
-        cy * cz, -cy * sz, sy,
-        sx * sy * cz + cx * sz, -sx * sy * sz + cx * cz, -sx * cy,
-        -cx * sy * cz + sx * sz, cx * sy * sz + sx * cz, cx * cy
+    float3x3 rotX = float3x3(
+        1, 0, 0,
+        0, cx, -sx,
+        0, sx, cx
     );
+
+    float3x3 rotY = float3x3(
+        cy, 0, sy,
+        0, 1, 0,
+        -sy, 0, cy
+    );
+
+    float3x3 rotZ = float3x3(
+        cz, -sz, 0,
+        sz, cz, 0,
+        0, 0, 1
+    );
+    
+    return mul(rotZ, mul(rotY, rotX));
 }
 
 PS_INPUT mainVS(VS_INPUT input)
@@ -42,11 +55,11 @@ PS_INPUT mainVS(VS_INPUT input)
     PS_INPUT output;
     
     // 스케일을 각 축별로 적용 후 회전
-    float3 scaledPos = input.position.xyz * Scale; // 변경됨: 각 축별 Scale 적용
-    float3 rotatedPos = mul(RotationMatrix(Rotation), scaledPos); // 변경됨: 회전 적용
+    float3 scaledPos = float3(input.position.x * Scale.x, input.position.y*Scale.y, input.position.z); // 변경됨: 각 축별 Scale 적용
+    //float3 rotatedPos = mul(scaledPos, RotationMatrix(Rotation));
 
     // 최종 위치 적용
-    output.position = float4(Offset + rotatedPos, 1.0);
+    output.position = float4(Offset + scaledPos, 1.0);
     output.color = input.color;
     
     return output;

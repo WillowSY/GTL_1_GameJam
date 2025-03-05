@@ -343,9 +343,9 @@ public:
 
 	struct FConstants
 	{
-		FVector3 Offset;
-		FVector3 Scale;    // 변경됨: 각 축별 스케일 추가
-		FVector3 Rotation; // 변경됨: 회전 추가
+		FVector4 Offset;
+		FVector4 Scale;    // 변경됨: 각 축별 스케일 추가
+		//FVector3 Rotation; // 변경됨: 회전 추가
 	};
 
 	void CreateConstantBuffer()
@@ -367,7 +367,7 @@ public:
 			ConstantBuffer = nullptr;
 		}
 	}
-	void UpdateConstant(FVector3 Offset, FVector3 Rotation, FVector3 Scale)
+	void UpdateConstant(FVector4 Offset, FVector4 Scale)
 	{
 		if (ConstantBuffer)
 		{
@@ -377,11 +377,12 @@ public:
 			FConstants* constants = (FConstants*)constantbufferMSR.pData;
 			{
 				constants->Offset = Offset;
-				constants->Rotation = Rotation; // 변경됨: 회전 적용
+				//constants->Rotation = Rotation; // 변경됨: 회전 적용
 				constants->Scale = Scale;       // 변경됨: 각 축별 스케일 적용
 			}
 			DeviceContext->Unmap(ConstantBuffer, 0);
 		}
+
 	}
 
 	void PrepareShader()
@@ -571,7 +572,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		LevelLoader levelLoader;
 		vector<ObjectData> levelObjs = levelLoader.FileLoader("C:/Users/Jungle/Desktop/tempData.txt");
 		for (auto v : levelObjs) {
-			renderer.UpdateConstant(v.position, v.rotation, v.scale);
+			FVector4 pos;
+			pos.x = v.position.x;
+			pos.y = v.position.y;
+			pos.z = v.position.z;
+
+			FVector4 sc;
+			sc.x = v.scale.x;
+			sc.y = v.scale.y;
+			sc.z = v.scale.z;
+
+			renderer.UpdateConstant(pos, sc);
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		}
 
