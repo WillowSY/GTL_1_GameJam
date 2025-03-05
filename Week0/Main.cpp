@@ -23,7 +23,6 @@
 #include "Ball.h"
 #include "SharkShark.h"
 #include "Sphere.h";
-#include "LevelLoader.h"
 #include "Utils.h"
 #include "Dagger.h"
 #include "Sound.h"
@@ -405,8 +404,8 @@ public:
 			FConstants* constants = (FConstants*)constantbufferMSR.pData;
 			{
 				constants->Offset = Offset;
-				constants->Rotation = Rotation; // 변경됨: 회전 적용
-				constants->Scale = Scale;       // 변경됨: 각 축별 스케일 적용
+				constants->Rotation = Rotation;
+				constants->Scale = Scale;
 			}
 			DeviceContext->Unmap(ConstantBuffer, 0);
 		}
@@ -483,8 +482,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	CGameMode* gameMode = new CGameMode;
 	gameMode->Initialize();
 
-
-
 	UBall* HeadBall = new UBall;
 	//HeadBall->CreateBall();
 	static int numBalls = 0;  // 공의 개수 초기값
@@ -493,6 +490,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	const double targetFrameTime = 1000.0 / targetFPS; // 한 프레임의 목표 시간 (밀리초 단위)
 	LARGE_INTEGER frequency;
 	QueryPerformanceFrequency(&frequency);
+
+	LevelManager levelManager;						// 레벨 로드 관련 매니저 클래스
+	vector<ObjectData> levelObjs;					// 해당 레벨 오브젝트들 정보
 
 	LARGE_INTEGER startTime, endTime;
 	double elapsedTime = 1.0;
@@ -532,6 +532,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			gameMode->bGameOver ? player->Initialize() : player->Reposition();
 			/* 지형 */
 			// LevelLoader
+			levelObjs = levelManager.LevelLoad(gameMode->stage);
 			/* 적 (UBall) */
 			numBalls = gameMode->stage;
 			while (numBalls > pMainGame->GetpObejectList()[OL_BALL].size())
@@ -554,97 +555,88 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.Prepare();
 		renderer.PrepareShader();
 
-		//// 원 하나를 중앙에 그리기
-		//FVector3 circlePosition = FVector3(0.0, 0.0, 0.0);
-		//FVector3 circleRotation = FVector3(0.0, 0.0, 0.0);
-		//FVector3 circleScale = FVector3(0.5, 1, 0.5); // 반지름 0.5 크기로 설정
-		LevelManager levelManager;
-		LevelLoader levelLoader;
-
-		levelManager.AddStage(0, "C:/Users/Jungle/Desktop/tempData.txt");
-		string path = levelManager.GetStagePath(0);
-		vector<ObjectData> levelObjs = levelLoader.FileLoader(path);
 		for (auto v : levelObjs) {
 			renderer.UpdateConstant(ConvertV3ToV4(v.position), ConvertV3ToV4(v.scale), ConvertV3ToV4(v.rotation));
 			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
-			// ball Rendering
-			for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
-			{
-				// FIXME : Cosntant 변경으로 인한 수정 필요
-				//renderer.UpdateConstant(static_cast<UBall*>(*iter)->GetLoc(), static_cast<UBall*>(*iter)->Radius);
-				//renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
-			}
-			for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
-			{
-				// FIXME : Cosntant 변경으로 인한 수정 필요
-				//renderer.UpdateConstant(static_cast<UDagger*>(*iter)->GetLoc(), static_cast<UDagger*>(*iter)->GetScale());
-				//renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
-			}
-			//Player Rendering
-			// FIXME : Cosntant 변경으로 인한 수정 필요
-			//renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
-			//renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
-
-				// 텍스트 렌더링
-			textRenderer.RenderText(L"Shark, Shark", 8, 8);
-			std::wstring numBallsText = L"Number of Balls: " + std::to_wstring(numBalls);
-			textRenderer.RenderText(numBallsText, 8, 48);
-			std::wstring stageText = L"Stage: " + std::to_wstring(gameMode->stage);
-			textRenderer.RenderText(stageText, 8, 88);
-			std::wstring scoreText = L"Score: " + std::to_wstring(gameMode->score);
-			textRenderer.RenderText(scoreText, 8, 128);
-
-			if (gameMode->bGameOver)
-			{
-				textRenderer.RenderText(L"Game Over", 442, 424);
-				textRenderer.RenderText(L"Press 'R'", 460, 464);
-				textRenderer.RenderButton(L"Restart", buttonX, buttonY, buttonWidth, buttonHeight);
-				textRenderer.RenderText(scoreText, 460, 560);
-			}
-
-
-			// ImGui 렌더링
-			ImGui_ImplDX11_NewFrame();
-			ImGui_ImplWin32_NewFrame();
-			ImGui::NewFrame();
-
-			// 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
-			ImGui::Begin("Jungle Property Window");
-
-			ImGui::Text("Hello Jungle World!");
-
-			ImGui::Text("%d", pMainGame->GetBallList().size());
-			ImGui::Text("%f", elapsedTime);
-			ImGui::Text("%f", static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDashTimer());
-			ImGui::Text("%d", pMainGame->GetDaggerList().size());
-
-
-			ImGui::PushItemWidth(80);
-			ImGui::InputInt("##balls", &numBalls);
-			ImGui::PopItemWidth();
-
-			ImGui::SameLine();
-			ImGui::Text("Number of Balls");
-
-			ImGui::End();
-			/////////////////////////////////////////////////////////////////////////
-			ImGui::Render();
-			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
-			//버퍼 교체
-			renderer.SwapBuffer();
-			do
-			{
-				Sleep(0);
-
-				// 루프 종료 시간 기록
-				QueryPerformanceCounter(&endTime);
-
-				// 한 프레임이 소요된 시간 계산 (밀리초 단위로 변환)
-				elapsedTime = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
-
-			} while (elapsedTime < targetFrameTime);
 		}
+		// ball Rendering
+		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
+		{
+			// FIXME : Cosntant 변경으로 인한 수정 필요
+			//renderer.UpdateConstant(static_cast<UBall*>(*iter)->GetLoc(), static_cast<UBall*>(*iter)->Radius);
+			//renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+		}
+		for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
+		{
+			// FIXME : Cosntant 변경으로 인한 수정 필요
+			//renderer.UpdateConstant(static_cast<UDagger*>(*iter)->GetLoc(), static_cast<UDagger*>(*iter)->GetScale());
+			//renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+		}
+		//Player Rendering
+		// FIXME : Cosntant 변경으로 인한 수정 필요
+		//renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
+		//renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+
+			// 텍스트 렌더링
+		textRenderer.RenderText(L"Shark, Shark", 8, 8);
+		std::wstring numBallsText = L"Number of Balls: " + std::to_wstring(numBalls);
+		textRenderer.RenderText(numBallsText, 8, 48);
+		std::wstring stageText = L"Stage: " + std::to_wstring(gameMode->stage);
+		textRenderer.RenderText(stageText, 8, 88);
+		std::wstring scoreText = L"Score: " + std::to_wstring(gameMode->score);
+		textRenderer.RenderText(scoreText, 8, 128);
+
+		if (gameMode->bGameOver)
+		{
+			textRenderer.RenderText(L"Game Over", 442, 424);
+			textRenderer.RenderText(L"Press 'R'", 460, 464);
+			textRenderer.RenderButton(L"Restart", buttonX, buttonY, buttonWidth, buttonHeight);
+			textRenderer.RenderText(scoreText, 460, 560);
+		}
+
+
+		// ImGui 렌더링
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		// 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
+		ImGui::Begin("Jungle Property Window");
+
+		ImGui::Text("Hello Jungle World!");
+
+		ImGui::Text("%d", pMainGame->GetBallList().size());
+		ImGui::Text("%f", elapsedTime);
+		ImGui::Text("%f", static_cast<UPlayer*>(pMainGame->GetPlayer())->GetDashTimer());
+		ImGui::Text("%d", pMainGame->GetDaggerList().size());
+
+
+		ImGui::PushItemWidth(80);
+		ImGui::InputInt("##balls", &numBalls);
+		ImGui::PopItemWidth();
+
+		ImGui::SameLine();
+		ImGui::Text("Number of Balls");
+
+		ImGui::End();
+		/////////////////////////////////////////////////////////////////////////
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+		//버퍼 교체
+		renderer.SwapBuffer();
+		do
+		{
+			Sleep(0);
+
+			// 루프 종료 시간 기록
+			QueryPerformanceCounter(&endTime);
+
+			// 한 프레임이 소요된 시간 계산 (밀리초 단위로 변환)
+			elapsedTime = (endTime.QuadPart - startTime.QuadPart) * 1000.0 / frequency.QuadPart;
+
+		} while (elapsedTime < targetFrameTime);
+		
 	}
 
 	// 자원해제 및 종료.
