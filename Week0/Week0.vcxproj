@@ -136,7 +136,10 @@
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="GameMode.h" />
     <ClCompile Include="Dagger.cpp" />
+    <ClCompile Include="LevelLoader.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="inputclass.cpp" />
+
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="particleshaderclass.cpp" />
     <ClCompile Include="particlesystemclass.cpp" />
@@ -163,10 +166,13 @@
   <ItemGroup>
     <ClInclude Include="applicationclass.h" />
     <ClInclude Include="Ball.h" />
-    <ClInclude Include="cameraclass.h" />
+    <ClInclude Include="Boxs.h" />
     <ClInclude Include="CollisionMgr.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="Dagger.h" />
+    <ClInclude Include="LevelLoader.h" />
+    <ClInclude Include="LevelManager.h" />
+    <ClInclude Include="LevelShapeKey.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="Object.h" />
@@ -191,9 +197,9 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="Attack.mp3" />
-    <Media Include="Dash.mp3" />
     <Media Include="BGM.mp3" />
-    <Media Include="Hit_Dash.mp3" />
+    <Media Include="Hit.mp3" />
+    <Media Include="ReflectMetal.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

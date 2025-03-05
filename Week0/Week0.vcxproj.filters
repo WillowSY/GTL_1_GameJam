@@ -63,10 +63,13 @@
     <ClCompile Include="SharkShark.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="GameMode.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="GameMode.h">
       <Filter>헤더 파일</Filter>
     </ClCompile>
-    <ClCompile Include="GameMode.cpp">
+    <ClCompile Include="Dagger.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
@@ -75,7 +78,10 @@
     <ClCompile Include="TextRenderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Dagger.cpp">
+    <ClCompile Include="LevelLoader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="applicationclass.cpp">
@@ -151,13 +157,16 @@
     <ClInclude Include="SharkShark.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Dagger.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TextRenderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Dagger.h">
+    <ClInclude Include="LevelLoader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="timerclass.h">
@@ -190,12 +199,21 @@
     <ClInclude Include="applicationclass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="LevelManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="Attack.mp3">
+    <Media Include="BGM.mp3">
       <Filter>리소스 파일</Filter>
     </Media>
-    <Media Include="BGM.mp3">
+    <Media Include="ReflectMetal.wav">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Hit.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack.mp3">
       <Filter>리소스 파일</Filter>
     </Media>
     <Media Include="Dash.mp3" />

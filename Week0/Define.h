@@ -7,6 +7,7 @@ using namespace std;
 struct FVector3
 {
 	float x, y, z;
+	FVector3(float _r, bool _b) : x(_r), y(_r), z(_r) {}
 	FVector3(float _x = 0, float _y = 0, float _z = 0) : x(_x), y(_y), z(_z) {}
 
 	FVector3 operator-(const FVector3& other) const {
@@ -46,6 +47,17 @@ struct FVector3
 		return ((*this - other).Magnitude());
 	}
 };
+struct FVector4 {
+	float x, y, z, a;
+	FVector4(float _x = 0, float _y = 0, float _z = 0, float _a = 0) : x(_x), y(_y), z(_z), a(_a) {}
+
+	FVector4 operator-(const FVector4& other) const {
+		return FVector4(x - other.x, y - other.y, z - other.z, a - other.a);
+	}
+	FVector4 operator+(const FVector4& other) const {
+		return FVector4(x + other.x, y + other.y, z + other.z, a + other.a);
+	}
+};
 
 enum Direction
 {
@@ -61,6 +73,7 @@ enum OBJECTLIST
 	OL_PLAYER,
 	OL_BALL,
 	OL_DAGGER,
+	OL_UI,
 	OL_END
 };
 
