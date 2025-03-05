@@ -128,12 +128,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="applicationclass.cpp" />
     <ClCompile Include="Ball.cpp" />
+    <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="CollisionMgr.cpp" />
+    <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="GameMode.h" />
     <ClCompile Include="Dagger.cpp" />
+    <ClCompile Include="inputclass.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="particleshaderclass.cpp" />
+    <ClCompile Include="particlesystemclass.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
@@ -146,6 +152,8 @@
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="SharkShark.cpp" />
+    <ClCompile Include="textureclass.cpp" />
+    <ClCompile Include="timerclass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
@@ -153,10 +161,18 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="applicationclass.h" />
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="cameraclass.h" />
     <ClInclude Include="CollisionMgr.h" />
+    <ClInclude Include="d3dclass.h" />
     <ClInclude Include="Dagger.h" />
+    <ClInclude Include="Define.h" />
+    <ClInclude Include="inputclass.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="particleshaderclass.h" />
+    <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="particlesystemclass.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
@@ -170,6 +186,8 @@
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="TextRenderer.h" />
+    <ClInclude Include="textureclass.h" />
+    <ClInclude Include="timerclass.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="Attack.mp3" />

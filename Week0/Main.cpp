@@ -26,11 +26,21 @@
 #include "Sound.h"
 #include "TextRenderer.h"
 
+#include "inputclass.h"
+#include "applicationclass.h"
+
 
 SoundManager soundManager;
 TextRenderer textRenderer;
+
+LPCWSTR m_applicationName;
+
+InputClass* m_Input;
+ApplicationClass* m_Application;
+
 bool isMouseDown = false;
 int mouseX = 0, mouseY = 0;
+HWND hWnd = 0;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -439,12 +449,18 @@ public:
 			MessageBoxW(nullptr, L"윈도우 클래스 등록 실패!", L"오류", MB_OK | MB_ICONERROR);
 			return -1;
 		}
-		HWND hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-			CW_USEDEFAULT, CW_USEDEFAULT, 1024, 1024, nullptr, nullptr, hInstance, nullptr);
+		hWnd = CreateWindowExW(0, WindowClass, Title, WS_POPUP | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
+			CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, nullptr, nullptr, hInstance, nullptr);
 		if (!hWnd) {
 			MessageBoxW(nullptr, L"윈도우 생성 실패!", L"오류", MB_OK | MB_ICONERROR);
 			return -1;
 		}
+
+		m_Input = new InputClass;
+		m_Input->Initialize(GetModuleHandleW(NULL), hWnd, 800, 600);
+
+		m_Application = new ApplicationClass;
+		m_Application->Initialize(800, 600, hWnd);
 
 		if (!soundManager.PlayBGM(L"BGM.mp3")) {
 			MessageBoxW(nullptr, L"BGM 재생 실패!", L"Error", MB_ICONERROR);
@@ -626,6 +642,7 @@ public:
 			renderer.Prepare();
 			renderer.PrepareShader();
 
+			
 
 		// ball Rendering
 		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
@@ -641,6 +658,9 @@ public:
 		//Player Rendering
 		renderer.UpdateConstant(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc(), static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale());
 		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+
+		m_Input->Frame();
+		m_Application->Frame(m_Input);
 
 			// 텍스트 렌더링
 			textRenderer.RenderText(L"Shark, Shark", 8, 8);
@@ -879,6 +899,20 @@ public:
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
+	// 렌더러 관련 자원 해제
+	if (m_Application)
+	{
+		m_Application->Shutdown();
+		delete m_Application;
+		m_Application = 0;
+	}
+
+	// Release the input object.
+	if (m_Input)
+	{
+		delete m_Input;
+		m_Input = 0;
+	}
 		textRenderer.Cleanup();
 		renderer.ReleaseVertexBuffer(vertexBufferSphere);
 		renderer.ReleaseConstantBuffer();
