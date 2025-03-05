@@ -17,15 +17,11 @@
 #include "CollisionMgr.h"
 #include "Ball.h"
 #include "SharkShark.h"
+#include "Sphere.h";
+#include "LevelLoader.h"
+#include "Utils.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-// 각종 메시지를 처리할 함수
-struct FVertexSimple {
-	// 각 정점에 위치 정보와 색상 정보가 함께 저장.
-	float x, y, z;			// Position(위치)
-	float r, g, b, a;		// Color (색상)
-};
 
 FVertexSimple box_vertices[] =
 {
@@ -52,9 +48,6 @@ void HandleCollisions(UBall* headBall, float restitution);
 void UpdateMousePosition(HWND hWnd);
 FVector3 ComputeRepulsiveForce(UBall* ball, const FVector3& mousePos, float strength);
 
-
-
-#include "Sphere.h"
 UINT numVerticesSphere = sizeof(sphere_vertices) / sizeof(FVertexSimple);
 UINT numVerticesBox = sizeof(box_vertices) / sizeof(FVertexSimple);
 
@@ -82,7 +75,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 class URenderer {
 public:
-	
+
 	ID3D11Device* Device = nullptr; // GPU와 통신하기 위한 Direct3D 장치
 	ID3D11DeviceContext* DeviceContext = nullptr; // GPU 명령 실행을 담당하는 컨텍스트
 	IDXGISwapChain* SwapChain = nullptr; // 프레임 버퍼를 교체하는 데 사용되는스왑 체인
@@ -251,7 +244,7 @@ public:
 		ID3DBlob* pixelshaderCSO;
 
 		D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainVS", "vs_5_0", 0, 0, &vertexshaderCSO, nullptr);
-		
+
 		Device->CreateVertexShader(vertexshaderCSO->GetBufferPointer(), vertexshaderCSO->GetBufferSize(), nullptr, &SimpleVertexShader);
 
 		D3DCompileFromFile(L"ShaderW0.hlsl", nullptr, nullptr, "mainPS", "ps_5_0", 0, 0, &pixelshaderCSO, nullptr);
@@ -309,7 +302,7 @@ public:
 	// 정점 데이터를 GPU에 전달하고, 실제로 화면에 그리는(Render)함수.
 	void RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices)
 	{
-		
+
 		UINT offset = 0;
 		DeviceContext->IASetVertexBuffers(0, 1, &pBuffer, &Stride, &offset);
 		DeviceContext->Draw(numVertices, 0);
@@ -407,7 +400,7 @@ public:
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-	
+
 	WCHAR WindowClass[] = L"JungleWindowClass";
 	WCHAR Title[] = L"Game Tech Lab";
 	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
@@ -561,7 +554,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			pMainGame->DeleteRandomBall(numBalls);
 		}
-		
+
 		pMainGame->Update(elapsedTime);
 		pMainGame->FixedUpdate();
 		numBalls = pMainGame->GetBallList().size();*/
@@ -570,13 +563,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.Prepare();
 		renderer.PrepareShader();
 
-		// 원 하나를 중앙에 그리기
-		FVector3 circlePosition = FVector3(0.0, 0.0, 0.0);
-		FVector3 circleRotation = FVector3(0.0, 0.0, 0.0);
-		FVector3 circleScale = FVector3(0.5, 1, 0.5); // 반지름 0.5 크기로 설정
+		//// 원 하나를 중앙에 그리기
+		//FVector3 circlePosition = FVector3(0.0, 0.0, 0.0);
+		//FVector3 circleRotation = FVector3(0.0, 0.0, 0.0);
+		//FVector3 circleScale = FVector3(0.5, 1, 0.5); // 반지름 0.5 크기로 설정
 
-		renderer.UpdateConstant(circlePosition, circleRotation, circleScale);
-		renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+		LevelLoader levelLoader;
+		vector<ObjectData> levelObjs = levelLoader.FileLoader("C:/Users/Jungle/Desktop/tempData.txt");
+		for (auto v : levelObjs) {
+			renderer.UpdateConstant(v.position, v.rotation, v.scale);
+			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+		}
+
+		//renderer.UpdateConstant(circlePosition, circleRotation, circleScale);
+		//renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 		// Ball Rendering
 		//for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
 		//{
@@ -860,18 +860,18 @@ void HandleCollisions(UBall* headBall, float e = 0.5f) {
 				// 충돌 방향으로의 상대 속도 크기
 				float velocityAlongNormal = relativeVelocity.x * normal.x + relativeVelocity.y * normal.y;
 				if (velocityAlongNormal > 0) continue;
-				
+
 				// 운동량 보존 법칙으로 충돌 후 속도 계산
 				float m1 = b1->Mass;
 				float m2 = b2->Mass;
 
-				float impulseMagnitude = (-(1+e) * velocityAlongNormal) / (1 / m1 + 1 / m2);
+				float impulseMagnitude = (-(1 + e) * velocityAlongNormal) / (1 / m1 + 1 / m2);
 
 				FVector3 impulse = MultVector3(normal, impulseMagnitude);
 
 
-				b1->Velocity = SubVector3(b1->Velocity, MultVector3(impulse, 1/m1));
-				b2->Velocity = SumVector3(b2->Velocity, MultVector3(impulse, 1/m2));
+				b1->Velocity = SubVector3(b1->Velocity, MultVector3(impulse, 1 / m1));
+				b2->Velocity = SumVector3(b2->Velocity, MultVector3(impulse, 1 / m2));
 
 				// 충돌 후 겹침 방지
 				float penetrationDepth = radiusSum - distance;
@@ -882,7 +882,7 @@ void HandleCollisions(UBall* headBall, float e = 0.5f) {
 				//각속도 미완
 				//FVector3 tangential = { -normal.y, normal.x, 0 }; // 접선 방향
 				//float spinForce = DotProductVector3(relativeVelocity, tangential);
-				
+
 				//각속도 미완
 				/*b1->AngularVelocity = SumVector3(b1->AngularVelocity, MultVector3(tangential, spinForce * 0.1f));
 				b2->AngularVelocity = SubVector3(b2->AngularVelocity, MultVector3(tangential, spinForce * 0.1f));*/
@@ -901,7 +901,7 @@ float DotProductVector3(FVector3 v1, FVector3 v2) {
 FVector3 SumVector3(FVector3 v1, FVector3 v2) {
 	return FVector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
-FVector3 SubVector3(FVector3 v1, FVector3 v2){
+FVector3 SubVector3(FVector3 v1, FVector3 v2) {
 	float x = v1.x - v2.x;
 	float y = v1.y - v2.y;
 	float z = v1.z - v2.z;
@@ -913,7 +913,7 @@ FVector3 DivideVector3(FVector3 v1, float f) {
 }
 
 float SqVector3(FVector3 diff) {
-	return diff.x * diff.x + diff.y * diff.y+diff.z * diff.z;
+	return diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 }
 
 // 마우스 위치 업데이트 함수
