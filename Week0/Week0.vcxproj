@@ -133,6 +133,7 @@
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="GameMode.h" />
     <ClCompile Include="Dagger.cpp" />
+    <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="imgui.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Ball.h" />
     <ClInclude Include="CollisionMgr.h" />
     <ClInclude Include="Dagger.h" />
+    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="imconfig.h" />
@@ -170,6 +172,7 @@
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="TextRenderer.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="Attack.mp3" />
