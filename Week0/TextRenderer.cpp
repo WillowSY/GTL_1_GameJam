@@ -83,3 +83,12 @@ void TextRenderer::Cleanup() {
     textBrush.Reset();
     buttonBrush.Reset();
 }
+
+D2D1_COLOR_F TextRenderer::SetButtonColor(D2D1::ColorF color)
+{
+    D2D1_COLOR_F oldColor = buttonBrush->GetColor();
+    D2D1_COLOR_F newColor = color;
+    buttonBrush->SetColor(newColor);
+    return oldColor;
+}
+

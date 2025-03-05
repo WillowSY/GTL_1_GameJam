@@ -34,7 +34,6 @@ private:
 	void	FinishDragonBlade();
 private:
 	float		m_Scale = 0.05f;
-	FVector3	m_Rot;
 	
 	FVector3	m_DashTarget;
 	bool		m_Dead = false;
@@ -54,6 +53,7 @@ private:
 	float		m_Reflectionlasting = 2.0f;
 	bool		m_bReflecting = false;
 	// ¿ë°Ë
+	float		m_NeedGage = 10.0f;
 	float		m_DragonBladeGage = 0.0f;
 	float		m_DragonBladeLasting = 5.0f;
 	bool		m_bDragonBlading = false;
@@ -65,6 +65,10 @@ public:
 	float		GetScale() { return m_Scale; }
 	FVector3	GetRot() { return m_Rot; }
 	float		GetHp() { return m_Hp; }
+	float		GetMaxHp() { return m_MaxHp; }
+	float		GetDragonBladeGage() { return m_DragonBladeGage; }
+	float		GetDragonBladeNeedGage() { return m_NeedGage; }
+
 	bool		IsDead() { return m_Dead; }
 	bool		IsDash() { return m_Dashing; }
 	float		GetDashTimer() { return m_DashTimer; }

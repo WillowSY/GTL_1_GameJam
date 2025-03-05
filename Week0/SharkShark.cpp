@@ -24,6 +24,7 @@ void SharkShark::Initialize()
 		m_pObjectList.push_back(std::list<UObject*>());
 	}
 	UObject* pPlayer = new UPlayer;
+	static_cast<UPlayer*>(pPlayer)->Initialize();
 	static_cast<UPlayer*>(pPlayer)->SetMainGame(this);
 	m_pObjectList[OL_PLAYER].push_back(pPlayer);
 }
@@ -62,7 +63,7 @@ void SharkShark::FixedUpdate()
 		if (static_cast<UBall*>(*iter)->bDead)
 		{
 			if (!static_cast<UPlayer*>(GetPlayer())->IsDragonBlading())
-				static_cast<UPlayer*>(GetPlayer())->AddDragonBladeGage(2.0f);
+				static_cast<UPlayer*>(GetPlayer())->AddDragonBladeGage(1.0f);
 			else
 				static_cast<UPlayer*>(GetPlayer())->DashReset();
 			delete* iter;

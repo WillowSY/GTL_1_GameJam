@@ -4,9 +4,11 @@
 #include "SharkShark.h"
 #include "Ball.h"
 #include "Dagger.h"
+
 extern FVector3 MousePosition;
 
-UPlayer::UPlayer() : UObject(OL_PLAYER)
+UPlayer::UPlayer() : UObject(FVector3(0.0f, -1.0f, 0.0f), FVector3(0.05f,0.05f,0.05f)
+	, FVector3(), FVector3(), OL_PLAYER)
 {
 }
 
@@ -17,10 +19,11 @@ UPlayer::~UPlayer()
 void UPlayer::Initialize()
 {
 	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
+	//m_Scale = FVector3(0.05f, 0.05f, 0.05f);
 	m_Rot = FVector3(0.0f, 0.0f, 0.0f);
 	m_Velocity = FVector3(0.0f, 0.0f, 0.0f);
-	m_MaxHp = 10.0f;
-	m_Hp = 10.0f;
+	m_MaxHp = 100.0f;
+	m_Hp = 100.0f;
 	m_Dead = false;
 	m_Dashing = false;
 	m_Scale = 0.05f;
@@ -129,9 +132,9 @@ void UPlayer::SideCheck()
 		m_Loc.x = -1.0f + m_Scale;
 	if (m_Loc.x + m_Scale> 1.0f)
 		m_Loc.x = 1.0f - m_Scale;
-	if (m_Loc.y - m_Scale < -1.0f)
+	if (m_Loc.y - m_Scale < -0.8f)
 	{
-		m_Loc.y = -1.0f + m_Scale;
+		m_Loc.y = -0.8f + m_Scale;
 		m_bJumping = false;
 	}
 	if (m_Loc.y + m_Scale > 1.0f)
@@ -216,7 +219,7 @@ void UPlayer::FinishReflection()
 
 void UPlayer::DragonBlade()
 {
-	if (m_DragonBladeGage < 10.0f)
+	if (m_DragonBladeGage < m_NeedGage)
 		return;
 	DashReset();
 	m_bDragonBlading = true;
@@ -235,6 +238,8 @@ void UPlayer::FinishDragonBlade()
 void UPlayer::AddDragonBladeGage(float _Add)
 {
 	m_DragonBladeGage += _Add;
+	if (m_DragonBladeGage > m_NeedGage)
+		m_DragonBladeGage = m_NeedGage;
 }
 
 void UPlayer::DashReset()
