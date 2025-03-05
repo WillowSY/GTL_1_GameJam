@@ -47,6 +47,13 @@ FVertexSimple box_vertices[] =
 	{  1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }  // 우하
 };
 
+FVertexSimple triangle_vertices[] =
+{
+	{  0.0f,  0.5f, 0.0f , 1.0f, 0.0f, 1.0f, 1.0f},
+	{ -0.5f, -0.5f, 0.0f , 1.0f, 0.0f, 1.0f, 1.0f},
+	{  0.5f, -0.5f, 0.0f , 1.0f, 0.0f, 1.0f, 1.0f}
+};
+
 
 float GetRandomFloat(float min, float max);
 
@@ -65,7 +72,7 @@ FVector3 ComputeRepulsiveForce(UBall* ball, const FVector3& mousePos, float stre
 
 UINT numVerticesSphere = sizeof(sphere_vertices) / sizeof(FVertexSimple);
 UINT numVerticesBox = sizeof(box_vertices) / sizeof(FVertexSimple);
-
+UINT numVerticesTriangle = sizeof(triangle_vertices) / sizeof(FVertexSimple);
 /* 자기력 관련 변수들 */
 // 마우스 위치를 저장할 변수
 FVector3 MousePosition;
@@ -462,11 +469,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// 재시작 버튼 위치 및 크기
 	float buttonX = 430, buttonY = 512, buttonWidth = 200, buttonHeight = 50;
 
-	// 구 정점 버퍼 1회 생성
+	//정점 버퍼 1회 생성
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
-
 	ID3D11Buffer* vertexBufferBox = renderer.CreateVertexBuffer(box_vertices, numVerticesBox * sizeof(FVertexSimple));
-
+	ID3D11Buffer* vertexBufferTriangle = renderer.CreateVertexBuffer(triangle_vertices, numVerticesTriangle * sizeof(FVertexSimple));
 
 	// IMGUI 초기화
 	IMGUI_CHECKVERSION();
@@ -532,6 +538,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			gameMode->bGameOver ? player->Initialize() : player->Reposition();
 			/* 지형 */
 			// LevelLoader
+			//FIXME : 추후 
 			levelObjs = levelManager.LevelLoad(gameMode->stage);
 			/* 적 (UBall) */
 			numBalls = gameMode->stage;
@@ -555,9 +562,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		renderer.Prepare();
 		renderer.PrepareShader();
 
+
 		for (auto v : levelObjs) {
 			renderer.UpdateConstant(ConvertV3ToV4(v.position), ConvertV3ToV4(v.scale), ConvertV3ToV4(v.rotation));
-			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+			if (v.objIndex == 0) {
+				renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+			}
+			else if (v.objIndex == 1) {
+				renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+			}
+			else if (v.objIndex == 2) {
+				renderer.RenderPrimitive(vertexBufferTriangle, numVerticesTriangle);
+			}
+			
 		}
 		// ball Rendering
 		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
