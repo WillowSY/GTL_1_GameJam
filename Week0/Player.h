@@ -19,6 +19,7 @@ public:
 	void	Reposition();
 	void	AddDragonBladeGage(float _Add);
 	void	DashReset();
+	void	TakeDamage(float _Damage);
 private:
 	void	Move();
 	void	Move(float _Scale, Direction _Dir);
@@ -37,6 +38,7 @@ private:
 	
 	FVector3	m_DashTarget;
 	bool		m_Dead = false;
+	float		m_MaxHp;
 	float		m_Hp;
 	bool		m_bJumping = false;
 	//ÁúÇ³Âü
@@ -62,7 +64,7 @@ public:
 
 	float		GetScale() { return m_Scale; }
 	FVector3	GetRot() { return m_Rot; }
-
+	float		GetHp() { return m_Hp; }
 	bool		IsDead() { return m_Dead; }
 	bool		IsDash() { return m_Dashing; }
 	float		GetDashTimer() { return m_DashTimer; }

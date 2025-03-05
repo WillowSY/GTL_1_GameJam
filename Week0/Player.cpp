@@ -19,10 +19,11 @@ void UPlayer::Initialize()
 	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
 	m_Rot = FVector3(0.0f, 0.0f, 0.0f);
 	m_Velocity = FVector3(0.0f, 0.0f, 0.0f);
-	m_Hp = 1.0f;
+	m_MaxHp = 10.0f;
+	m_Hp = 10.0f;
 	m_Dead = false;
 	m_Dashing = false;
-	m_Scale = 0.1f;
+	m_Scale = 0.05f;
 }
 
 void UPlayer::Update(float deltaTime)
@@ -241,6 +242,13 @@ void UPlayer::DashReset()
 	m_DashTimer = 0.0f;
 }
 
+void UPlayer::TakeDamage(float _Damage)
+{
+	m_Hp -= _Damage;
+	if (m_Hp < 0.f)
+		m_Dead = true;
+}
+
 void UPlayer::Reposition()
 {
 	m_Loc = FVector3(0.0f, -1.0f, 0.0f);
@@ -260,13 +268,14 @@ void UPlayer::BeginOverllaped(UObject* _pOther)
 {
 	UBall* pBall = dynamic_cast<UBall*>(_pOther);
 	if (pBall && !m_Dashing)
-		m_Dead = true;
-
+	{
+		TakeDamage(2.0f);
+	}
 	UDagger* pDagger = dynamic_cast<UDagger*>(_pOther);
 	if (pDagger && pDagger->GetIsntigator() != GetType())
 	{
-		if(!m_bReflecting)
-			m_Dead = true;
+		if (!m_bReflecting)
+			TakeDamage(1.0f);
 		else 
 		{
 			pDagger->SetVel(pDagger->GetVelocity() * -1);
