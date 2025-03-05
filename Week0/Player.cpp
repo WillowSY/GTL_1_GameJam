@@ -168,7 +168,7 @@ void UPlayer::Attack()
 	static_cast<UDagger*>(newDagger)->SetInstigator(m_Type);
 	m_pMainGame->GetDaggerList().push_back(newDagger);
 	m_AttackTimer = m_AttackCDT;
-	SoundManager::GetInstance().PlayEffect(L"Attack.mp3");
+	SoundManager::GetInstance().PlayEffect(L"Attack_0.mp3");
 
 }
 

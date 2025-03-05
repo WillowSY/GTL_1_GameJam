@@ -115,9 +115,6 @@
     <ClInclude Include="Player.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Define.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="CollisionMgr.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -141,13 +138,40 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="Attack.mp3">
-      <Filter>리소스 파일</Filter>
-    </Media>
     <Media Include="BGM.mp3">
       <Filter>리소스 파일</Filter>
     </Media>
-    <Media Include="Hit.mp3">
+    <Media Include="Dash.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="DragonBlade.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Hit_Dash.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Jump2.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Jump0.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Jump1.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_1_0.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_1_1.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_1_2.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_1_3.mp3">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="Attack_0.mp3">
       <Filter>리소스 파일</Filter>
     </Media>
   </ItemGroup>
