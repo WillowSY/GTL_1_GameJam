@@ -670,33 +670,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 			textRenderer.RenderButton(L"Q", 920, 920, 50, 50);
 			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
-			// ImGui 렌더링
-			ImGui_ImplDX11_NewFrame();
-			ImGui_ImplWin32_NewFrame();
-			ImGui::NewFrame();
+		//	// ImGui 렌더링
+		//	ImGui_ImplDX11_NewFrame();
+		//	ImGui_ImplWin32_NewFrame();
+		//	ImGui::NewFrame();
 
-		// 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
-		ImGui::Begin("Jungle Property Window");
+		//// 이후 ImGui UI 컨트롤 추가는 ImGui::NewFrame()과 ImGui::Render() 사이인 여기에 위치합니다.
+		//ImGui::Begin("Jungle Property Window");
 
-		ImGui::Text("Hello Jungle World!");
+		//ImGui::Text("Hello Jungle World!");
 
-			ImGui::Text("%d", pMainGame->GetBallList().size());
-			ImGui::Text("%f", elapsedTime);
-			ImGui::Text("%f",static_cast<UPlayer*>(pMainGame->GetPlayer())->GetHp());
-			ImGui::Text("%d", pMainGame->GetDaggerList().size());
+		//	ImGui::Text("%d", pMainGame->GetBallList().size());
+		//	ImGui::Text("%f", elapsedTime);
+		//	ImGui::Text("%f",static_cast<UPlayer*>(pMainGame->GetPlayer())->GetHp());
+		//	ImGui::Text("%d", pMainGame->GetDaggerList().size());
 
 
-		ImGui::PushItemWidth(80);
-		ImGui::InputInt("##balls", &numBalls);
-		ImGui::PopItemWidth();
+		//ImGui::PushItemWidth(80);
+		//ImGui::InputInt("##balls", &numBalls);
+		//ImGui::PopItemWidth();
 
-		ImGui::SameLine();
-		ImGui::Text("Number of Balls");
+		//ImGui::SameLine();
+		//ImGui::Text("Number of Balls");
 
-		ImGui::End();
-		/////////////////////////////////////////////////////////////////////////
-		ImGui::Render();
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		//ImGui::End();
+		///////////////////////////////////////////////////////////////////////////
+		//ImGui::Render();
+		//ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 		//버퍼 교체
 		renderer.SwapBuffer();

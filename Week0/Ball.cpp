@@ -159,3 +159,13 @@ void UBall::Rotate(float deltaTime)
 		RotationAngle += 2 * 3.14f;
 	m_Rot.z += 10;
 }
+
+void UBall::RestrictVel(FVector3 _Vec) {
+	// 속도가 최대 속도를 초과하면 정규화 후 조정
+	if (_Vec.Magnitude() > MaxSpeed) {
+		_Vec = _Vec.Normalize() * MaxSpeed;
+	}
+
+	// 속도 설정
+	m_Velocity = _Vec;
+}

@@ -29,7 +29,7 @@ public:
 	FVector3	GetRot() { return m_Rot; }
 	OBJECTLIST	GetType() { return m_Type; }
 	void		SetLoc(FVector3 _Loc) { m_Loc = _Loc; }
-	void		SetVel(FVector3 _Vec); // { m_Velocity = _Vec; }
+	void		SetVel(FVector3 _Vec){ m_Velocity = _Vec; }
 	void		SetType(OBJECTLIST _Type) { m_Type = _Type; }
 	void		SetScale(FVector3 _Scale) { m_Scale = _Scale; }
 	void		SetRot(FVector3 _Rotation) { m_Rot = _Rotation; }
