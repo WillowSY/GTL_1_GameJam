@@ -16,6 +16,7 @@ void CGameMode::Initialize()
 	score = 0;
 	bGameOver = false;
 	bHasInit = false;
+	bGameStart = false;
 	bool bStageClear = false;
 	bTryAgain = false;
 	m_fStageTime = 0.0f;
@@ -23,14 +24,20 @@ void CGameMode::Initialize()
 
 void CGameMode::Update(float deltaTime)
 {
+	XINPUT_STATE state;
+	bool gamepadConnected = (XInputGetState(0, &state) == ERROR_SUCCESS);
+	if (!bGameStart)
+	{
+		if (GetAsyncKeyState('R') & 0x8000 || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)))
+		{
+			bGameStart = true;
+		}
+	}
 	if (bGameOver)
 	{
 		highScore = (score > highScore) ? score : highScore;
 		// Game over logic
-		XINPUT_STATE state;
 		ZeroMemory(&state, sizeof(XINPUT_STATE));
-		bool gamepadConnected = (XInputGetState(0, &state) == ERROR_SUCCESS);
-
 		if (GetAsyncKeyState('R') & 0x8000|| (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)))
 		{
 			bTryAgain = true;
