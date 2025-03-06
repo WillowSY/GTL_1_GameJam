@@ -1,7 +1,8 @@
 #pragma once
 #include "Define.h"
-
 class UObject;
+class CGameMode;
+class ULeaderboard;
 class SharkShark
 {
 public:
@@ -19,12 +20,15 @@ public:
 	void DeleteAllUI();
 private:
 	std::vector<std::list<UObject*>> m_pObjectList;
-
+	CGameMode* m_pMyGameMode = nullptr;
+	ULeaderboard* m_pLeaderBoard = nullptr;
 public:
 	std::vector<std::list<UObject*>>& GetpObejectList() { return m_pObjectList; }
 	std::list<UObject*>& GetBallList() { return m_pObjectList[OL_BALL]; }
 	std::list<UObject*>& GetDaggerList() { return m_pObjectList[OL_DAGGER]; }
 	std::list<UObject*>& GetUIList() { return m_pObjectList[OL_UI]; }
 	UObject* GetPlayer() { return m_pObjectList[OL_PLAYER].front(); }
+	CGameMode* GetGameMode() { return m_pMyGameMode; }
+	ULeaderboard* GetLeaderboard() { return m_pLeaderBoard; }
 };
 

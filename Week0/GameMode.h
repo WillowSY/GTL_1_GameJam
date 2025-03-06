@@ -15,10 +15,10 @@ public:
 	bool bTryAgain = false;
 
 public:
-	void Initialize();
-	void Update(float deltaTime);
-	float GetStageTime() { return m_fStageTime; }
-
+	void	Initialize();
+	void	Update(float deltaTime);
+	float	GetStageTime() { return m_fStageTime; }
+	void	AddScore(int _Add);
 private:
 	float m_fStageTime = 0.0f;
 };

@@ -5,7 +5,29 @@
 #include "Ball.h"
 #include "Dagger.h"
 #include "Sound.h"
+#include "LeaderBoard.h"
+#include "GameMode.h"
+#include <windows.h>
+#include <Xinput.h>
+#pragma comment(lib, "xinput.lib")
+
 extern FVector3 MousePosition;
+
+
+void SendMouseClick()
+{
+	INPUT input[2] = {};
+
+	// 마우스 왼쪽 버튼 누르기
+	input[0].type = INPUT_MOUSE;
+	input[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+	// 마우스 왼쪽 버튼 떼기
+	input[1].type = INPUT_MOUSE;
+	input[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+	SendInput(2, input, sizeof(INPUT));
+}
 
 UPlayer::UPlayer() : UObject(FVector3(0.0f, -1.0f, 0.0f), FVector3(0.05f,0.05f,0.05f)
 	, FVector3(), FVector3(), OL_PLAYER)
@@ -70,8 +92,11 @@ void UPlayer::Update(float deltaTime)
 			FinishDragonBlade();
 	}
 	m_Velocity.y -= 0.0005f; // gravity
+	if (m_Velocity.y < -0.05f)
+		m_Velocity.y = -0.05f;
 	Move();
 }
+
 void UPlayer::Release()
 {
 }
@@ -83,41 +108,72 @@ void UPlayer::SetMainGame(SharkShark* _MainGame)
 
 void UPlayer::Move()
 {
+	XINPUT_STATE state;
+	ZeroMemory(&state, sizeof(XINPUT_STATE));
+	bool gamepadConnected = (XInputGetState(0, &state) == ERROR_SUCCESS);
+
+	// 위치 업데이트
 	m_Loc = m_Loc + m_Velocity;
 
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-	{
+	// 점프 (키보드: SPACE, 게임패드: A 버튼)
+	if ((GetAsyncKeyState(VK_SPACE) & 0x8000) || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_A))) {
 		if (m_bJumping)
 			DoubleJump();
 		else
 			Jump();
 	}
-	if (GetAsyncKeyState('A') & 0x8000)
-	{
-		Move(-0.01f, D_RIGHT);
+
+	// 이동 (키보드: A/D, 게임패드: 왼쪽 스틱)
+	float moveSpeed = 0.01f;
+	const SHORT deadZone = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
+	SHORT leftStickX = gamepadConnected ? state.Gamepad.sThumbLX : 0;
+
+	if (GetAsyncKeyState('A') & 0x8000 || leftStickX < -deadZone) {
+		Move(-moveSpeed, D_RIGHT);
 	}
-	if (GetAsyncKeyState('D') & 0x8000)
-	{
-		Move(0.01f, D_RIGHT);
+	if (GetAsyncKeyState('D') & 0x8000 || leftStickX > deadZone) {
+		Move(moveSpeed, D_RIGHT);
 	}
-	if (GetAsyncKeyState('E') & 0x8000)
-	{
+	if (gamepadConnected) {
+		SHORT rightStickX = state.Gamepad.sThumbRX;
+		SHORT rightStickY = state.Gamepad.sThumbRY;
+
+		const SHORT deadZone = XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
+		if (abs(rightStickX) > deadZone || abs(rightStickY) > deadZone) {
+			float mouseSensitivity = 8.0f; // 마우스 이동 감도 조절
+
+			INPUT input = { 0 };
+			input.type = INPUT_MOUSE;
+			input.mi.dwFlags = MOUSEEVENTF_MOVE;
+			input.mi.dx = static_cast<int>((rightStickX / 32768.0f) * mouseSensitivity);
+			input.mi.dy = static_cast<int>((-rightStickY / 32768.0f) * mouseSensitivity); // Y축 반전
+
+			SendInput(1, &input, sizeof(INPUT));
+		}
+	}
+	// Reflection (키보드: E, 게임패드: X 버튼)
+	if ((GetAsyncKeyState('E') & 0x8000) || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_X))) {
 		Reflection();
 	}
-	if (GetAsyncKeyState('Q') & 0x8000)
-	{
+
+	// DragonBlade (키보드: Q, 게임패드: Y 버튼)
+	if ((GetAsyncKeyState('Q') & 0x8000) || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y))) {
 		DragonBlade();
 	}
-	// Reposition 이후 Dash 재적용 되는 문제 해결
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x0001)
-	{
+
+	// Dash (키보드: 우클릭, 게임패드: RB 버튼)
+	if ((GetAsyncKeyState(VK_RBUTTON) & 0x0001) || (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER))) {
 		Dash();
-	}	
-	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
-	{
+	}
+
+	// 공격 (키보드: 좌클릭, 게임패드: RT 트리거)
+	if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) || (gamepadConnected && state.Gamepad.bRightTrigger > 100)) {
 		Attack();
 	}
+
+	// 충돌 체크
 	SideCheck();
+
 }
 
 void UPlayer::Move(float _Scale, Direction _Dir)
@@ -276,11 +332,14 @@ void UPlayer::DashReset()
 
 void UPlayer::TakeDamage(float _Damage)
 {
+	if (m_Hp <= 0.0f)
+		return;
 	m_Hp -= _Damage;
 	if (m_Hp <= 0.f)
 	{
 		m_Dead = true;
 		m_Hp = 0.0f;
+		m_pMainGame->GetLeaderboard()->AddScore(m_pMainGame->GetGameMode()->score);
 	}
 }
 
