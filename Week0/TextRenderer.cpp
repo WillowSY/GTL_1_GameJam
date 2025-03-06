@@ -27,9 +27,10 @@ bool TextRenderer::Initialize(IDXGISwapChain* swapChain) {
         return false;
 
     if (FAILED(dwriteFactory->CreateTextFormat(
-        L"Arial", nullptr, DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
+        L"koverwatch", nullptr, DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH_NORMAL, 24.0f, L"en-us", textFormat.GetAddressOf())))
         return false;
+        textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 
     //textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
     textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
@@ -84,18 +85,23 @@ void TextRenderer::Cleanup() {
     buttonBrush.Reset();
 }
 
-D2D1_COLOR_F TextRenderer::SetButtonColor(D2D1::ColorF color)
+D2D1_COLOR_F TextRenderer::SetButtonColor(D2D1::ColorF color, float alpha)
 {
     D2D1_COLOR_F oldColor = buttonBrush->GetColor();
     D2D1_COLOR_F newColor = color;
+    if (alpha < 0.0f) alpha = 0.0f;
+    if (alpha > 1.0f) alpha = 1.0f;
+	newColor.a = alpha;
     buttonBrush->SetColor(newColor);
     return oldColor;
 }
 
+
 void TextRenderer::ChangeFontSize(float newFontSize)
 {
     dwriteFactory->CreateTextFormat(
-        L"Arial", nullptr, DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
+        L"koverwatch", nullptr, DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH_NORMAL, newFontSize, L"en-us", textFormat.GetAddressOf());
+        textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 }
 

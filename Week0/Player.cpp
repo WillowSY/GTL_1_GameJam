@@ -206,13 +206,20 @@ void UPlayer::SideCheck()
 		m_Loc.y = 1.0f - m_Scale;
 }
 
-void UPlayer::Jump()
-{
-	if (m_bJumping)
-		return; 
-	m_Velocity.y = 0.02f;
-	m_bJumping = true;
-}
+
+    void UPlayer::Jump()
+    {
+        if (m_bJumping)
+            return; 
+        m_Velocity.y = 0.02f;
+        m_bJumping = true;
+
+        int randomIndex = rand() % 3;
+        std::wstring soundFile = L"jump" + std::to_wstring(randomIndex) + L".mp3";
+
+        SoundManager::GetInstance().PlayEffect(soundFile.c_str());
+    }
+
 
 void UPlayer::Attack()
 {
@@ -312,17 +319,27 @@ void UPlayer::DoubleJump()
 
 	if (m_bJumping && m_bDoubleJump && (m_Loc.x < -0.95f + m_Scale || m_Loc.x == 1.0f - m_Scale))
 	{
-
 		m_Velocity.y = 0.02f;
 		m_bDoubleJump = false;
+		int randomIndex = rand() % 3;
+		std::wstring soundFile = L"jump" + std::to_wstring(randomIndex) + L".mp3";
+
+		SoundManager::GetInstance().PlayEffect(soundFile.c_str());
 	}
+
 }
 
 void UPlayer::AddDragonBladeGage(float _Add)
 {
-	m_DragonBladeGage += _Add;
-	if (m_DragonBladeGage > m_NeedGage)
-		m_DragonBladeGage = m_NeedGage;
+	if (m_DragonBladeGage < m_NeedGage)
+	{
+		m_DragonBladeGage += _Add;
+		if (m_DragonBladeGage >= m_NeedGage)
+		{
+			m_DragonBladeGage = m_NeedGage;
+		}
+			
+	}
 }
 
 void UPlayer::DashReset()

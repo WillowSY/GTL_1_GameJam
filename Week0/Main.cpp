@@ -476,7 +476,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	// 재시작 버튼 위치 및 크기
-	float buttonX = 450, buttonY = 540, buttonWidth = 200, buttonHeight = 50;
+	float buttonX = 420, buttonY = 540, buttonWidth = 200, buttonHeight = 50;
 
 	//정점 버퍼 1회 생성
 	ID3D11Buffer* vertexBufferSphere = renderer.CreateVertexBuffer(sphere_vertices, numVerticesSphere * sizeof(FVertexSimple));
@@ -620,56 +620,55 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			{
 				textRenderer.ChangeFontSize(56.0f);
 
-				textRenderer.RenderText(L"Game Over", 400, 300);
+				textRenderer.RenderText(L"Game Over", 320, 300);
 
 				textRenderer.ChangeFontSize(24.0f);
 				for (int i = 0; i < 5;i++)
 				{
 					std::wstring LeaderBoardText = L"" + std::to_wstring(pMainGame->GetLeaderboard()->Scores[i]);
-					textRenderer.RenderText(LeaderBoardText, 530, 370 + i*30);
+					textRenderer.RenderText(LeaderBoardText, 320, 370 + i*30);
 				}
 				textRenderer.ChangeFontSize(24.0f);
-				textRenderer.RenderButton(L"", buttonX, buttonY, buttonWidth, buttonHeight);
-				textRenderer.RenderText(L"Restart 'R'", 490, 550);
-				textRenderer.RenderText(scoreText, 500, 600);
+				textRenderer.RenderButton(L"Restart 'R", buttonX, buttonY, buttonWidth, buttonHeight);
+				textRenderer.RenderText(scoreText, 320, 600);
 			}
 			//체력, 궁극기 게이지
 			UPlayer* pPlayer = static_cast<UPlayer*>(pMainGame->GetPlayer());
 			textRenderer.RenderButton(L"", 260, 920,pPlayer->GetMaxHp()*5, 20);
-			textRenderer.SetButtonColor(D2D1::ColorF::Red);
+			textRenderer.SetButtonColor(D2D1::ColorF::Red,1);
 			textRenderer.RenderButton(L"", 260, 920, pPlayer->GetHp() * 5, 20);
-			textRenderer.SetButtonColor(D2D1::ColorF::Gray);
+			textRenderer.SetButtonColor(D2D1::ColorF::Gray,1);
 			textRenderer.RenderButton(L"", 400, 950, pPlayer->GetDragonBladeNeedGage() * 20, 20);
-			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
+			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow,1);
 			textRenderer.RenderButton(L"", 400, 950, pPlayer->GetDragonBladeGage() * 20, 20);
-			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray,1);
 			//
 			textRenderer.ChangeFontSize(36.0f);
 
 			// 스킬 UI
-			textRenderer.RenderButton(L"", 50, 920, pPlayer->GetDashCDT()*5.5f, 50);
-			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
+			textRenderer.RenderButton(L"RB", 50, 920, pPlayer->GetDashCDT()*5.5f, 50);
+			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow,0.5);
 			textRenderer.RenderButton(L"", 50, 920, (pPlayer->GetDashCDT()-pPlayer->GetDashTimer())*5.5f, 50);
-			textRenderer.RenderText(L"RB", 50, 925);
+			//textRenderer.RenderText(L"RB", 50, 925);
 
 
-			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray,1);
 			textRenderer.RenderButton(L"E", 150, 920, pPlayer->GetReflectionCDT()*6.3f, 50);
-			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
-			textRenderer.RenderButton(L"E", 150, 920, (pPlayer->GetReflectionCDT()-pPlayer->GetReflectionTimer()) * 6.3f, 50);
-			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+			textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow,0.5);
+			textRenderer.RenderButton(L"", 150, 920, (pPlayer->GetReflectionCDT()-pPlayer->GetReflectionTimer()) * 6.3f, 50);
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray,1);
 
 			textRenderer.RenderButton(L"LB", 820, 920, 50, 50);
 			if (pPlayer->GetDragonBladeGage() >= pPlayer->GetDragonBladeNeedGage())
 			{
-				textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
+				textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow,0.5);
 			}
 			else
 			{
-				textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+				textRenderer.SetButtonColor(D2D1::ColorF::LightGray,1);
 			}
 			textRenderer.RenderButton(L"Q", 920, 920, 50, 50);
-			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray,1);
 		//	// ImGui 렌더링
 		//	ImGui_ImplDX11_NewFrame();
 		//	ImGui_ImplWin32_NewFrame();
