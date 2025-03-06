@@ -660,7 +660,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
 
 			textRenderer.RenderButton(L"LB", 820, 920, 50, 50);
+			if (pPlayer->GetDragonBladeGage() >= pPlayer->GetDragonBladeNeedGage())
+			{
+				textRenderer.SetButtonColor(D2D1::ColorF::GreenYellow);
+			}
+			else
+			{
+				textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
+			}
 			textRenderer.RenderButton(L"Q", 920, 920, 50, 50);
+			textRenderer.SetButtonColor(D2D1::ColorF::LightGray);
 			// ImGui ·»´õ¸µ
 			ImGui_ImplDX11_NewFrame();
 			ImGui_ImplWin32_NewFrame();
