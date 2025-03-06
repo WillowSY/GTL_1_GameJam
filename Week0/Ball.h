@@ -14,6 +14,7 @@ public:
 	
 	void		SetMainGame(SharkShark* _pMainGame);
 	void		Attack();
+	void		RestrictVel(FVector3 _Vel);
 public:
 	// 클래스 이름과, 아래 두개의 변수 이름은 변경하지 않습니다.
 	float Radius;
@@ -22,7 +23,7 @@ public:
 	float RotationAngle = 0.1f;
 
 	bool bDead = false;
-	
+	const float MaxSpeed = 0.002f;
 	SharkShark* m_pMainGame;
 private:
 	const float sphereRadius = 1.0f;

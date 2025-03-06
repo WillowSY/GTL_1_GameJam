@@ -46,7 +46,7 @@ void ULevel::CollisionHandle(UObject* _pOther) {
     if (normalV.x != 0 || normalV.y != 0) {
         FVector3 velocity = pOther->GetVelocity();
         FVector3 reflectedVelocity = velocity - normalV * (2 * velocity.Dot(normalV));
-        pOther->SetVel(reflectedVelocity);
+        pOther->RestrictVel(reflectedVelocity);
     }
 }
 
