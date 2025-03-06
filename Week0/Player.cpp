@@ -13,6 +13,22 @@
 
 extern FVector3 MousePosition;
 
+
+void SendMouseClick()
+{
+	INPUT input[2] = {};
+
+	// 마우스 왼쪽 버튼 누르기
+	input[0].type = INPUT_MOUSE;
+	input[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+	// 마우스 왼쪽 버튼 떼기
+	input[1].type = INPUT_MOUSE;
+	input[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+	SendInput(2, input, sizeof(INPUT));
+}
+
 UPlayer::UPlayer() : UObject(FVector3(0.0f, -1.0f, 0.0f), FVector3(0.05f,0.05f,0.05f)
 	, FVector3(), FVector3(), OL_PLAYER)
 {

@@ -1,6 +1,8 @@
 #include "GameMode.h"
 #include "Windows.h"
+#include <Xinput.h>
 
+#pragma comment(lib, "Xinput.lib")
 CGameMode::CGameMode()
 {
 }
@@ -24,7 +26,11 @@ void CGameMode::Update(float deltaTime)
 	{
 		highScore = (score > highScore) ? score : highScore;
 		// Game over logic
-		if (GetAsyncKeyState('R') & 0x8000)
+		XINPUT_STATE state;
+		ZeroMemory(&state, sizeof(XINPUT_STATE));
+		bool gamepadConnected = (XInputGetState(0, &state) == ERROR_SUCCESS);
+
+		if (GetAsyncKeyState('R') & 0x8000|| (gamepadConnected && (state.Gamepad.wButtons & XINPUT_GAMEPAD_A)))
 		{
 			bTryAgain = true;
 		}
