@@ -86,6 +86,14 @@ UINT numVerticesTriangle = sizeof(triangle_vertices) / sizeof(FVertexSimple);
 // 마우스 위치를 저장할 변수
 FVector3 MousePosition;
 
+bool InstallFont(const wchar_t* fontPath) {
+	if (AddFontResourceEx(fontPath, FR_PRIVATE, nullptr) == 0) {
+		return false;
+	}
+	SendMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
+	return true;
+}
+
 int numMap = 6;
 // 쿨롱 상수
 const float kCoulomb = 0.005f;
@@ -460,6 +468,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!soundManager.PlayBGM(L"BGM.mp3")) {
 		MessageBoxW(nullptr, L"BGM 재생 실패!", L"Error", MB_ICONERROR);
+	}
+
+	if (!InstallFont(L"koverwatch.ttf")) {
+		MessageBoxW(nullptr, L"폰트 설치 실패!", L"오류", MB_OK | MB_ICONERROR);
+		return -1;
 	}
 
 	// Renderer 및 Direct3D 관련 초기화
