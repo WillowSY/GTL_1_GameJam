@@ -121,7 +121,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>윈도우(/SUBSYSTEM:WINDOWS)</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -154,6 +154,7 @@
   <ItemGroup>
     <FxCompile Include="ShaderW0.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,9 +185,23 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="Attack.mp3" />
+    <Media Include="Attack_0.mp3" />
+    <Media Include="Attack_1_0.mp3" />
+    <Media Include="Attack_1_1.mp3" />
+    <Media Include="Attack_1_2.mp3" />
+    <Media Include="Attack_1_3.mp3" />
     <Media Include="BGM.mp3" />
+    <Media Include="Dash.mp3" />
+    <Media Include="DragonBlade.mp3" />
     <Media Include="Hit.mp3" />
+    <Media Include="Hit_Dash.mp3" />
+    <Media Include="Jump0.mp3" />
+    <Media Include="Jump1.mp3" />
+    <Media Include="Jump2.mp3" />
     <Media Include="ReflectMetal.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="koverwatch.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

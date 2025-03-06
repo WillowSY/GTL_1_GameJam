@@ -94,7 +94,7 @@ bool InstallFont(const wchar_t* fontPath) {
 	return true;
 }
 
-int numMap = 6;
+int numMap = 3;
 // 쿨롱 상수
 const float kCoulomb = 0.005f;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -559,6 +559,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			/* 지형 */
 			//TODO: LevelLoader는 스테이지 구성 전까지 주석처리
 			pMainGame->DeleteAllUI();
+			//levelManager.LevelLoad(3, pMainGame);
 			levelManager.LevelLoad(rand()%numMap, pMainGame);
 			/* 적 (UBall) */
 			numBalls = pGameMode->stage + 1;
