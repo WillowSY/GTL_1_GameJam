@@ -11,6 +11,7 @@ public:
 	int highScore = 0;
 	bool bGameOver = false;
 	bool bHasInit = false;
+	bool bGameStart = false;
 	bool bStageClear = false;
 	bool bTryAgain = false;
 

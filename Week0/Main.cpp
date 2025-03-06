@@ -508,6 +508,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	pMainGame->Initialize();
 	CGameMode* pGameMode = pMainGame->GetGameMode();
 
+
+
 	static int numBalls = 0;  // 공의 개수 초기값
 
 	const int targetFPS = 60;
@@ -540,12 +542,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		}
 		UpdateMousePosition(hWnd);
+
+		if (!pGameMode->bGameStart)
+		{
+			pGameMode->bGameStart = textRenderer.IsButtonClicked(buttonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY, isMouseDown);
+			isMouseDown = false;
+		}
 		// UI 로직
-		if (pGameMode->bGameOver)
+		else if (pGameMode->bGameOver)
 		{
 			pGameMode->bTryAgain = textRenderer.IsButtonClicked(buttonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY, isMouseDown);
 			isMouseDown = false;
 		}
+		
 
 		UPlayer* player = (UPlayer*)pMainGame->GetPlayer();
 		pGameMode->bGameOver = player->IsDead();
@@ -574,53 +583,59 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			pGameMode->bHasInit = true;
 		}
 
-		pGameMode->Update(elapsedTime * 0.001f);
-		pMainGame->Update(elapsedTime * 0.001f);
-		pMainGame->FixedUpdate();
-		numBalls = pMainGame->GetBallList().size();
 
 		// 준비 작업
 		renderer.Prepare();
 		renderer.PrepareShader();
+		pGameMode->Update(elapsedTime * 0.001f);
+		if (pGameMode->bGameStart)
+		{
+		
+		pMainGame->Update(elapsedTime * 0.001f);
+		pMainGame->FixedUpdate();
+		numBalls = pMainGame->GetBallList().size();
 
-		// 맵제작용 렌더링 코드
-		/*pMainGame->DeleteAllUI();
-		levelManager.LevelLoad(5, pMainGame);*/
-		// Level Rendering
-		for (auto iter = pMainGame->GetUIList().begin(); iter != pMainGame->GetUIList().end(); iter++) {
-			renderer.UpdateConstant(ConvertV3ToV4((*iter)->GetLoc()), ConvertV3ToV4((*iter)->GetScale()), ConvertV3ToV4((*iter)->GetRot()));
-			int idx = (*iter)->GetIndex();
-			if (idx == int(ShapeKey::Circle_rainbow)) {
+		
+
+		
+			// 맵제작용 렌더링 코드
+			/*pMainGame->DeleteAllUI();
+			levelManager.LevelLoad(5, pMainGame);*/
+			// Level Rendering
+			for (auto iter = pMainGame->GetUIList().begin(); iter != pMainGame->GetUIList().end(); iter++) {
+				renderer.UpdateConstant(ConvertV3ToV4((*iter)->GetLoc()), ConvertV3ToV4((*iter)->GetScale()), ConvertV3ToV4((*iter)->GetRot()));
+				int idx = (*iter)->GetIndex();
+				if (idx == int(ShapeKey::Circle_rainbow)) {
+					renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+				}
+				else if (idx == ShapeKey::Rect_blue) {
+					renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+				}
+				else if (idx == ShapeKey::Tri_blue) {
+					renderer.RenderPrimitive(vertexBufferTriangle, numVerticesTriangle);
+				}
+				else if (idx == ShapeKey::Rect_black) {
+					renderer.RenderPrimitive(vBB_black, numVerticesBox);
+				}
+			}
+			// ball Rendering
+			for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
+			{
+				renderer.UpdateConstant(ConvertV3ToV4(static_cast<UBall*>(*iter)->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UBall*>(*iter)->Radius, true)), ConvertV3ToV4((*iter)->GetRot()));
 				renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
 			}
-			else if (idx == ShapeKey::Rect_blue) {
-				renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
-			}
-			else if (idx == ShapeKey::Tri_blue) {
+			for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
+			{
+				renderer.UpdateConstant(ConvertV3ToV4(static_cast<UDagger*>(*iter)->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UDagger*>(*iter)->GetScale(), true)), ConvertV3ToV4((*iter)->GetRot()));
+				/*renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);*/
 				renderer.RenderPrimitive(vertexBufferTriangle, numVerticesTriangle);
 			}
-			else if (idx == ShapeKey::Rect_black) {
-				renderer.RenderPrimitive(vBB_black, numVerticesBox);
-			}
-		}
-		// ball Rendering
-		for (auto iter = pMainGame->GetBallList().begin(); iter != pMainGame->GetBallList().end(); iter++)
-		{
-			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UBall*>(*iter)->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UBall*>(*iter)->Radius,true)), ConvertV3ToV4((*iter)->GetRot()));
-			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
-		}
-		for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
-		{
-			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UDagger*>(*iter)->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UDagger*>(*iter)->GetScale(),true)), ConvertV3ToV4((*iter)->GetRot()));
-			/*renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);*/
-			renderer.RenderPrimitive(vertexBufferTriangle, numVerticesTriangle);
-		}
-		//Player Rendering
-		renderer.UpdateConstant(ConvertV3ToV4(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale(),true)),
-			ConvertV3ToV4(pMainGame->GetPlayer()->GetRot()));
-		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+			//Player Rendering
+			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale(), true)),
+				ConvertV3ToV4(pMainGame->GetPlayer()->GetRot()));
+			renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
 
-
+		}
 		
 		textRenderer.ChangeFontSize(24.0f);
 
@@ -633,7 +648,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		std::wstring scoreText = L"Score: " + std::to_wstring(pGameMode->score);
 		textRenderer.RenderText(scoreText, 8, 128);
 
-			if (pGameMode->bGameOver)
+		if (!pGameMode->bGameStart)
+		{
+			textRenderer.ChangeFontSize(56.0f);
+			textRenderer.RenderText(L"Shark Shark", 320, 300);
+			textRenderer.ChangeFontSize(24.0f);
+			textRenderer.RenderButton(L"Restart 'R", buttonX, buttonY, buttonWidth, buttonHeight);
+		}
+		else if (pGameMode->bGameOver)
 			{
 				textRenderer.ChangeFontSize(56.0f);
 
