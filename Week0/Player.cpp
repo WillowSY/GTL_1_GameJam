@@ -76,6 +76,8 @@ void UPlayer::Update(float deltaTime)
 			FinishDragonBlade();
 	}
 	m_Velocity.y -= 0.0005f; // gravity
+	if (m_Velocity.y < -0.05f)
+		m_Velocity.y = -0.05f;
 	Move();
 }
 
