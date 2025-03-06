@@ -40,6 +40,12 @@ int mouseX = 0, mouseY = 0;
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+FVertexSimple triangle_vertices[] =
+{
+	{  0.0f,  1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f }, // 상단 정점 (위)
+	{  1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f }, // 우측 하단 정점
+	{ -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f }  // 좌측 하단 정점
+};
 FVertexSimple box_vertices[] =
 {
 	{ -1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌상
@@ -48,13 +54,6 @@ FVertexSimple box_vertices[] =
 	{ -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 좌하
 	{  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }, // 우상
 	{  1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }  // 우하
-};
-
-FVertexSimple triangle_vertices[] =
-{
-	{  0.0f,  0.5f, 0.0f , 1.0f, 0.0f, 1.0f, 1.0f},
-	{ -0.5f, -0.5f, 0.0f , 1.0f, 0.0f, 1.0f, 1.0f},
-	{  0.5f, -0.5f, 0.0f , 1.0f, 0.0f, 1.0f, 1.0f}
 };
 
 
@@ -445,9 +444,9 @@ public:
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	WCHAR WindowClass[] = L"JungleWindowClass";
-	WCHAR Title[] = L"Game Tech Lab";
+	WCHAR Title[] = L"Shark!Shark!";
 	WNDCLASSW wndclass = { 0, WndProc, 0, 0, 0, 0, 0, 0, 0, WindowClass };
-
+	//wndclass.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(255, 255, 0));
 	if (!RegisterClassW(&wndclass)) {
 		MessageBoxW(nullptr, L"윈도우 클래스 등록 실패!", L"오류", MB_OK | MB_ICONERROR);
 		return -1;
@@ -599,17 +598,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		for (auto iter = pMainGame->GetDaggerList().begin(); iter != pMainGame->GetDaggerList().end(); iter++)
 		{
 			renderer.UpdateConstant(ConvertV3ToV4(static_cast<UDagger*>(*iter)->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UDagger*>(*iter)->GetScale(),true)), ConvertV3ToV4((*iter)->GetRot()));
-			renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);
+			/*renderer.RenderPrimitive(vertexBufferSphere, numVerticesSphere);*/
+			renderer.RenderPrimitive(vertexBufferTriangle, numVerticesTriangle);
 		}
 		//Player Rendering
 		renderer.UpdateConstant(ConvertV3ToV4(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetLoc()), ConvertV3ToV4(FVector3(static_cast<UPlayer*>(pMainGame->GetPlayer())->GetScale(),true)),
 			ConvertV3ToV4(pMainGame->GetPlayer()->GetRot()));
 		renderer.RenderPrimitive(vertexBufferBox, numVerticesBox);
+
+
+		
 		textRenderer.ChangeFontSize(24.0f);
 
 		// 텍스트 렌더링
 		textRenderer.RenderText(L"Shark, Shark", 8, 8);
-		std::wstring numBallsText = L"Number of Balls: " + std::to_wstring(numBalls);
+		std::wstring numBallsText = L"Number of Enemies: " + std::to_wstring(numBalls);
 		textRenderer.RenderText(numBallsText, 8, 48);
 		std::wstring stageText = L"Stage: " + std::to_wstring(pGameMode->stage);
 		textRenderer.RenderText(stageText, 8, 88);
